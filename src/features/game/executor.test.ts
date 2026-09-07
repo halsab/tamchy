@@ -15,16 +15,20 @@ import {
   deferred,
   flush,
   successfulFetch,
+  identifyInteractions,
 } from '../../../tests/helpers/browser.ts';
 import { createGameExecutor, type GameClock } from './executor.ts';
 import { createSessionRounds } from './session-rounds.ts';
 
 export function setup(categoryIndex = 0, clock?: GameClock) {
   const category = catalog.categories[categoryIndex] as GameCategory;
-  const audioBoundary = browserAudio();
+  const audioBoundary = browserAudio(true);
   const imageBoundary = browserImages();
   const fetch = successfulFetch();
-  const audio = createAudioService({ ...audioBoundary, fetch });
+  const audio = createAudioService({
+    ...audioBoundary,
+    fetch: identifyInteractions(fetch),
+  });
   const images = createImageService({ ...imageBoundary, fetch });
   const rounds = createSessionRounds('session', category, () => 0);
   const time: GameClock = clock ?? {
@@ -109,10 +113,10 @@ describe('исполнитель требований с настоящим до
     network.resolve(new Response('audio'));
     await flush();
     expect(s.state.status).toBe('awaiting');
-    expect(s.sources).toHaveLength(1);
+    expect(s.learningSources).toHaveLength(1);
     s.reconcile();
-    expect(s.sources[0]!.stop).not.toHaveBeenCalled();
-    s.sources[0]!.onended!();
+    expect(s.learningSources[0]!.stop).not.toHaveBeenCalled();
+    s.learningSources[0]!.onended!();
     expect(s.state).toMatchObject({
       status: 'awaiting',
       prompt: { status: 'ended' },
@@ -169,7 +173,7 @@ describe('исполнитель требований с настоящим до
   it('правильный ответ сохраняет подтверждение после старта и даёт один следующий раунд', async () => {
     const s = setup();
     await s.start();
-    const oldEnd = s.sources[0]!.onended!;
+    const oldEnd = s.learningSources[0]!.onended!;
     s.event({
       type: 'ANSWER',
       itemId: s.state.round.targetId,
@@ -185,12 +189,12 @@ describe('исполнитель требований с настоящим до
       status: 'correct',
       confirmation: { status: 'playing' },
     });
-    expect(s.sources[0]!.stop).toHaveBeenCalledTimes(1);
+    expect(s.learningSources[0]!.stop).toHaveBeenCalledTimes(1);
     oldEnd();
     s.reconcile();
-    expect(s.sources[1]!.stop).not.toHaveBeenCalled();
+    expect(s.learningSources[1]!.stop).not.toHaveBeenCalled();
     await vi.advanceTimersByTimeAsync(1100);
-    s.sources[1]!.onended!();
+    s.learningSources[1]!.onended!();
     await vi.advanceTimersByTimeAsync(299);
     expect(s.state.round.roundId).toBe(1);
     await vi.advanceTimersByTimeAsync(1);
@@ -219,8 +223,17 @@ describe('исполнитель требований с настоящим до
     expect(hasHint(s.state)).toBe(true);
     s.event({ type: 'REPEAT', at: s.time.now() });
     await flush();
-    expect(s.sources).toHaveLength(4);
-    expect(s.fetch).toHaveBeenCalledTimes(2);
+    expect(s.learningSources).toHaveLength(4);
+    expect(
+      s.fetch.mock.calls.filter(
+        ([path]) => !String(path).includes('/interaction/'),
+      ),
+    ).toHaveLength(2);
+    expect(
+      s.fetch.mock.calls.filter(([path]) =>
+        String(path).includes('/interaction/'),
+      ),
+    ).toHaveLength(3);
     expect(s.state.round).toEqual(round);
     s.dispose();
   });
@@ -238,7 +251,7 @@ describe('исполнитель требований с настоящим до
     };
     const s = setup(0, clock);
     await s.start();
-    s.sources[0]!.onended!();
+    s.learningSources[0]!.onended!();
     const idle = callbacks.at(-1)!;
     s.event({ type: 'ACTIVITY' });
     now = 10000;
@@ -264,7 +277,7 @@ describe('исполнитель требований с настоящим до
     };
     const s = setup(0, clock);
     await s.start();
-    s.sources[0]!.onended!();
+    s.learningSources[0]!.onended!();
     now = 9999;
     callbacks.at(-1)!();
     expect(s.events.some((e) => e.type === 'IDLE_DUE')).toBe(false);
@@ -287,7 +300,7 @@ describe('исполнитель требований с настоящим до
     network.resolve(new Response('late'));
     await flush();
     expect(s.events).toHaveLength(count);
-    expect(s.sources).toHaveLength(1);
+    expect(s.learningSources).toHaveLength(1);
     s.dispose();
   });
 
@@ -335,7 +348,7 @@ describe('исполнитель требований с настоящим до
     s.event({ type: 'RETRY', at: s.time.now() });
     await flush();
     expect(s.state).toMatchObject({ status: 'correct', acceptedAt: 0 });
-    s.sources.at(-1)!.onended!();
+    s.learningSources.at(-1)!.onended!();
     await vi.advanceTimersByTimeAsync(1200);
     expect(s.state.round.roundId).toBe(2);
     expect(s.events.filter((e) => e.type === 'ROUND_GENERATED')).toHaveLength(
@@ -394,14 +407,14 @@ it('поздний resume не обходит срок запуска при з�
 it('cleanup/setup звучавшей операции запрашивает паузу без второго source', async () => {
   const s = setup();
   await s.start();
-  const oldEnd = s.sources[0]!.onended!;
+  const oldEnd = s.learningSources[0]!.onended!;
   s.restart();
   s.reconcile();
   await flush();
   expect(s.state.status).toBe('paused');
   oldEnd();
   expect(s.state.status).toBe('paused');
-  expect(s.sources).toHaveLength(1);
+  expect(s.learningSources).toHaveLength(1);
   s.dispose();
 });
 
@@ -418,7 +431,7 @@ it('старые callbacks таймера не действуют после н�
   };
   const s = setup(0, clock);
   await s.start();
-  s.sources[0]!.onended!();
+  s.learningSources[0]!.onended!();
   const oldTimer = callbacks.at(-1)!;
   s.restart();
   s.reconcile();
@@ -430,5 +443,5 @@ it('старые callbacks таймера не действуют после н�
   expect(s.events.filter((e) => e.type === 'IDLE_DUE')).toHaveLength(1);
   s.dispose();
   s.reconcile();
-  expect(s.sources.at(-1)!.onended).toBeNull();
+  expect(s.learningSources.at(-1)!.onended).toBeNull();
 });

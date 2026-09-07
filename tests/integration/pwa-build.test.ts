@@ -11,7 +11,7 @@ it('итоговый PWA /tamchy/: один перечень и отклонен
     const artifact = await inspectArtifact(root, base);
     expect(
       artifact.metadata.entries.filter((entry) => entry.url.endsWith('.mp3')),
-    ).toHaveLength(30);
+    ).toHaveLength(42);
     expect(
       artifact.metadata.entries.filter((entry) => entry.url.endsWith('.webp')),
     ).toHaveLength(10);

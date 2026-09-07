@@ -62,7 +62,7 @@ it.each(catalog.categories)(
       screen.getByRole('heading', { name: category.labelTt }),
     ).toBeVisible();
     expect(s.createSessionId).toHaveBeenCalledTimes(1);
-    expect(s.sources).toHaveLength(1);
+    expect(s.learningSources).toHaveLength(1);
     expect(
       screen.queryByRole('button', { name: strings.action.listen }),
     ).not.toBeInTheDocument();
@@ -70,7 +70,7 @@ it.each(catalog.categories)(
     await s.settle();
     expect(s.createSessionId).toHaveBeenCalledTimes(1);
     await s.click(strings.nav.home);
-    expect(s.sources[0]!.stop).toHaveBeenCalledTimes(1);
+    expect(s.learningSources[0]!.stop).toHaveBeenCalledTimes(1);
     expect(location.hash).toBe('#/');
   },
 );
@@ -84,7 +84,7 @@ it('прямой вход и повторный mount ждут активаци�
     screen.getByRole('button', { name: strings.action.listen }),
   ).toBeVisible();
   await s.click(strings.action.listen);
-  expect(s.sources).toHaveLength(1);
+  expect(s.learningSources).toHaveLength(1);
   expect(s.createSessionId).toHaveBeenCalledTimes(1);
   s.view.unmount();
   const next = setupApp('#/animals');
@@ -131,7 +131,7 @@ it('ошибка отображённой картинки блокирует о
   const group = screen.getByRole('group', { name: strings.game.answers });
   const answers = within(group).getAllByRole('button');
   const displayed = group.querySelector('img')!;
-  const oldSource = s.sources[0]!;
+  const oldSource = s.learningSources[0]!;
   fireEvent.error(displayed);
   await s.settle();
   expect(screen.getByRole('alert')).toHaveTextContent(strings.error.load);
@@ -174,7 +174,7 @@ it('ошибки и повтор сохраняют карточки; две о�
   }
   const right = screen.getByRole('button', { name: item.labelTt });
   expect(right).toHaveAccessibleDescription(strings.game.hint);
-  const oldAudio = s.sources.at(-1)!;
+  const oldAudio = s.learningSources.at(-1)!;
   await s.click(strings.action.listenAgain);
   expect(oldAudio.stop).toHaveBeenCalledTimes(1);
   expect(answers()).toEqual(original);
@@ -186,7 +186,7 @@ it('ошибки и повтор сохраняют карточки; две о�
     screen.getByRole('button', { name: strings.action.listenAgain }),
   ).toBeDisabled();
   original.forEach((button) => expect(button).toBeDisabled());
-  act(() => s.sources.at(-1)!.onended!());
+  act(() => s.learningSources.at(-1)!.onended!());
   await act(() => vi.advanceTimersByTimeAsync(1200));
   await s.settle();
   expect(target().id).not.toBe(item.id);
@@ -213,7 +213,7 @@ it('все числа 1–5 содержат точное количество �
         expect(image).toHaveAttribute('width', '768');
     }
     await s.click(item.labelTt);
-    act(() => s.sources.at(-1)!.onended!());
+    act(() => s.learningSources.at(-1)!.onended!());
     await act(() => vi.advanceTimersByTimeAsync(1200));
     await s.settle();
   }
@@ -259,7 +259,7 @@ it('ошибка подтверждения не отменяет ответ; я
   expect(screen.getByRole('alert')).toHaveTextContent(strings.error.audio);
   expect(screen.getByRole('img', { name: strings.game.correct })).toBeVisible();
   await s.click(strings.action.retry);
-  act(() => s.sources.at(-1)!.onended!());
+  act(() => s.learningSources.at(-1)!.onended!());
   await act(() => vi.advanceTimersByTimeAsync(1200));
   await s.settle();
   expect(target().id).not.toBe(item.id);
@@ -277,12 +277,12 @@ it('запрет воспроизведения восстанавливаетс
 it('активность за пределами игровых кнопок снимает напоминание', async () => {
   const s = setupApp();
   await s.click('Төсләр');
-  act(() => s.sources.at(-1)!.onended!());
+  act(() => s.learningSources.at(-1)!.onended!());
   await s.settle();
   fireEvent.pointerDown(screen.getByRole('main'));
   await act(() => vi.advanceTimersByTimeAsync(10000));
   await s.settle();
-  expect(s.sources).toHaveLength(1);
+  expect(s.learningSources).toHaveLength(1);
 });
 
 it('Tab, Enter и Space управляют настоящими кнопками', async () => {
@@ -315,7 +315,7 @@ it('сбой яблока после правильного ответа вос�
   expect(screen.getByRole('img', { name: strings.game.correct })).toBeVisible();
   await s.click(strings.action.retry);
   expect(screen.getByRole('img', { name: strings.game.correct })).toBeVisible();
-  act(() => s.sources.at(-1)!.onended!());
+  act(() => s.learningSources.at(-1)!.onended!());
   await act(() => vi.advanceTimersByTimeAsync(1200));
   await s.settle();
   expect(target().id).not.toBe(item.id);
@@ -343,10 +343,10 @@ it.each(['preparing', 'correct', 'retrying', 'paused', 'error'])(
     expect(
       screen.getByRole('heading', { name: strings.app.name }),
     ).toBeVisible();
-    const sources = s.sources.length;
+    const sources = s.learningSources.length;
     await act(() => vi.advanceTimersByTimeAsync(20000));
     await s.settle();
-    expect(s.sources).toHaveLength(sources);
+    expect(s.learningSources).toHaveLength(sources);
     expect(location.hash).toBe('#/');
   },
 );

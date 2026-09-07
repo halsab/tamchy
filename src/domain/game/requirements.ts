@@ -1,4 +1,5 @@
 import { gameTiming } from './timing.ts';
+import type { InteractionId } from '../../content/types.ts';
 import type { GameState, OperationScope, Resource } from './models.ts';
 import { audioResource } from './resources.ts';
 
@@ -14,6 +15,7 @@ export type GameRequirements = Readonly<{
         kind: 'play';
         resource: Resource;
         started: boolean;
+        introduction: InteractionId | null;
         timeoutAt: number | null;
       }>
     | Readonly<{
@@ -48,6 +50,7 @@ export function getGameRequirements(state: GameState): GameRequirements {
                 kind: 'play',
                 resource: audioResource(state.session, state.round, 'prompt'),
                 started: false,
+                introduction: state.introduction,
                 timeoutAt: state.requestedAt + gameTiming.resourceTimeout,
               },
       };
@@ -60,6 +63,7 @@ export function getGameRequirements(state: GameState): GameRequirements {
                 kind: 'play',
                 resource: audioResource(state.session, state.round, 'prompt'),
                 started: true,
+                introduction: state.introduction,
                 timeoutAt: null,
               }
             : {
@@ -115,6 +119,7 @@ export function getGameRequirements(state: GameState): GameRequirements {
           kind: 'play',
           resource,
           started: confirmation.status === 'playing',
+          introduction: state.introduction,
           timeoutAt:
             confirmation.status === 'playing'
               ? null

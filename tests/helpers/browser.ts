@@ -11,22 +11,33 @@ export function deferred<T>() {
 }
 
 export async function flush() {
-  for (let i = 0; i < 30; i++) await Promise.resolve();
+  for (let i = 0; i < 100; i++) await Promise.resolve();
 }
 
 export function buffer(length = 100, numberOfChannels = 1): AudioBuffer {
   return { length, numberOfChannels } as AudioBuffer;
 }
 
-export function browserAudio() {
+export function browserAudio(autoEndInteractions = false) {
   const sources: ReturnType<typeof makeSource>[] = [];
+  const learningSources: ReturnType<typeof makeSource>[] = [];
   function makeSource() {
     return {
       buffer: null as AudioBuffer | null,
       onended: null as (() => void) | null,
       connect: vi.fn(),
       disconnect: vi.fn(),
-      start: vi.fn(),
+      start: vi.fn(function (this: {
+        buffer: AudioBuffer | null;
+        onended: (() => void) | null;
+      }) {
+        const interaction = (
+          this.buffer as (AudioBuffer & { interaction?: string }) | null
+        )?.interaction;
+        if (!interaction)
+          learningSources.push(this as ReturnType<typeof makeSource>);
+        else if (autoEndInteractions) queueMicrotask(() => this.onended?.());
+      }),
       stop: vi.fn(function (this: { onended: (() => void) | null }) {
         this.onended?.();
       }),
@@ -43,7 +54,13 @@ export function browserAudio() {
       context.state = 'closed';
     }),
     decodeAudioData: vi.fn<(data: ArrayBuffer) => Promise<AudioBuffer>>(
-      async () => buffer(),
+      async (data) => {
+        const recording = new TextDecoder().decode(data);
+        return Object.assign(
+          buffer(),
+          recording.includes('/interaction/') ? { interaction: recording } : {},
+        );
+      },
     ),
     createBufferSource: vi.fn(() => {
       const source = makeSource();
@@ -60,12 +77,23 @@ export function browserAudio() {
   return {
     context,
     sources,
+    learningSources,
     listeners,
     createContext: vi.fn(() => context as unknown as AudioContext),
     changeState(state: string) {
       context.state = state;
       for (const listener of listeners) listener();
     },
+  };
+}
+
+// Реплики в обычных регрессионных сценариях заканчиваются сами; учебные записи управляются тестом.
+export function identifyInteractions(fetcher: typeof fetch): typeof fetch {
+  return async (input, init) => {
+    const response = await fetcher(input, init);
+    return response.ok && String(input).includes('/interaction/')
+      ? new Response(new TextEncoder().encode(String(input)))
+      : response;
   };
 }
 

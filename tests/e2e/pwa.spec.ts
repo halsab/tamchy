@@ -1,4 +1,8 @@
 import {
+  interactionIds,
+  interactionPath,
+} from '../../src/content/interactions.ts';
+import {
   test,
   expect,
   chromium,
@@ -49,7 +53,7 @@ async function parents(page: Page) {
 const offlineStatus = (page: Page) =>
   page.getByRole('status', { name: strings.parents.connectionTitle });
 
-test('T13: только главное меню → закрытие браузера → тот же профиль без сети → 15 целей и 30 записей', async ({
+test('T13: только главное меню → закрытие браузера → тот же профиль без сети → 15 целей и 42 записи', async ({
   browserName,
 }, testInfo) => {
   test.setTimeout(120_000);
@@ -97,6 +101,7 @@ test('T13: только главное меню → закрытие брауз�
     const audio = catalog.categories.flatMap((category) =>
       category.items.flatMap((item) => [item.labelAudio, item.promptAudio]),
     );
+    audio.push(...interactionIds.map(interactionPath));
     const decoded = await page.evaluate(async (paths) => {
       const audio = new AudioContext();
       const results = [];
@@ -120,7 +125,7 @@ test('T13: только главное меню → закрытие брауз�
       }
       return results;
     }, audio);
-    expect(decoded).toHaveLength(30);
+    expect(decoded).toHaveLength(42);
     for (const item of decoded) {
       expect(item.channels).toBe(1);
       expect(item.duration).toBeGreaterThan(0);

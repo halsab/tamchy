@@ -136,9 +136,7 @@ export async function inspectArtifact(
   );
   for (const entry of entries) {
     assert(
-      !/(^\/|\.\.|:|^(public|dist|assets-source)\/|interaction|\.gitkeep)/.test(
-        entry.url,
-      ),
+      !/(^\/|\.\.|:|^(public|dist|assets-source)\/|\.gitkeep)/.test(entry.url),
       `Недопустимый путь: ${entry.url}`,
     );
     const bytes = await readFile(resolve(dist, entry.url));

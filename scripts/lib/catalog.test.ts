@@ -66,7 +66,7 @@ describe('каталог MVP', () => {
       { image: 'assets/images/animals/animal-dog.webp' },
     ],
     [
-      'отложенная реплика',
+      'интерактивная реплика вместо учебной записи',
       'color-red',
       { labelAudio: 'assets/audio/tt/interaction/hello.mp3' },
     ],

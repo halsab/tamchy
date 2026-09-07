@@ -824,6 +824,7 @@ describe('контракт будущих адаптеров', () => {
       kind: 'play',
       resource: label(correct),
       started: false,
+      introduction: 'correct',
       timeoutAt: 15110,
     });
     const confirming = step(starting, { type: 'AUDIO_STARTED', at: 120 });
@@ -831,6 +832,7 @@ describe('контракт будущих адаптеров', () => {
       kind: 'play',
       resource: label(correct),
       started: true,
+      introduction: 'correct',
       timeoutAt: null,
     });
     expect(
@@ -1080,4 +1082,67 @@ it('ошибка картинки сохраняет паузу, приняты�
     status: 'transitioning',
     acceptedAt: 100,
   });
+});
+
+it('выбирает реплики входа, ошибки, подсказки, напоминания и продолжения; повтор оставляет только задание', () => {
+  let state = setup().state;
+  expect(getGameRequirements(ready(state)).work).toMatchObject({
+    introduction: 'hello',
+  });
+  state = begin(state);
+  expect(
+    getGameRequirements(step(state, { type: 'REPEAT', at: 50 })).work,
+  ).toMatchObject({ introduction: null });
+  for (const [index, introduction] of [
+    'think-again',
+    'hint',
+    'try-again',
+    null,
+  ].entries()) {
+    state = answer(state, 100 + index * 1000, false);
+    state = step(state, { type: 'RETRY_DUE', at: 350 + index * 1000 });
+    expect(getGameRequirements(state).work).toMatchObject({ introduction });
+    state = step(state, { type: 'AUDIO_STARTED', at: 400 + index * 1000 });
+  }
+  state = step(state, { type: 'AUDIO_ENDED', at: 4000 });
+  const reminder = step(state, { type: 'IDLE_DUE', at: 14000 });
+  expect(getGameRequirements(reminder).work).toMatchObject({
+    introduction: 'listen',
+  });
+  const resumed = step(step(state, { type: 'PAUSE' }), {
+    type: 'CONTINUE',
+    at: 15000,
+  });
+  expect(getGameRequirements(ready(resumed)).work).toMatchObject({
+    introduction: 'continue',
+  });
+});
+
+it('похвала звучит через раунд с тремя вариантами, переходная реплика — каждое пятое задание', () => {
+  const s = setup();
+  let state = s.state;
+  for (const [index, introduction] of [
+    'correct',
+    null,
+    'well-done',
+    null,
+    'very-good',
+    null,
+    'correct',
+  ].entries()) {
+    if (index > 0)
+      expect(getGameRequirements(ready(state)).work).toMatchObject({
+        introduction: (index + 1) % 5 === 0 ? 'next-one' : null,
+      });
+    state = ready(answer(begin(state), index * 10000 + 100));
+    expect(getGameRequirements(state).work).toMatchObject({ introduction });
+    state = step(state, { type: 'AUDIO_STARTED', at: index * 10000 + 200 });
+    state = step(state, { type: 'AUDIO_ENDED', at: index * 10000 + 500 });
+    state = step(state, { type: 'ADVANCE_DUE', at: index * 10000 + 2000 });
+    state = step(state, {
+      type: 'ROUND_GENERATED',
+      round: s.generate(),
+      at: index * 10000 + 2001,
+    });
+  }
 });

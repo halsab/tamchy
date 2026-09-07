@@ -1,4 +1,5 @@
 import type { CategoryId, LearningItem } from '../../content/types.ts';
+import type { InteractionId } from '../../content/types.ts';
 
 export type GameCategory = Readonly<{
   id: CategoryId;
@@ -81,6 +82,7 @@ export type RoundContext = Readonly<{
   operationId: number;
   mistakes: number;
   reminderUsed: boolean;
+  introduction: InteractionId | null;
 }>;
 
 export type GameState = RoundContext &

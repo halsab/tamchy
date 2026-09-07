@@ -1,6 +1,10 @@
 import { lstat, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import type { Catalog } from '../../src/content/types.ts';
+import {
+  interactionIds,
+  interactionPath,
+} from '../../src/content/interactions.ts';
 
 export const icons = [
   { path: 'icons/pwa-192x192.png', size: 192 },
@@ -20,6 +24,7 @@ export function resourcePaths(catalog: Catalog) {
       if (item.kind === 'number') images.add(item.countImage);
     }
   }
+  audio.push(...interactionIds.map(interactionPath));
   return { images: [...images], audio, icons: icons.map(({ path }) => path) };
 }
 
@@ -105,7 +110,7 @@ export function formatResourceReport(report: ResourceReport): string {
     ...report.errors,
     ...(report.missingAudio.length
       ? [
-          `Нет обязательных учебных MP3 (${report.missingAudio.length}):`,
+          `Нет обязательных MP3 (${report.missingAudio.length}):`,
           ...report.missingAudio.map((path) => `  ${path}`),
           'Контент не готов к релизу. Проверка каталога не заменяет validate:content.',
         ]

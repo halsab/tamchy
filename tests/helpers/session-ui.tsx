@@ -10,6 +10,7 @@ import {
   browserImages,
   flush,
   successfulFetch,
+  identifyInteractions,
 } from './browser.ts';
 import {
   useGameSession,
@@ -23,7 +24,7 @@ export function Harness({ options }: { options: GameSessionOptions }) {
       <button onClick={() => game.start(catalog.categories[1] as GameCategory)}>
         Хайваннар
       </button>
-      <button onClick={game.exit}>Өйгә</button>
+      <button onClick={() => game.exit(true)}>Өйгә</button>
       <button onClick={game.repeat}>Кабатла</button>
       <button onClick={game.retry}>Яңадан</button>
       <button onClick={game.continueGame}>Дәвам ит</button>
@@ -58,13 +59,13 @@ export function Harness({ options }: { options: GameSessionOptions }) {
   );
 }
 
-export function setup() {
-  const audio = browserAudio();
+export function setup(autoEndInteractions = true) {
+  const audio = browserAudio(autoEndInteractions);
   const images = browserImages();
   const fetch = successfulFetch();
   let nextId = 0;
   const options: GameSessionOptions = {
-    audio: { ...audio, fetch },
+    audio: { ...audio, fetch: identifyInteractions(fetch) },
     images: { ...images, fetch },
     random: () => 0,
     createSessionId: () => `session-${++nextId}`,

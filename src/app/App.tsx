@@ -23,9 +23,9 @@ export function App({ options }: { options?: GameSessionOptions }) {
   const activeRoute = useRef<Route | null>(null);
   const main = useRef<HTMLElement>(null);
   const synchronize = useCallback(
-    (next: Route) => {
+    (next: Route, sayGoodbye = false) => {
       if (activeRoute.current !== next) {
-        exit();
+        exit(sayGoodbye);
         activeRoute.current = next;
         const category = categories.find((category) => category.id === next);
         if (category) start(category, false);
@@ -59,9 +59,9 @@ export function App({ options }: { options?: GameSessionOptions }) {
     main.current?.focus({ preventScroll: true });
   }, [route]);
 
-  function navigate(next: Route) {
+  function navigate(next: Route, sayGoodbye = false) {
     writeRoute(next);
-    synchronize(next);
+    synchronize(next, sayGoodbye);
   }
   function enter(category: Category) {
     start(category);
@@ -69,7 +69,7 @@ export function App({ options }: { options?: GameSessionOptions }) {
     navigate(category.id);
   }
   const category = categories.find((category) => category.id === route);
-  const home = () => navigate('home');
+  const home = () => navigate('home', true);
   return (
     <main
       ref={main}

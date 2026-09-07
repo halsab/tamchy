@@ -8,16 +8,17 @@ import {
   browserImages,
   flush,
   successfulFetch,
+  identifyInteractions,
 } from './browser.ts';
 
-export function setupApp(hash = '#/') {
+export function setupApp(hash = '#/', autoEndInteractions = true) {
   window.history.replaceState(null, '', hash);
-  const audio = browserAudio();
+  const audio = browserAudio(autoEndInteractions);
   const images = browserImages();
   const fetch = successfulFetch();
   const createSessionId = vi.fn(() => crypto.randomUUID());
   const options = {
-    audio: { ...audio, fetch },
+    audio: { ...audio, fetch: identifyInteractions(fetch) },
     images: { ...images, fetch },
     random: () => 0,
     createSessionId,

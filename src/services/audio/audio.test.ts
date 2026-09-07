@@ -21,6 +21,91 @@ function callbacks() {
   return { started: vi.fn(), ended: vi.fn(), failed: vi.fn() };
 }
 
+describe('реплика перед учебной записью', () => {
+  const introduction = 'assets/audio/tt/interaction/hello.mp3';
+  it('сообщает старт только задания, окончание только после всей последовательности', async () => {
+    const s = setup();
+    await s.service.activate();
+    const cb = callbacks();
+    s.service.play(path, s.controller.signal, cb, introduction);
+    await flush();
+    expect(s.fetch.mock.calls[0]?.[0]).toContain(introduction);
+    expect(cb.started).not.toHaveBeenCalled();
+    s.sources[0]!.onended!();
+    await flush();
+    expect(s.fetch.mock.calls[1]?.[0]).toContain(path);
+    expect(cb.started).toHaveBeenCalledTimes(1);
+    expect(cb.ended).not.toHaveBeenCalled();
+    s.sources[1]!.onended!();
+    expect(cb.ended).toHaveBeenCalledTimes(1);
+    s.service.dispose();
+  });
+
+  it.each(['abort', 'stop', 'replace', 'interrupt'] as const)(
+    '%s отменяет оставшуюся последовательность и позднее окончание',
+    async (mode) => {
+      const s = setup();
+      await s.service.activate();
+      const cb = callbacks();
+      s.service.play(path, s.controller.signal, cb, introduction);
+      await flush();
+      const lateEnd = s.sources[0]!.onended!;
+      if (mode === 'abort') s.controller.abort();
+      if (mode === 'stop') s.service.stop();
+      if (mode === 'replace')
+        s.service.play(path, new AbortController().signal, callbacks());
+      if (mode === 'interrupt') s.changeState('interrupted');
+      lateEnd();
+      await flush();
+      expect(cb.started).not.toHaveBeenCalled();
+      expect(cb.ended).not.toHaveBeenCalled();
+      expect(s.sources).toHaveLength(mode === 'replace' ? 2 : 1);
+      s.service.dispose();
+    },
+  );
+
+  it.each(['load', 'decode'] as const)(
+    'сбой %s реплики сохраняет учебную запись',
+    async (reason) => {
+      const s = setup();
+      await s.service.activate();
+      if (reason === 'load')
+        s.fetch.mockResolvedValueOnce(new Response(null, { status: 404 }));
+      else s.context.decodeAudioData.mockRejectedValueOnce(new Error('decode'));
+      const cb = callbacks();
+      s.service.play(path, s.controller.signal, cb, introduction);
+      await flush();
+      expect(s.fetch.mock.calls.at(-1)?.[0]).toContain(path);
+      await flush();
+      expect(cb.started).toHaveBeenCalledTimes(1);
+      expect(cb.failed).not.toHaveBeenCalled();
+      s.service.dispose();
+    },
+  );
+
+  it('через 2 секунды отменяет зависшую реплику и запускает задание', async () => {
+    vi.useFakeTimers();
+    const s = setup();
+    try {
+      await s.service.activate();
+      const pending = deferred<Response>();
+      s.fetch.mockReturnValueOnce(pending.promise);
+      const cb = callbacks();
+      s.service.play(path, s.controller.signal, cb, introduction);
+      await flush();
+      await vi.advanceTimersByTimeAsync(2000);
+      expect(s.fetch.mock.calls[0]?.[1]?.signal?.aborted).toBe(true);
+      expect(cb.started).toHaveBeenCalledTimes(1);
+      pending.resolve(new Response('late'));
+      await flush();
+      expect(s.sources).toHaveLength(1);
+    } finally {
+      s.service.dispose();
+      vi.useRealTimers();
+    }
+  });
+});
+
 describe('аудиосервис', () => {
   it('создаёт и возобновляет контекст прямо в activate до fetch', async () => {
     const s = setup();

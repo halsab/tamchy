@@ -13,6 +13,8 @@ export type AudioBoundary = {
   fetch: typeof fetch;
   resolveUrl: (path: string) => string;
   maxCacheBytes: number;
+  setTimeout: typeof setTimeout;
+  clearTimeout: typeof clearTimeout;
 };
 export type PlaybackCallbacks = {
   started: () => void;
@@ -26,6 +28,8 @@ export function createAudioService(boundary: Partial<AudioBoundary> = {}) {
     fetch: (...args) => fetch(...args),
     resolveUrl: assetUrl,
     maxCacheBytes: 8 * 1024 * 1024,
+    setTimeout: (...args) => setTimeout(...args),
+    clearTimeout: (id) => clearTimeout(id),
     ...boundary,
   };
   const cache = createBufferCache(environment.maxCacheBytes);
@@ -123,6 +127,7 @@ export function createAudioService(boundary: Partial<AudioBoundary> = {}) {
     path: string,
     signal: AbortSignal,
     callbacks: PlaybackCallbacks,
+    introduction?: string,
   ) {
     stop();
     if (signal.aborted || disposed) return;
@@ -130,24 +135,49 @@ export function createAudioService(boundary: Partial<AudioBoundary> = {}) {
     const abort = () => {
       if (playback === current) stop();
     };
+    let introductionTimer: ReturnType<typeof setTimeout> | undefined;
+    let introductionLoad: AbortController | undefined;
+    const clearIntroduction = () => {
+      if (introductionTimer !== undefined)
+        environment.clearTimeout(introductionTimer);
+      introductionTimer = undefined;
+      introductionLoad?.abort();
+      introductionLoad = undefined;
+    };
     const current = {
       path,
       controller,
       source: null as AudioBufferSourceNode | null,
       buffer: null as AudioBuffer | null,
-      detach: () => signal.removeEventListener('abort', abort),
+      detach: () => {
+        signal.removeEventListener('abort', abort);
+        clearIntroduction();
+      },
     };
     playback = current;
     signal.addEventListener('abort', abort, { once: true });
     const attempt = activation ?? Promise.resolve(false);
-    void (async () => {
+    async function startRecording(recording: string, introductory: boolean) {
       try {
         if (
           !(await abortable(attempt, controller.signal)) ||
           context?.state !== 'running'
         )
           throw new ResourceError('blocked');
-        const buffer = await loads.run(path, controller.signal);
+        current.buffer = null;
+        current.path = recording;
+        if (introductory) {
+          introductionLoad = new AbortController();
+          introductionTimer = environment.setTimeout(
+            () => introductionLoad?.abort(),
+            2000,
+          );
+        }
+        const buffer = await loads.run(
+          recording,
+          introductionLoad?.signal ?? controller.signal,
+        );
+        clearIntroduction();
         controller.signal.throwIfAborted();
         if (context.state !== 'running') throw new ResourceError('blocked');
         const source = context.createBufferSource();
@@ -156,28 +186,49 @@ export function createAudioService(boundary: Partial<AudioBoundary> = {}) {
         source.buffer = buffer;
         source.connect(context.destination);
         source.onended = () => {
-          if (playback !== current || controller.signal.aborted) return;
+          if (
+            playback !== current ||
+            current.source !== source ||
+            controller.signal.aborted
+          )
+            return;
           if (context?.state !== 'running') {
             stateChanged();
             return;
           }
           source.onended = null;
           source.disconnect();
-          current.detach();
-          playback = null;
-          callbacks.ended();
+          current.source = null;
+          if (introductory) void startRecording(path, false);
+          else {
+            current.detach();
+            playback = null;
+            callbacks.ended();
+          }
         };
         source.start();
         if (context.state !== 'running') throw new ResourceError('blocked');
-        callbacks.started();
+        // Ответ разрешается только после начала учебной фразы, а не вступительной реплики.
+        if (!introductory) callbacks.started();
       } catch (error) {
         if (playback !== current || controller.signal.aborted) return;
+        clearIntroduction();
+        if (
+          introductory &&
+          context?.state === 'running' &&
+          ((error instanceof ResourceError && error.reason !== 'blocked') ||
+            (error instanceof DOMException && error.name === 'AbortError'))
+        ) {
+          void startRecording(path, false);
+          return;
+        }
         stop();
         callbacks.failed(
           error instanceof ResourceError ? error.reason : 'blocked',
         );
       }
-    })();
+    }
+    void startRecording(introduction ?? path, introduction !== undefined);
   }
 
   return {

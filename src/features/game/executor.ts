@@ -9,6 +9,7 @@ import type { AudioService } from '../../services/audio/audio.ts';
 import type { ImageService } from '../../services/assets/images.ts';
 import { ResourceError } from '../../services/assets/resource-loading.ts';
 import type { SessionRounds } from './session-rounds.ts';
+import { interactionPath } from '../../content/interactions.ts';
 
 export type GameClock = {
   now: () => number;
@@ -186,20 +187,25 @@ export function createGameExecutor({
           }
           const controller = new AbortController();
           playing = controller;
-          audio.play(work.resource.path, controller.signal, {
-            started: () => {
-              if (work.timeoutAt !== null && clock.now() >= work.timeoutAt)
-                expire(work.resource);
-              else emit({ type: 'AUDIO_STARTED', at: clock.now() });
+          audio.play(
+            work.resource.path,
+            controller.signal,
+            {
+              started: () => {
+                if (work.timeoutAt !== null && clock.now() >= work.timeoutAt)
+                  expire(work.resource);
+                else emit({ type: 'AUDIO_STARTED', at: clock.now() });
+              },
+              ended: () => emit({ type: 'AUDIO_ENDED', at: clock.now() }),
+              failed: (reason) =>
+                emit({
+                  type: 'RESOURCE_FAILED',
+                  resource: work.resource,
+                  reason,
+                }),
             },
-            ended: () => emit({ type: 'AUDIO_ENDED', at: clock.now() }),
-            failed: (reason) =>
-              emit({
-                type: 'RESOURCE_FAILED',
-                resource: work.resource,
-                reason,
-              }),
-          });
+            work.introduction ? interactionPath(work.introduction) : undefined,
+          );
         }
         break;
       case 'wait':

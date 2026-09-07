@@ -18,18 +18,20 @@ it('верный ответ: название, обе задержки и ров
   const s = setup();
   await s.click('Хайваннар');
   const target = screen.getByTestId('target').textContent!;
-  const oldEnd = s.sources[0]!.onended!;
+  const oldEnd = s.learningSources[0]!.onended!;
   await s.click('Җавап');
   await s.click('Җавап');
   await s.click('Кабатла');
   expect(screen.getByTestId('state')).toHaveTextContent('correct');
-  expect(s.fetch.mock.calls.at(-1)?.[0]).toBe(
-    `/assets/audio/tt/animals/${target}-label.mp3`,
-  );
-  expect(s.sources).toHaveLength(2);
+  expect(
+    s.fetch.mock.calls
+      .filter(([path]) => !String(path).includes('/interaction/'))
+      .at(-1)?.[0],
+  ).toBe(`/assets/audio/tt/animals/${target}-label.mp3`);
+  expect(s.learningSources).toHaveLength(2);
   act(oldEnd);
   await act(() => vi.advanceTimersByTimeAsync(1100));
-  act(() => s.sources[1]!.onended!());
+  act(() => s.learningSources[1]!.onended!());
   await act(() => vi.advanceTimersByTimeAsync(299));
   expect(screen.getByTestId('round')).toHaveTextContent('1');
   await act(() => vi.advanceTimersByTimeAsync(1));
@@ -37,7 +39,7 @@ it('верный ответ: название, обе задержки и ров
   expect(screen.getByTestId('state')).toHaveTextContent('awaiting');
   expect(screen.getByTestId('round')).toHaveTextContent('2');
   expect(screen.getByTestId('target')).not.toHaveTextContent(target);
-  expect(s.sources).toHaveLength(3);
+  expect(s.learningSources).toHaveLength(3);
 });
 
 it('неверные ответы повторяют исходное задание; после второго есть подсказка', async () => {
@@ -47,7 +49,7 @@ it('неверные ответы повторяют исходное задан
   for (let count = 0; count < 2; count++) {
     await s.click('Ялгыш');
     expect(screen.getByTestId('state')).toHaveTextContent('retrying');
-    expect(s.sources.at(-1)!.onended).toBeNull();
+    expect(s.learningSources.at(-1)!.onended).toBeNull();
     await act(() => vi.advanceTimersByTimeAsync(249));
     expect(screen.getByTestId('state')).toHaveTextContent('retrying');
     await act(() => vi.advanceTimersByTimeAsync(1));
@@ -57,35 +59,48 @@ it('неверные ответы повторяют исходное задан
     expect(screen.getByTestId('options')).toHaveTextContent(options);
   }
   expect(screen.getByTestId('hint')).toHaveTextContent('hint');
-  expect(s.sources).toHaveLength(3);
-  expect(s.fetch).toHaveBeenCalledTimes(3);
+  expect(s.learningSources).toHaveLength(3);
+  expect(
+    s.fetch.mock.calls.filter(
+      ([path]) => !String(path).includes('/interaction/'),
+    ),
+  ).toHaveLength(3);
+  expect(
+    s.fetch.mock.calls
+      .filter(([path]) => String(path).includes('/interaction/'))
+      .map(([path]) => path),
+  ).toEqual([
+    '/assets/audio/tt/interaction/hello.mp3',
+    '/assets/audio/tt/interaction/think-again.mp3',
+    '/assets/audio/tt/interaction/hint.mp3',
+  ]);
 });
 
 it('повтор, активность, пауза, выход и поздние окончания не оживляют прежнюю работу', async () => {
   const s = setup();
   await s.click('Хайваннар');
-  const oldEnd = s.sources[0]!.onended!;
+  const oldEnd = s.learningSources[0]!.onended!;
   await s.click('Кабатла');
-  expect(s.sources).toHaveLength(2);
+  expect(s.learningSources).toHaveLength(2);
   act(() => {
     oldEnd();
-    s.sources[1]!.onended!();
+    s.learningSources[1]!.onended!();
   });
   await s.click('Кагылу');
   await act(() => vi.advanceTimersByTimeAsync(10000));
-  expect(s.sources).toHaveLength(2);
+  expect(s.learningSources).toHaveLength(2);
   act(() => s.changeState('suspended'));
   expect(screen.getByTestId('state')).toHaveTextContent('paused');
   act(() => s.changeState('running'));
-  expect(s.sources).toHaveLength(2);
+  expect(s.learningSources).toHaveLength(2);
   await s.click('Дәвам ит');
   expect(screen.getByTestId('round')).toHaveTextContent('1');
-  const late = s.sources.at(-1)!.onended!;
+  const late = s.learningSources.at(-1)!.onended!;
   await s.click('Өйгә');
   act(late);
   await act(() => vi.advanceTimersByTimeAsync(20000));
   expect(screen.getByTestId('state')).toHaveTextContent('ended');
-  expect(s.sources).toHaveLength(3);
+  expect(s.learningSources).toHaveLength(3);
 });
 
 it('ошибка подтверждения повторяет название без повторного зачёта', async () => {
@@ -100,11 +115,11 @@ it('ошибка подтверждения повторяет название 
   expect(screen.getByTestId('state')).toHaveTextContent('error');
   await s.click('Яңадан');
   expect(screen.getByTestId('state')).toHaveTextContent('correct');
-  act(() => s.sources.at(-1)!.onended!());
+  act(() => s.learningSources.at(-1)!.onended!());
   await act(() => vi.advanceTimersByTimeAsync(1200));
   await s.settle();
   expect(screen.getByTestId('round')).toHaveTextContent('2');
-  expect(s.sources).toHaveLength(3);
+  expect(s.learningSources).toHaveLength(3);
 });
 
 it('заблокированный и зависший resume восстанавливаются явным действием; выход не ждёт Promise', async () => {
@@ -123,6 +138,6 @@ it('заблокированный и зависший resume восстанав
   expect(screen.getByTestId('state')).toHaveTextContent('awaiting');
   resume.resolve();
   await s.settle();
-  expect(s.sources).toHaveLength(1);
+  expect(s.learningSources).toHaveLength(1);
   expect(screen.getByTestId('session')).toHaveTextContent('session-2');
 });

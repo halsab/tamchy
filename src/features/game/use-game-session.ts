@@ -32,6 +32,7 @@ import {
   type GameExecutor,
 } from './executor.ts';
 import { createSessionRounds, type SessionRounds } from './session-rounds.ts';
+import { interactionPath } from '../../content/interactions.ts';
 
 export type GameSessionOptions = {
   audio?: Partial<AudioBoundary>;
@@ -80,7 +81,16 @@ type Owner = {
   images: ImageService;
   executor: GameExecutor | null;
   restoring: boolean;
+  farewell: AbortController | null;
+  farewellTimer: ReturnType<typeof setTimeout> | null;
 };
+
+function stopFarewell(owner: Owner, clock: GameClock) {
+  owner.farewell?.abort();
+  owner.farewell = null;
+  if (owner.farewellTimer !== null) clock.clearTimeout(owner.farewellTimer);
+  owner.farewellTimer = null;
+}
 
 export function useGameSession(
   configuration: GameSessionOptions = defaultOptions,
@@ -90,6 +100,7 @@ export function useGameSession(
   const [state, dispatch] = useReducer(sessionReducer, null);
   const ownerRef = useRef<Owner | null>(null);
   const roundsRef = useRef<SessionRounds | null>(null);
+  const greetedRef = useRef(false);
   const clock = options.clock ?? browserClock;
 
   useLayoutEffect(() => {
@@ -98,11 +109,14 @@ export function useGameSession(
       images: createImageService(options.images),
       executor: null,
       restoring: roundsRef.current !== null,
+      farewell: null,
+      farewellTimer: null,
     };
     ownerRef.current = owner;
     let attached = true;
     const visibility = options.visibility ?? browserVisibility;
     function notify(event: 'PAUSE' | 'RETURN') {
+      if (event === 'PAUSE') stopFarewell(owner, clock);
       const rounds = roundsRef.current;
       if (!attached || !rounds) return;
       if (event === 'PAUSE') owner.executor?.cancel();
@@ -120,11 +134,12 @@ export function useGameSession(
       removeVisibility();
       removeInterruption();
       owner.executor?.dispose();
+      stopFarewell(owner, clock);
       owner.audio.dispose();
       owner.images.dispose();
       ownerRef.current = null;
     };
-  }, [options]);
+  }, [options, clock]);
 
   useLayoutEffect(() => {
     const owner = ownerRef.current;
@@ -151,6 +166,7 @@ export function useGameSession(
     (category: GameCategory, activateAudio = true) => {
       const owner = ownerRef.current;
       if (!owner) return;
+      stopFarewell(owner, clock);
       owner.executor?.dispose();
       owner.executor = null;
       owner.restoring = false;
@@ -167,7 +183,9 @@ export function useGameSession(
         category,
         rounds.get(1),
         clock.now(),
+        greetedRef.current ? 'game-start' : 'hello',
       );
+      greetedRef.current = true;
       const prepared = activateAudio
         ? initial
         : gameReducer(initial, {
@@ -183,15 +201,34 @@ export function useGameSession(
     [options, clock],
   );
 
-  const exit = useCallback(() => {
-    const rounds = roundsRef.current;
-    if (!rounds) return;
-    const owner = ownerRef.current;
-    owner?.executor?.dispose();
-    if (owner) owner.executor = null;
-    roundsRef.current = null;
-    dispatch({ type: 'CONTROL', sessionId: rounds.sessionId, event: 'EXIT' });
-  }, []);
+  const exit = useCallback(
+    (sayGoodbye = false) => {
+      const owner = ownerRef.current;
+      if (owner) stopFarewell(owner, clock);
+      const rounds = roundsRef.current;
+      if (!rounds) return;
+      owner?.executor?.dispose();
+      if (owner) owner.executor = null;
+      roundsRef.current = null;
+      dispatch({ type: 'CONTROL', sessionId: rounds.sessionId, event: 'EXIT' });
+      if (
+        sayGoodbye &&
+        owner &&
+        !(options.visibility ?? browserVisibility).hidden()
+      ) {
+        const controller = new AbortController();
+        owner.farewell = controller;
+        const finish = () => stopFarewell(owner, clock);
+        owner.farewellTimer = clock.setTimeout(finish, 15000);
+        owner.audio.play(interactionPath('goodbye'), controller.signal, {
+          started: () => {},
+          ended: finish,
+          failed: finish,
+        });
+      }
+    },
+    [clock, options],
+  );
 
   function activity() {
     if (!state || state.session.sessionId !== roundsRef.current?.sessionId)

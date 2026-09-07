@@ -42,14 +42,14 @@ afterEach(async () => {
 });
 
 describe('полнота обязательных ресурсов', () => {
-  it('требует 10 иллюстраций, 4 иконки, 30 учебных записей без interaction', async () => {
+  it('требует 10 иллюстраций, 4 иконки, 30 учебных записей и все 12 реплик', async () => {
     const paths = resourcePaths(catalog);
     expect(paths.images).toHaveLength(10);
     expect(paths.icons).toHaveLength(4);
-    expect(paths.audio).toHaveLength(30);
-    expect(paths.audio.every((path) => !path.includes('interaction/'))).toBe(
-      true,
-    );
+    expect(paths.audio).toHaveLength(42);
+    expect(
+      paths.audio.filter((path) => path.includes('interaction/')),
+    ).toHaveLength(12);
     const report = await inspectResources(await fixture(), catalog);
     expect(report.resourcesComplete).toBe(true);
     expect(() => assertCompleteContent(report)).not.toThrow();
@@ -106,4 +106,26 @@ describe('полнота обязательных ресурсов', () => {
     expect(report.errors).toHaveLength(3);
     expect(() => assertCompleteContent(report)).toThrow();
   });
+});
+
+it.each([
+  'hello',
+  'game-start',
+  'correct',
+  'well-done',
+  'very-good',
+  'think-again',
+  'try-again',
+  'hint',
+  'listen',
+  'next-one',
+  'continue',
+  'goodbye',
+])('строгая сборка отклоняет отсутствие реплики %s', async (name) => {
+  const root = await fixture();
+  const path = `assets/audio/tt/interaction/${name}.mp3`;
+  await rm(join(root, path));
+  const report = await inspectResources(root, catalog);
+  expect(report.missingAudio).toContain(path);
+  expect(() => assertCompleteContent(report)).toThrow(path);
 });

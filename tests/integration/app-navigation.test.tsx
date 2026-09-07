@@ -27,13 +27,13 @@ it('сессия останавливается при переходе к вз�
   expect(s.fetch.mock.calls[0]![1]!.signal!.aborted).toBe(true);
   network.resolve(new Response('late'));
   await s.settle();
-  expect(s.sources).toHaveLength(0);
+  expect(s.learningSources).toHaveLength(0);
   await s.route('#/numbers');
   expect(
     screen.getByRole('button', { name: strings.action.listen }),
   ).toBeVisible();
   await s.click(strings.action.listen);
-  const previous = s.sources[0]!;
+  const previous = s.learningSources[0]!;
   await s.route('#/colors');
   expect(previous.stop).toHaveBeenCalledTimes(1);
   expect(s.createSessionId).toHaveBeenCalledTimes(3);
@@ -52,7 +52,7 @@ it('быстрые старт, выход и новая категория со�
   await s.settle();
   expect(location.hash).toBe('#/numbers');
   expect(screen.getByRole('heading', { name: 'Саннар' })).toBeVisible();
-  expect(s.sources).toHaveLength(1);
+  expect(s.learningSources).toHaveLength(1);
   expect(s.createSessionId).toHaveBeenCalledTimes(2);
   act(() => window.dispatchEvent(new HashChangeEvent('hashchange')));
   await s.settle();
@@ -73,7 +73,7 @@ it('новые options и повторные события истории не 
   });
   await s.settle();
   expect(s.createSessionId).toHaveBeenCalledTimes(1);
-  expect(s.sources).toHaveLength(1);
+  expect(s.learningSources).toHaveLength(1);
   expect(s.context.close).not.toHaveBeenCalled();
-  expect(s.sources[0]!.stop).not.toHaveBeenCalled();
+  expect(s.learningSources[0]!.stop).not.toHaveBeenCalled();
 });

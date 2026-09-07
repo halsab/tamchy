@@ -51,7 +51,7 @@ export function contentPlugin(check: boolean): Plugin {
           );
         }
       }
-      // Копируется только проверенный список, включая доступные учебные MP3.
+      // Копируется только проверенный список, включая учебные и интерактивные MP3.
       for (const path of available) {
         this.emitFile({
           type: 'asset',

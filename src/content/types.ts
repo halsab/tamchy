@@ -1,3 +1,4 @@
+export type { InteractionId } from './interactions.ts';
 export type CategoryId = 'colors' | 'animals' | 'numbers';
 
 type ItemBase = {

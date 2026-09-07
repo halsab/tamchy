@@ -1,4 +1,5 @@
 import { gameTiming } from './timing.ts';
+import type { InteractionId } from '../../content/types.ts';
 import type {
   ActivePhase,
   GameCategory,
@@ -22,28 +23,54 @@ function context(state: RoundContext): RoundContext {
     operationId: state.operationId,
     mistakes: state.mistakes,
     reminderUsed: state.reminderUsed,
+    introduction: state.introduction,
   };
 }
 
-function changeOperation(state: RoundContext, phase: ActivePhase): GameState {
-  return { ...context(state), operationId: state.operationId + 1, ...phase };
+function changeOperation(
+  state: RoundContext,
+  phase: ActivePhase,
+  introduction = state.introduction,
+): GameState {
+  return {
+    ...context(state),
+    operationId: state.operationId + 1,
+    introduction,
+    ...phase,
+  };
 }
 
-function prepareRound(state: RoundContext, at: number): GameState {
-  return changeOperation(state, {
-    status: 'preparing',
-    stage: 'resources',
-    pending: roundResources(state.session, state.round),
-    requestedAt: at,
-  });
+function prepareRound(
+  state: RoundContext,
+  at: number,
+  introduction: InteractionId | null = null,
+): GameState {
+  return changeOperation(
+    state,
+    {
+      status: 'preparing',
+      stage: 'resources',
+      pending: roundResources(state.session, state.round),
+      requestedAt: at,
+    },
+    introduction,
+  );
 }
 
-function startPrompt(state: RoundContext, at: number): GameState {
-  return changeOperation(state, {
-    status: 'preparing',
-    stage: 'prompt',
-    requestedAt: at,
-  });
+function startPrompt(
+  state: RoundContext,
+  at: number,
+  introduction = state.introduction,
+): GameState {
+  return changeOperation(
+    state,
+    {
+      status: 'preparing',
+      stage: 'prompt',
+      requestedAt: at,
+    },
+    introduction,
+  );
 }
 
 function validRound(session: GameSession, round: Round) {
@@ -65,6 +92,7 @@ export function createGame(
   category: GameCategory,
   round: Round,
   at: number,
+  introduction: 'hello' | 'game-start' = 'hello',
 ): GameState {
   const session: GameSession = {
     sessionId,
@@ -80,8 +108,10 @@ export function createGame(
       operationId: 0,
       mistakes: 0,
       reminderUsed: false,
+      introduction,
     },
     at,
+    introduction,
   );
 }
 
@@ -114,14 +144,22 @@ export function gameReducer(state: GameState, event: GameEvent): GameState {
       };
     case 'PAUSE': {
       if (state.status === 'paused') return state;
-      const { session, round, operationId, mistakes, reminderUsed, ...resume } =
-        state;
+      const {
+        session,
+        round,
+        operationId,
+        mistakes,
+        reminderUsed,
+        introduction,
+        ...resume
+      } = state;
       return {
         session,
         round,
         operationId: operationId + 1,
         mistakes,
         reminderUsed,
+        introduction,
         status: 'paused',
         resume,
       };
@@ -145,7 +183,7 @@ export function gameReducer(state: GameState, event: GameEvent): GameState {
         }
         return changeOperation(state, resume);
       }
-      return prepareRound(state, event.at);
+      return prepareRound(state, event.at, 'continue');
     }
     case 'ROUND_GENERATED':
       if (
@@ -163,6 +201,7 @@ export function gameReducer(state: GameState, event: GameEvent): GameState {
           reminderUsed: false,
         },
         event.at,
+        event.round.roundId % 5 === 0 ? 'next-one' : null,
       );
     case 'IMAGE_FAILED': {
       const resource = roundResources(state.session, state.round).find(
@@ -244,20 +283,28 @@ export function gameReducer(state: GameState, event: GameEvent): GameState {
     case 'RETRY':
       if (state.status !== 'error') return state;
       if (state.failure.phase === 'confirmation') {
-        return changeOperation(state, {
-          status: 'correct',
-          acceptedAt: state.failure.acceptedAt,
-          confirmation:
-            state.failure.resource.kind === 'image'
-              ? {
-                  status: 'repairing-image',
-                  resource: state.failure.resource,
-                  requestedAt: event.at,
-                }
-              : { status: 'loading', requestedAt: event.at },
-        });
+        return changeOperation(
+          state,
+          {
+            status: 'correct',
+            acceptedAt: state.failure.acceptedAt,
+            confirmation:
+              state.failure.resource.kind === 'image'
+                ? {
+                    status: 'repairing-image',
+                    resource: state.failure.resource,
+                    requestedAt: event.at,
+                  }
+                : { status: 'loading', requestedAt: event.at },
+          },
+          null,
+        );
       }
-      return prepareRound(state, event.at);
+      return prepareRound(
+        state,
+        event.at,
+        state.failure.reason === 'blocked' ? state.introduction : null,
+      );
     case 'RESOURCE_READY':
       if (
         state.status === 'correct' &&
@@ -349,11 +396,19 @@ export function gameReducer(state: GameState, event: GameEvent): GameState {
       )
         return state;
       if (event.itemId === state.round.targetId) {
-        return changeOperation(state, {
-          status: 'correct',
-          acceptedAt: event.at,
-          confirmation: { status: 'loading', requestedAt: event.at },
-        });
+        return changeOperation(
+          state,
+          {
+            status: 'correct',
+            acceptedAt: event.at,
+            confirmation: { status: 'loading', requestedAt: event.at },
+          },
+          state.round.roundId % 2 === 1
+            ? (['correct', 'well-done', 'very-good'] as const)[
+                ((state.round.roundId - 1) / 2) % 3
+              ]!
+            : null,
+        );
       }
       return changeOperation(
         { ...context(state), mistakes: state.mistakes + 1 },
@@ -365,7 +420,13 @@ export function gameReducer(state: GameState, event: GameEvent): GameState {
       );
     case 'RETRY_DUE':
       return state.status === 'retrying' && event.at >= state.retryAt
-        ? startPrompt(state, event.at)
+        ? startPrompt(
+            state,
+            event.at,
+            (['think-again', 'hint', 'try-again'] as const)[
+              state.mistakes - 1
+            ] ?? null,
+          )
         : state;
     case 'ADVANCE_DUE':
       if (
@@ -385,7 +446,7 @@ export function gameReducer(state: GameState, event: GameEvent): GameState {
         state.status === 'awaiting' ||
         (state.status === 'preparing' && state.stage === 'prompt')
       )
-        return startPrompt(state, event.at);
+        return startPrompt(state, event.at, null);
       if (state.status === 'preparing') return prepareRound(state, event.at);
       return state;
     case 'IDLE_DUE':
@@ -395,7 +456,11 @@ export function gameReducer(state: GameState, event: GameEvent): GameState {
         state.prompt.idleAt !== null &&
         event.at >= state.prompt.idleAt
       ) {
-        return startPrompt({ ...context(state), reminderUsed: true }, event.at);
+        return startPrompt(
+          { ...context(state), reminderUsed: true },
+          event.at,
+          'listen',
+        );
       }
       return state;
     case 'ACTIVITY':
