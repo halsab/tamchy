@@ -1,52 +1,11 @@
 import { mkdir } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { test as base, expect, type Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
 import strings from '../../src/content/tt.json' with { type: 'json' };
 import catalog from '../../src/content/catalog.json' with { type: 'json' };
+import { test, expect, answerButtons, answersReady } from './fixtures.ts';
 
-const test = base.extend<{ checkedPage: Page }>({
-  checkedPage: async ({ page, baseURL }, use, testInfo) => {
-    const unexpected: string[] = [];
-    const missingAudio: string[] = [];
-    const origin = new URL(baseURL!).origin;
-    const audioPath =
-      /\/assets\/audio\/tt\/(colors|animals|numbers)\/[^/]+\.mp3$/;
-    page.on('pageerror', (error) => unexpected.push(error.message));
-    page.on('console', (message) => {
-      if (message.type() !== 'error' && message.type() !== 'warning') return;
-      const url = message.location().url;
-      if (audioPath.test(url) && /Failed to load resource/.test(message.text()))
-        missingAudio.push(`${url}: ${message.text()}`);
-      else unexpected.push(`${url}: ${message.text()}`);
-    });
-    page.on('request', (request) => {
-      const url = new URL(request.url());
-      if (url.protocol === 'http:' || url.protocol === 'https:') {
-        if (url.origin !== origin)
-          unexpected.push(`External request: ${url.href}`);
-        if (!url.pathname.startsWith(new URL(baseURL!).pathname))
-          unexpected.push(`Outside base: ${url.href}`);
-      }
-    });
-    page.on('response', (response) => {
-      if (audioPath.test(response.url()))
-        missingAudio.push(`${response.status()} ${response.url()}`);
-      else if (response.status() >= 400)
-        unexpected.push(`${response.status()} ${response.url()}`);
-    });
-    await use(page);
-    if (missingAudio.length)
-      await testInfo.attach('expected-missing-audio', {
-        body: missingAudio.join('\n'),
-        contentType: 'text/plain',
-      });
-    expect(unexpected).toEqual([]);
-  },
-});
-
-const answerButtons = (page: Page) =>
-  page.getByRole('group', { name: strings.game.answers }).getByRole('button');
 async function imagesReady(page: Page) {
   await expect
     .poll(() =>
@@ -78,9 +37,10 @@ async function noOverflow(page: Page) {
   );
 }
 
-// Эти сценарии используют настоящий Web Audio; отсутствующий MP3 остаётся ошибкой.
-test('меню → три раздела → ошибка отсутствующей записи → повтор → домой', async ({
+// Отказ задаётся только в этом сценарии; остальные тесты требуют настоящую озвучку.
+test('меню → три раздела → ошибка загрузки → успешный повтор → домой', async ({
   checkedPage: page,
+  expectedAudioFailures,
 }) => {
   await page.goto('./');
   await expect(page).toHaveTitle(strings.app.name);
@@ -93,6 +53,14 @@ test('меню → три раздела → ошибка отсутствующ
     strings.nav.parents,
   ]);
   for (const category of catalog.categories) {
+    const pattern = `**/assets/audio/tt/${category.id}/*-prompt.mp3`;
+    await page.route(pattern, async (route) => {
+      expectedAudioFailures.add(route.request().url());
+      await route.fulfill({
+        status: 503,
+        body: 'Audio temporarily unavailable',
+      });
+    });
     await page
       .getByRole('button', { name: category.labelTt, exact: true })
       .click();
@@ -104,12 +72,14 @@ test('меню → три раздела → ошибка отсутствующ
     await expect(answerButtons(page)).toHaveCount(2);
     for (const button of await answerButtons(page).all())
       await expect(button).toBeDisabled();
-    const request = page.waitForRequest((request) =>
-      request.url().endsWith('-prompt.mp3'),
+    await page.unroute(pattern);
+    const request = page.waitForResponse(
+      (response) =>
+        response.url().endsWith('-prompt.mp3') && response.status() === 200,
     );
     await page.getByRole('button', { name: strings.action.retry }).click();
     await request;
-    await expect(page.getByRole('alert')).toHaveText(strings.error.audio);
+    await answersReady(page);
     await page.getByRole('button', { name: strings.nav.home }).click();
     await expect(page).toHaveURL(/#\/$/);
   }
@@ -184,7 +154,7 @@ test('клавиатура, фокус и быстрые касания', async 
     page.getByRole('heading', { name: strings.app.name }),
   ).toBeVisible();
   await page.getByRole('button', { name: 'Саннар', exact: true }).dblclick();
-  await expect(page.getByRole('alert')).toHaveText(strings.error.audio);
+  await answersReady(page);
   await page.getByRole('button', { name: strings.nav.home }).click();
 });
 
@@ -272,7 +242,7 @@ for (const viewport of viewports) {
         await page
           .getByRole('button', { name: strings.action.listen, exact: true })
           .click();
-        await expect(page.getByRole('alert')).toHaveText(strings.error.audio);
+        await answersReady(page);
         await noOverflow(page);
       }
       if (route === 'numbers') {
@@ -308,7 +278,7 @@ for (const viewport of viewports) {
       ) {
         const directory =
           process.env.TAMCHY_SCREENSHOTS ??
-          join(tmpdir(), 'tamchy-stage4-screenshots');
+          join(tmpdir(), 'tamchy-screenshots');
         await mkdir(directory, { recursive: true });
         const path = join(
           directory,

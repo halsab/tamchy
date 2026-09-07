@@ -32,15 +32,9 @@ jobs:
       - name: Сборки и интеграция игровой сессии
         run: npm run test:integration
       - run: git diff --check
-      - name: Подготовка графики и проверка каталога
-        run: npm run validate:catalog
-      - name: Техническая компиляция в корне
-        run: npm run build:check
-      - name: Техническая компиляция в подкаталоге
-        run: npm run build:check
-        env:
-          VITE_BASE: /tamchy/
+      - name: Подготовка графики и строгая проверка контента
+        run: npm run validate:content
       - name: Браузеры Playwright
         run: npx playwright install --with-deps chromium webkit firefox
-      - name: Экраны и навигация в браузерах, обе базы
+      - name: Сборка, экраны и настоящая озвучка в браузерах, обе базы
         run: npm run test:e2e

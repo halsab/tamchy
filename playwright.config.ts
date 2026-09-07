@@ -23,7 +23,7 @@ export default defineConfig({
     { name: 'firefox', use: { browserName: 'firefox' } },
   ],
   webServer: {
-    command: 'npm run preview:check -- --port 4173 --strictPort',
+    command: 'npm run preview -- --port 4173 --strictPort',
     url: `http://127.0.0.1:4173${base}`,
     reuseExistingServer: false,
     timeout: 30000,

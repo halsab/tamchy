@@ -1,0 +1,142 @@
+import { createHash } from 'node:crypto';
+import { readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+import catalog from '../../src/content/catalog.json' with { type: 'json' };
+import strings from '../../src/content/tt.json' with { type: 'json' };
+import { test, expect, answerButtons, answersReady } from './fixtures.ts';
+
+test('все 30 учебных MP3 из сборки совпадают с исходными файлами и декодируются', async ({
+  checkedPage: page,
+}) => {
+  const recordings = await Promise.all(
+    catalog.categories
+      .flatMap((category) =>
+        category.items.flatMap((item) => [item.labelAudio, item.promptAudio]),
+      )
+      .map(async (path) => ({
+        path,
+        sha256: createHash('sha256')
+          .update(await readFile(resolve('public', path)))
+          .digest('hex'),
+      })),
+  );
+  expect(recordings).toHaveLength(30);
+  await page.goto('./');
+  const decoded = await page.evaluate(async (entries) => {
+    const context = new AudioContext();
+    try {
+      const results = [];
+      for (const { path } of entries) {
+        const response = await fetch(new URL(path, document.baseURI));
+        if (!response.ok) throw new Error(`${path}: HTTP ${response.status}`);
+        const bytes = await response.arrayBuffer();
+        const digest = await crypto.subtle.digest('SHA-256', bytes);
+        const buffer = await context.decodeAudioData(bytes);
+        results.push({
+          path,
+          sha256: [...new Uint8Array(digest)]
+            .map((byte) => byte.toString(16).padStart(2, '0'))
+            .join(''),
+          channels: buffer.numberOfChannels,
+          duration: buffer.duration,
+        });
+      }
+      return results;
+    } finally {
+      await context.close();
+    }
+  }, recordings);
+  expect(decoded.map(({ path, sha256 }) => ({ path, sha256 }))).toEqual(
+    recordings,
+  );
+  for (const recording of decoded) {
+    expect(recording.channels, recording.path).toBe(1);
+    expect(recording.duration, recording.path).toBeGreaterThan(0);
+  }
+});
+
+for (const category of catalog.categories) {
+  test(`${category.labelTt}: полный цикл с настоящими заданиями и подтверждениями`, async ({
+    checkedPage: page,
+  }) => {
+    const received = new Set<string>();
+    page.on('response', (response) => {
+      if (response.ok()) received.add(new URL(response.url()).pathname);
+    });
+    await page.goto('./');
+    await page
+      .getByRole('button', { name: category.labelTt, exact: true })
+      .click();
+    const historyLength = await page.evaluate(() => history.length);
+    const visited = new Set<string>();
+    for (let round = 0; round < category.items.length; round++) {
+      await answersReady(page);
+      const text = await page.getByRole('main').innerText();
+      const target = category.items.find((item) =>
+        text.includes(item.promptTt),
+      )!;
+      expect(target).toBeDefined();
+      expect(visited.has(target.id)).toBe(false);
+      visited.add(target.id);
+
+      if (round === 0) {
+        const labels = await answerButtons(page).evaluateAll((buttons) =>
+          buttons.map((button) => button.getAttribute('aria-label')),
+        );
+        const wrong = labels.find((label) => label !== target.labelTt)!;
+        for (let attempt = 0; attempt < 2; attempt++) {
+          await page.getByRole('button', { name: wrong, exact: true }).click();
+          await expect(page.getByRole('status')).toHaveText(
+            strings.game.tryAgain,
+          );
+          await answersReady(page);
+          await expect(
+            page.getByText(target.promptTt, { exact: true }),
+          ).toBeVisible();
+          expect(
+            await answerButtons(page).evaluateAll((buttons) =>
+              buttons.map((button) => button.getAttribute('aria-label')),
+            ),
+          ).toEqual(labels);
+        }
+        await expect(
+          page.getByText(strings.game.hint, { exact: true }),
+        ).toBeAttached();
+        await page
+          .getByRole('button', { name: strings.action.listenAgain })
+          .click();
+        await answersReady(page);
+        await expect(
+          page.getByText(target.promptTt, { exact: true }),
+        ).toBeVisible();
+      }
+
+      await page
+        .getByRole('button', { name: target.labelTt, exact: true })
+        .click();
+      await expect(page.getByRole('status')).toHaveText(strings.game.correct);
+      for (const button of await answerButtons(page).all())
+        await expect(button).toBeDisabled();
+      await expect(
+        page.getByText(target.promptTt, { exact: true }),
+      ).not.toBeVisible();
+      await answersReady(page);
+      expect(await page.evaluate(() => history.length)).toBe(historyLength);
+      await expect(page).toHaveURL(new RegExp(`#/${category.id}$`));
+    }
+    expect([...visited].sort()).toEqual(
+      category.items.map((item) => item.id).sort(),
+    );
+    for (const item of category.items) {
+      for (const path of [item.promptAudio, item.labelAudio])
+        expect(
+          [...received].some((url) => url.endsWith(`/${path}`)),
+          path,
+        ).toBe(true);
+    }
+    await page.getByRole('button', { name: strings.nav.home }).click();
+    await expect(
+      page.getByRole('heading', { name: strings.app.name }),
+    ).toBeVisible();
+  });
+}

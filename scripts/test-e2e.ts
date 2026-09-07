@@ -4,7 +4,7 @@ import { spawnSync } from 'node:child_process';
 for (const base of ['/', '/tamchy/']) {
   const env = { ...process.env, VITE_BASE: base };
   for (const args of [
-    ['run', 'build:check'],
+    ['run', 'build'],
     ['exec', 'playwright', 'test', '--', ...process.argv.slice(2)],
   ]) {
     const result = spawnSync('npm', args, { env, stdio: 'inherit' });
