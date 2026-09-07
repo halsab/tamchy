@@ -4,7 +4,13 @@ import tseslint from 'typescript-eslint';
 import reactHooks from 'eslint-plugin-react-hooks';
 
 export default defineConfig([
-  globalIgnores(['dist/**', '.build-check/**', 'coverage/**']),
+  globalIgnores([
+    'dist/**',
+    '.build-check/**',
+    'coverage/**',
+    '.release/**',
+    'reports/**',
+  ]),
   js.configs.recommended,
   tseslint.configs.recommended,
   {

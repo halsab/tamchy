@@ -10,6 +10,8 @@ node_modules/
 *.tsbuildinfo
 
 /coverage/
+/.release/
+/reports/
 /test-results/
 /playwright-report/
 /blob-report/

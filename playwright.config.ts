@@ -5,7 +5,10 @@ import { defineConfig } from '@playwright/test';
 const base = process.env.VITE_BASE ?? '/';
 export default defineConfig({
   testDir: './tests/e2e',
-  outputDir: join(tmpdir(), 'tamchy-e2e', base === '/' ? 'root' : 'subpath'),
+  outputDir: join(
+    process.env.TAMCHY_E2E_REPORTS ?? join(tmpdir(), 'tamchy-e2e'),
+    base === '/' ? 'root' : 'subpath',
+  ),
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: 0,

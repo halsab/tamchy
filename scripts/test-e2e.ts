@@ -2,6 +2,12 @@ import { spawnSync } from 'node:child_process';
 import { rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { createUpdateFixture } from './lib/e2e-update.ts';
+import {
+  captureRelease,
+  preserveRelease,
+  releaseDirectory,
+  verifyRelease,
+} from './lib/release.ts';
 
 function run(args: string[], env: NodeJS.ProcessEnv) {
   const result = spawnSync('npm', args, { env, stdio: 'inherit' });
@@ -9,18 +15,23 @@ function run(args: string[], env: NodeJS.ProcessEnv) {
   if (result.status !== 0)
     throw new Error(`npm ${args.join(' ')}: ${result.status}`);
 }
-// Один dist: обе проверки артефакта и браузеры используют ровно эту сборку до смены базы.
+await rm('.release', { recursive: true, force: true });
+// Один dist на базу; хеши фиксируются до тестов, выбранные копии больше не пересобираются.
 for (const base of ['/', '/tamchy/']) {
   const env = { ...process.env, VITE_BASE: base };
   run(['run', 'build'], env);
   run(['run', 'check:assets'], env);
   run(['run', 'check:budgets'], env);
+  const report = await captureRelease(base);
   const updateRoot = await createUpdateFixture(base);
   try {
     run(['exec', 'playwright', 'test', '--', ...process.argv.slice(2)], {
       ...env,
       TAMCHY_UPDATE_DIST: join(updateRoot, 'dist'),
     });
+    await verifyRelease('dist', report, base, undefined, false);
+    report.e2e = process.argv.length > 2 ? 'filtered' : 'full';
+    await preserveRelease('dist', releaseDirectory(base), report);
   } finally {
     await rm(updateRoot, { recursive: true, force: true });
   }

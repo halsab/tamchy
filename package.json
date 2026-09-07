@@ -25,7 +25,11 @@
     "test:integration": "vitest run tests/integration",
     "test:e2e": "node scripts/test-e2e.ts",
     "check:assets": "node scripts/check-assets.ts",
-    "check:budgets": "node scripts/check-budgets.ts"
+    "check:budgets": "node scripts/check-budgets.ts",
+    "check:lighthouse": "node scripts/check-lighthouse.ts",
+    "check:published": "node scripts/check-published.ts",
+    "check:published:local": "node scripts/check-published-local.ts",
+    "release:verify": "node scripts/verify-release.ts"
   },
   "dependencies": {
     "react": "19.2.8",
@@ -46,6 +50,7 @@
     "eslint": "10.10.0",
     "eslint-plugin-react-hooks": "7.1.1",
     "jsdom": "30.0.1",
+    "lighthouse": "13.4.1",
     "prettier": "3.9.6",
     "sharp": "0.35.4",
     "typescript": "6.0.3",

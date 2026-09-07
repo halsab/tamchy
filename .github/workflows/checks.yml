@@ -3,23 +3,33 @@ name: Проверки проекта
 on:
   push:
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: checks-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.event_name == 'workflow_dispatch' && 'pages' || format('checks-{0}-{1}', github.workflow, github.ref) }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
 
 jobs:
   check:
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 45
+    outputs:
+      pages_artifact_id: ${{ steps.pages-artifact.outputs.artifact_id }}
+      report_artifact_id: ${{ steps.release-report.outputs.artifact-id }}
+      report_sha256: ${{ steps.verified.outputs.report_sha256 }}
+      release: ${{ steps.verified.outputs.release }}
+    env:
+      TAMCHY_E2E_REPORTS: reports/e2e
+      TAMCHY_SCREENSHOTS: reports/screenshots
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
+          ref: ${{ github.sha }}
           persist-credentials: false
-      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -38,3 +48,94 @@ jobs:
         run: npx playwright install --with-deps chromium webkit firefox
       - name: Сборка, ресурсы, бюджеты и PWA в браузерах, обе базы
         run: npm run test:e2e
+      - name: Локальная проверка инструмента публикации, обе базы
+        run: npm run check:published:local
+      - name: Три холодных мобильных измерения каждой базы
+        run: npm run check:lighthouse
+      - name: Явный выбор проверенного выпуска /tamchy/
+        id: verified
+        run: npm run release:verify
+      - name: Отчёт с версией, коммитом и SHA-256 файлов
+        id: release-report
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: release-manifest
+          path: .release/subpath/release.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
+      - name: Упаковка только проверенного dist без пересборки
+        id: pages-artifact
+        uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4.0.0
+        with:
+          path: .release/subpath/dist
+          retention-days: 30
+      - name: Неизменность после упаковки
+        run: npm run release:verify
+      - name: Диагностика и исходные отчёты, включая неуспешные проверки
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: check-reports
+          path: |
+            reports/
+            coverage/
+            .release/*/release.json
+          include-hidden-files: true
+          retention-days: 30
+
+  deploy:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && github.event.repository.default_branch == 'main'
+    needs: check
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+        with:
+          artifact-ids: ${{ needs.check.outputs.pages_artifact_id }}
+          path: transfer/pages
+          merge-multiple: true
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+        with:
+          artifact-ids: ${{ needs.check.outputs.report_artifact_id }}
+          path: .release/subpath
+          merge-multiple: true
+      - name: Проверка полученного архива и отчёта до публикации
+        env:
+          TAMCHY_REPORT_SHA256: ${{ needs.check.outputs.report_sha256 }}
+        run: |
+          mkdir -p .release/subpath/dist
+          tar -xf transfer/pages/artifact.tar -C .release/subpath/dist
+          npm run release:verify
+      - run: npx playwright install --with-deps chromium
+      - name: Публикация проверенного артефакта этого запуска
+        id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
+      - name: Проверка фактического URL и настоящей озвучки
+        env:
+          PUBLISHED_URL: ${{ steps.deployment.outputs.page_url }}
+          EXPECTED_RELEASE: ${{ needs.check.outputs.release }}
+        run: npm run check:published -- "$PUBLISHED_URL" "$EXPECTED_RELEASE"
+      - name: Диагностика публикации, в том числе при ошибке
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: published-reports
+          path: reports/published/
+          retention-days: 30
