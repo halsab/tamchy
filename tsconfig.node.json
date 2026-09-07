@@ -18,6 +18,7 @@
     "noEmit": true,
     "skipLibCheck": true
   },
+  "exclude": ["tests/integration/**/*.tsx"],
   "include": [
     "scripts",
     "tests/integration",

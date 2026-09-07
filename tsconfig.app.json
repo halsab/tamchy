@@ -19,5 +19,5 @@
     "noEmit": true,
     "skipLibCheck": true
   },
-  "include": ["src"]
+  "include": ["src", "tests/helpers", "tests/integration/**/*.test.tsx"]
 }
