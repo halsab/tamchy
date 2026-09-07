@@ -46,6 +46,14 @@ jobs:
       - run: git diff --check
       - name: Браузеры Playwright
         run: npx playwright install --with-deps chromium webkit firefox
+      - name: Аудиовыход для браузеров Linux
+        run: |
+          sudo apt-get install --no-install-recommends -y pulseaudio
+          pulseaudio --start --exit-idle-time=-1
+          pactl load-module module-null-sink sink_name=tamchy
+          pactl set-default-sink tamchy
+          pactl info
+          pactl list short sinks
       - name: Сборка, ресурсы, бюджеты и PWA в браузерах, обе базы
         run: npm run test:e2e
       - name: Локальная проверка инструмента публикации, обе базы

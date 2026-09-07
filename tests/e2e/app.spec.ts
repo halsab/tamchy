@@ -106,6 +106,10 @@ test('прямой адрес, перезагрузка, неизвестный 
   await expect(
     page.getByRole('button', { name: strings.action.listen, exact: true }),
   ).toBeVisible();
+  // Reload проверяет перезапуск установленного PWA после первой активации worker.
+  await page.evaluate(async () => {
+    await navigator.serviceWorker.ready;
+  });
   await page.reload();
   await expect(
     page.getByRole('button', { name: strings.action.listen, exact: true }),
@@ -151,6 +155,7 @@ test('прямой адрес, перезагрузка, неизвестный 
 
 test('клавиатура, фокус и быстрые касания', async ({ checkedPage: page }) => {
   await page.goto('./');
+  await expect(page.getByRole('main')).toBeFocused();
   await page.keyboard.press('Tab');
   const colors = page.getByRole('button', { name: 'Төсләр', exact: true });
   await expect(colors).toBeFocused();
