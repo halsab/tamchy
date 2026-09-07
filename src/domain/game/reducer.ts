@@ -164,6 +164,42 @@ export function gameReducer(state: GameState, event: GameEvent): GameState {
         },
         event.at,
       );
+    case 'IMAGE_FAILED': {
+      const resource = roundResources(state.session, state.round).find(
+        (resource) => resource.kind === 'image' && resource.path === event.path,
+      );
+      if (!resource) return state;
+      if (state.status === 'paused') {
+        const failed = gameReducer(
+          { ...context(state), ...state.resume },
+          event,
+        );
+        if (failed.status !== 'error') return state;
+        return {
+          ...context(failed),
+          status: 'paused',
+          resume: { status: 'error', failure: failed.failure },
+        };
+      }
+      if (
+        state.status === 'error' &&
+        sameResource(state.failure.resource, resource)
+      )
+        return state;
+      const acceptedAt =
+        state.status === 'correct' || state.status === 'transitioning'
+          ? state.acceptedAt
+          : state.status === 'error' && state.failure.phase === 'confirmation'
+            ? state.failure.acceptedAt
+            : null;
+      return changeOperation(state, {
+        status: 'error',
+        failure:
+          acceptedAt === null
+            ? { resource, reason: 'load', phase: 'preparation' }
+            : { resource, reason: 'load', phase: 'confirmation', acceptedAt },
+      });
+    }
     case 'RESOURCE_FAILED':
     case 'RESOURCE_TIMEOUT': {
       const work = pendingWork(state);
@@ -211,11 +247,29 @@ export function gameReducer(state: GameState, event: GameEvent): GameState {
         return changeOperation(state, {
           status: 'correct',
           acceptedAt: state.failure.acceptedAt,
-          confirmation: { status: 'loading', requestedAt: event.at },
+          confirmation:
+            state.failure.resource.kind === 'image'
+              ? {
+                  status: 'repairing-image',
+                  resource: state.failure.resource,
+                  requestedAt: event.at,
+                }
+              : { status: 'loading', requestedAt: event.at },
         });
       }
       return prepareRound(state, event.at);
     case 'RESOURCE_READY':
+      if (
+        state.status === 'correct' &&
+        state.confirmation.status === 'repairing-image' &&
+        sameResource(state.confirmation.resource, event.resource)
+      ) {
+        return changeOperation(state, {
+          status: 'correct',
+          acceptedAt: state.acceptedAt,
+          confirmation: { status: 'loading', requestedAt: event.at },
+        });
+      }
       if (
         state.status === 'preparing' &&
         state.stage === 'resources' &&

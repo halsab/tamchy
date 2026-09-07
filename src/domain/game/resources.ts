@@ -68,7 +68,11 @@ export function pendingWork(state: GameState): {
   if (state.status === 'correct' && state.confirmation.status !== 'ended') {
     return {
       phase: 'confirmation',
-      resources: [audioResource(state.session, state.round, 'confirmation')],
+      resources: [
+        state.confirmation.status === 'repairing-image'
+          ? state.confirmation.resource
+          : audioResource(state.session, state.round, 'confirmation'),
+      ],
       requestedAt:
         state.confirmation.status === 'playing'
           ? null

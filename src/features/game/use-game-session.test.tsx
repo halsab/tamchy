@@ -1,6 +1,12 @@
 // @vitest-environment jsdom
-import { StrictMode } from 'react';
-import { act, cleanup, configure, screen } from '@testing-library/react';
+import { Activity, StrictMode } from 'react';
+import {
+  act,
+  cleanup,
+  configure,
+  screen,
+  render,
+} from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { deferred } from '../../../tests/helpers/browser.ts';
@@ -129,7 +135,7 @@ it('домик завершает сессию и после ответа в т�
   expect(s.sources).toHaveLength(1);
 });
 
-it('полный cleanup/setup с активной сессией сохраняет раунд и ждёт продолжения', async () => {
+it('новый объект options сохраняет владельца, раунд и воспроизведение', async () => {
   const s = setup();
   await s.click('Хайваннар');
   const target = screen.getByTestId('target').textContent!;
@@ -141,12 +147,41 @@ it('полный cleanup/setup с активной сессией сохраня
     </StrictMode>,
   );
   await s.settle();
-  expect(screen.getByTestId('state')).toHaveTextContent('paused');
+  expect(screen.getByTestId('state')).toHaveTextContent('awaiting');
+  expect(s.listeners.size).toBe(1);
+  expect(s.context.close).not.toHaveBeenCalled();
+  expect(s.sources[0]!.stop).not.toHaveBeenCalled();
+  act(late);
+  expect(screen.getByTestId('state')).toHaveTextContent('awaiting');
+  expect(screen.getByTestId('round')).toHaveTextContent('1');
+  expect(screen.getByTestId('target')).toHaveTextContent(target);
+  expect(s.sources).toHaveLength(1);
+});
+
+it('React Activity выполняет полный cleanup/setup активной сессии и ждёт продолжения', async () => {
+  const s = setup();
+  s.view.unmount();
+  const tree = (mode: 'visible' | 'hidden') => (
+    <StrictMode>
+      <Activity mode={mode}>
+        <Harness options={s.options} />
+      </Activity>
+    </StrictMode>
+  );
+  const view = render(tree('visible'));
+  await s.click('Хайваннар');
+  const target = screen.getByTestId('target').textContent;
+  const late = s.sources[0]!.onended!;
+  view.rerender(tree('hidden'));
+  expect(s.context.close).toHaveBeenCalledTimes(1);
   expect(s.listeners.size).toBe(0);
+  view.rerender(tree('visible'));
+  await s.settle();
+  expect(screen.getByTestId('state')).toHaveTextContent('paused');
   act(late);
   await s.click('Дәвам ит');
   expect(screen.getByTestId('state')).toHaveTextContent('awaiting');
   expect(screen.getByTestId('round')).toHaveTextContent('1');
-  expect(screen.getByTestId('target')).toHaveTextContent(target);
+  expect(screen.getByTestId('target')).toHaveTextContent(target!);
   expect(s.sources).toHaveLength(2);
 });

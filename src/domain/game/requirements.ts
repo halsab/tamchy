@@ -92,12 +92,19 @@ export function getGameRequirements(state: GameState): GameRequirements {
         state.round,
         'confirmation',
       );
-      if (confirmation.status === 'loading') {
+      if (
+        confirmation.status === 'loading' ||
+        confirmation.status === 'repairing-image'
+      ) {
         return {
           scope,
           work: {
             kind: 'prepare',
-            resources: [resource],
+            resources: [
+              confirmation.status === 'repairing-image'
+                ? confirmation.resource
+                : resource,
+            ],
             timeoutAt: confirmation.requestedAt + gameTiming.resourceTimeout,
           },
         };

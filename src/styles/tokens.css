@@ -9,6 +9,9 @@
   --color-learning-yellow: #f3c63a;
   --color-learning-green: #32965b;
   --color-learning-blue: #347fd4;
+  --color-state: #356548;
+  --radius-control: 20px;
+  --duration-press: 140ms;
   --space-1: 8px;
   --space-2: 16px;
   --space-3: 24px;

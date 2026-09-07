@@ -117,3 +117,24 @@ describe('каталог MVP', () => {
     ).toThrow();
   });
 });
+
+it('строгий словарь отклоняет пропуск, пустоту и лишний ключ на каждой ветке', () => {
+  for (const [section, fields] of Object.entries(strings)) {
+    for (const key of Object.keys(fields)) {
+      const copy = structuredClone(strings) as Record<
+        string,
+        Record<string, string>
+      >;
+      delete copy[section]![key];
+      expect(() => parseStrings(copy)).toThrow();
+      copy[section]![key] = ' ';
+      expect(() => parseStrings(copy)).toThrow();
+    }
+    expect(() =>
+      parseStrings({
+        ...strings,
+        [section]: { ...fields, unexpected: 'Текст' },
+      }),
+    ).toThrow();
+  }
+});

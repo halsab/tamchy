@@ -981,3 +981,103 @@ describe('последовательности событий', () => {
     },
   );
 });
+
+describe('ошибка изображения на экране', () => {
+  it('блокирует ответы после подготовки и сохраняет контекст принятого ответа', () => {
+    const waiting = begin(setup(1).state);
+    const item = waiting.session.items.find(
+      (item) => item.id === waiting.round.optionIds[0],
+    )!;
+    if (item.kind !== 'animal') throw new Error('Ожидается животное');
+    const failed = step(waiting, { type: 'IMAGE_FAILED', path: item.image });
+    expect(failed.status).toBe('error');
+    expect(answer(failed)).toBe(failed);
+    expect(step(waiting, { type: 'IMAGE_FAILED', path: 'unknown' })).toBe(
+      waiting,
+    );
+    const correct = answer(waiting);
+    const failure = step(correct, { type: 'IMAGE_FAILED', path: item.image });
+    expect(failure).toMatchObject({
+      status: 'error',
+      failure: {
+        phase: 'confirmation',
+        resource: { kind: 'image', path: item.image },
+        acceptedAt: 100,
+      },
+    });
+    const retry = step(failure, { type: 'RETRY', at: 200 });
+    expect(getGameRequirements(retry).work).toMatchObject({
+      kind: 'prepare',
+      resources: [{ kind: 'image', path: item.image }],
+    });
+    const restored = step(retry, {
+      type: 'RESOURCE_READY',
+      resource: { kind: 'image', path: item.image },
+      at: 210,
+    });
+    expect(restored).toMatchObject({ status: 'correct', acceptedAt: 100 });
+    expect(getGameRequirements(restored).work).toMatchObject({
+      kind: 'prepare',
+      resources: [label(restored)],
+    });
+  });
+});
+
+it('ошибка картинки сохраняет паузу, принятый ответ и отсеивает старые операции', () => {
+  const initial = setup(1).state;
+  const waiting = begin(initial);
+  const resource = getGameRequirements(initial).work;
+  if (resource.kind !== 'prepare') throw new Error('Нет подготовки');
+  const image = resource.resources.find(
+    (resource) => resource.kind === 'image',
+  )!;
+  const failedEvent = event(waiting, {
+    type: 'IMAGE_FAILED',
+    path: image.path,
+  });
+  const repeated = step(waiting, { type: 'REPEAT', at: 30 });
+  expect(gameReducer(repeated, failedEvent)).toBe(repeated);
+  const paused = step(waiting, { type: 'PAUSE' });
+  const failedPaused = step(paused, { type: 'IMAGE_FAILED', path: image.path });
+  expect(failedPaused).toMatchObject({
+    status: 'paused',
+    resume: { status: 'error', failure: { phase: 'preparation' } },
+  });
+  const failure = step(waiting, { type: 'IMAGE_FAILED', path: image.path });
+  expect(step(failure, { type: 'IMAGE_FAILED', path: image.path })).toBe(
+    failure,
+  );
+  const correct = answer(waiting);
+  const audioFailure = step(correct, {
+    type: 'RESOURCE_FAILED',
+    resource: label(correct),
+    reason: 'decode',
+  });
+  const imageFailure = step(audioFailure, {
+    type: 'IMAGE_FAILED',
+    path: image.path,
+  });
+  expect(imageFailure).toMatchObject({
+    status: 'error',
+    failure: { phase: 'confirmation', acceptedAt: 100 },
+  });
+  const repairing = step(imageFailure, { type: 'RETRY', at: 200 });
+  expect(
+    step(repairing, {
+      type: 'RESOURCE_READY',
+      resource: label(correct),
+      at: 201,
+    }),
+  ).toBe(repairing);
+  expect(
+    step(repairing, { type: 'RESOURCE_TIMEOUT', resource: image, at: 15200 }),
+  ).toMatchObject({
+    status: 'error',
+    failure: { reason: 'timeout', phase: 'confirmation', acceptedAt: 100 },
+  });
+  const pauseAfter = step(repairing, { type: 'PAUSE' });
+  expect(step(pauseAfter, { type: 'CONTINUE', at: 500 })).toMatchObject({
+    status: 'transitioning',
+    acceptedAt: 100,
+  });
+});

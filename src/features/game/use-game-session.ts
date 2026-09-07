@@ -1,4 +1,10 @@
-import { useLayoutEffect, useReducer, useRef } from 'react';
+import {
+  useCallback,
+  useLayoutEffect,
+  useReducer,
+  useRef,
+  useState,
+} from 'react';
 import type {
   GameCategory,
   GameEvent,
@@ -6,6 +12,8 @@ import type {
   GameState,
 } from '../../domain/game/models.ts';
 import { createGame, gameReducer } from '../../domain/game/reducer.ts';
+import { assetUrl } from '../../services/assets/asset-url.ts';
+import { audioResource } from '../../domain/game/resources.ts';
 import { getGameRequirements } from '../../domain/game/requirements.ts';
 import {
   createAudioService,
@@ -74,7 +82,11 @@ type Owner = {
   restoring: boolean;
 };
 
-export function useGameSession(options: GameSessionOptions = defaultOptions) {
+export function useGameSession(
+  configuration: GameSessionOptions = defaultOptions,
+) {
+  // Конфигурация задаёт границы владельца при mount, а не при каждом рендере.
+  const [options] = useState(() => configuration);
   const [state, dispatch] = useReducer(sessionReducer, null);
   const ownerRef = useRef<Owner | null>(null);
   const roundsRef = useRef<SessionRounds | null>(null);
@@ -129,28 +141,57 @@ export function useGameSession(options: GameSessionOptions = defaultOptions) {
         rounds,
         send: dispatch,
       });
+    const phase = state.status === 'paused' ? state.resume : state;
+    if (phase.status === 'error' && phase.failure.resource.kind === 'image')
+      owner.images.invalidate(phase.failure.resource.path);
     owner.executor.reconcile(getGameRequirements(state));
   }, [state, clock, options]);
 
-  function start(category: GameCategory) {
+  const start = useCallback(
+    (category: GameCategory, activateAudio = true) => {
+      const owner = ownerRef.current;
+      if (!owner) return;
+      owner.executor?.dispose();
+      owner.executor = null;
+      owner.restoring = false;
+      if (activateAudio) void owner.audio.activate();
+      const sessionId = options.createSessionId?.() ?? crypto.randomUUID();
+      const rounds = createSessionRounds(
+        sessionId,
+        category,
+        options.random ?? Math.random,
+      );
+      roundsRef.current = rounds;
+      const initial = createGame(
+        sessionId,
+        category,
+        rounds.get(1),
+        clock.now(),
+      );
+      const prepared = activateAudio
+        ? initial
+        : gameReducer(initial, {
+            ...getGameRequirements(initial).scope,
+            type: 'RESOURCE_FAILED',
+            resource: audioResource(initial.session, initial.round, 'prompt'),
+            reason: 'blocked',
+          });
+      dispatch({ type: 'START', initial: prepared });
+      if ((options.visibility ?? browserVisibility).hidden())
+        dispatch({ type: 'CONTROL', sessionId, event: 'PAUSE' });
+    },
+    [options, clock],
+  );
+
+  const exit = useCallback(() => {
+    const rounds = roundsRef.current;
+    if (!rounds) return;
     const owner = ownerRef.current;
-    if (!owner) return;
-    owner.executor?.dispose();
-    owner.executor = null;
-    owner.restoring = false;
-    void owner.audio.activate();
-    const sessionId = options.createSessionId?.() ?? crypto.randomUUID();
-    const rounds = createSessionRounds(
-      sessionId,
-      category,
-      options.random ?? Math.random,
-    );
-    roundsRef.current = rounds;
-    const initial = createGame(sessionId, category, rounds.get(1), clock.now());
-    dispatch({ type: 'START', initial });
-    if ((options.visibility ?? browserVisibility).hidden())
-      dispatch({ type: 'CONTROL', sessionId, event: 'PAUSE' });
-  }
+    owner?.executor?.dispose();
+    if (owner) owner.executor = null;
+    roundsRef.current = null;
+    dispatch({ type: 'CONTROL', sessionId: rounds.sessionId, event: 'EXIT' });
+  }, []);
 
   function activity() {
     if (!state || state.session.sessionId !== roundsRef.current?.sessionId)
@@ -163,18 +204,6 @@ export function useGameSession(options: GameSessionOptions = defaultOptions) {
     if (!state || state.session.sessionId !== roundsRef.current?.sessionId)
       return;
     activity();
-    if (data.type === 'EXIT') {
-      const owner = ownerRef.current;
-      owner?.executor?.dispose();
-      if (owner) owner.executor = null;
-      roundsRef.current = null;
-      dispatch({
-        type: 'CONTROL',
-        sessionId: state.session.sessionId,
-        event: 'EXIT',
-      });
-      return;
-    }
     if (activate) void ownerRef.current?.audio.activate();
     dispatch({ ...getGameRequirements(state).scope, ...data });
   }
@@ -188,6 +217,18 @@ export function useGameSession(options: GameSessionOptions = defaultOptions) {
     repeat: () => action({ type: 'REPEAT', at: clock.now() }, true),
     retry: () => action({ type: 'RETRY', at: clock.now() }, true),
     continueGame: () => action({ type: 'CONTINUE', at: clock.now() }, true),
-    exit: () => action({ type: 'EXIT' }),
+    exit,
+    imageFailed: (path: string) => {
+      if (!state) return;
+      dispatch({
+        ...getGameRequirements(state).scope,
+        type: 'IMAGE_FAILED',
+        path,
+      });
+    },
+    imageUrl: (path: string) =>
+      ownerRef.current?.images.get(path)?.src ?? assetUrl(path),
   };
 }
+
+export type GameSessionController = ReturnType<typeof useGameSession>;

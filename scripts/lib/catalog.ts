@@ -144,6 +144,25 @@ const stringsSchema = z.strictObject({
   }),
   status: z.strictObject({ loading: text, offlineReady: text }),
   error: z.strictObject({ load: text, audio: text }),
+  game: z.strictObject({
+    answers: text,
+    correct: text,
+    hint: text,
+    tryAgain: text,
+    activate: text,
+    paused: text,
+  }),
+  parents: z.strictObject({
+    about: text,
+    connectionTitle: text,
+    connection: text,
+    dataTitle: text,
+    data: text,
+    hosting: text,
+    materialsTitle: text,
+    materials: text,
+    version: text,
+  }),
 });
 
 export function parseCatalog(input: unknown): Catalog {

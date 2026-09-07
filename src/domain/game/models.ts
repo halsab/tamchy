@@ -39,6 +39,11 @@ export type Failure = Readonly<{
   );
 
 type Confirmation =
+  | Readonly<{
+      status: 'repairing-image';
+      resource: Resource;
+      requestedAt: number;
+    }>
   | Readonly<{ status: 'loading' | 'starting'; requestedAt: number }>
   | Readonly<{ status: 'playing'; startedAt: number }>
   | Readonly<{ status: 'ended'; endedAt: number }>;
@@ -86,6 +91,7 @@ export type GameState = RoundContext &
   );
 
 export type GameEventData =
+  | Readonly<{ type: 'IMAGE_FAILED'; path: string }>
   | Readonly<{ type: 'RESOURCE_READY'; resource: Resource; at: number }>
   | Readonly<{
       type: 'RESOURCE_FAILED';

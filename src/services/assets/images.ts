@@ -49,6 +49,13 @@ export function createImageService(boundary: Partial<ImageBoundary> = {}) {
   return {
     prepare: loads.run,
     get: (path: string) => ready.get(path),
+    invalidate(path: string) {
+      const image = ready.get(path);
+      if (!image) return;
+      ready.delete(path);
+      environment.revokeObjectURL(image.src);
+      image.src = '';
+    },
     dispose() {
       loads.dispose();
       for (const image of ready.values()) {

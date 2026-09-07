@@ -1,0 +1,105 @@
+.home {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 100%;
+  width: 100%;
+}
+.title {
+  font-size: clamp(2.5rem, 6vw, 3.5rem);
+  line-height: 1.15;
+  margin: 0;
+  font-weight: 750;
+}
+.categories {
+  display: grid;
+  width: 100%;
+  gap: var(--space-2);
+  margin-block: auto;
+}
+.category {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 112px;
+  border-radius: var(--radius-card);
+  padding: var(--space-1) var(--space-3);
+  text-align: left;
+  font-size: 1.5rem;
+  font-weight: 650;
+}
+.category img {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.colors {
+  background: var(--color-accent-peach);
+}
+.animals {
+  background: var(--color-accent-green);
+}
+.numbers {
+  background: var(--color-accent-blue);
+}
+.parents {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  min-height: 56px;
+  padding: var(--space-1) var(--space-2);
+  background: transparent;
+  border-radius: var(--radius-control);
+  font-size: 1.25rem;
+}
+@media (min-width: 640px) {
+  .categories {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+  .category {
+    flex-direction: column;
+    text-align: center;
+    padding: var(--space-3) var(--space-1);
+    border-radius: var(--radius-card-large);
+  }
+  .category img {
+    width: 100%;
+    height: auto;
+    max-height: min(32dvh, 256px);
+    aspect-ratio: 1;
+    min-height: 96px;
+  }
+}
+@media (max-height: 620px) {
+  .home {
+    gap: var(--space-2);
+  }
+}
+@media (min-width: 640px) and (max-height: 500px) {
+  .home {
+    gap: var(--space-1);
+  }
+  .category {
+    gap: var(--space-1);
+    padding-block: var(--space-1);
+  }
+  .category img {
+    height: 112px;
+    min-height: 96px;
+  }
+}
+.category span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.parents {
+  max-width: 100%;
+}
+.parents svg {
+  flex-shrink: 0;
+}

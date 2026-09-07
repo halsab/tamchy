@@ -1,7 +1,11 @@
+import project from './package.json' with { type: 'json' };
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
+  define: {
+    'import.meta.env.VITE_APP_VERSION': JSON.stringify(project.version),
+  },
   plugins: [react()],
   test: {
     environment: 'node',
@@ -23,7 +27,9 @@ export default defineConfig({
       include: [
         'src/services/assets/**/*.ts',
         'src/services/audio/**/*.ts',
-        'src/features/game/**/*.ts',
+        'src/features/**/*.{ts,tsx}',
+        'src/app/**/*.{ts,tsx}',
+        'src/shared/ui/**/*.tsx',
         'scripts/lib/**/*.ts',
         'src/domain/game/**/*.ts',
       ],
