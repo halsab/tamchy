@@ -54,11 +54,11 @@ jobs:
           pactl set-default-sink tamchy
           pactl info
           pactl list short sinks
-      - name: Сборка, ресурсы, бюджеты и PWA в браузерах, обе базы
+      - name: Сборка, ресурсы, бюджеты и PWA в браузерах для /tamchy/
         run: npm run test:e2e
-      - name: Локальная проверка инструмента публикации, обе базы
+      - name: Локальная проверка инструмента публикации для /tamchy/
         run: npm run check:published:local
-      - name: Три холодных мобильных измерения каждой базы
+      - name: Три холодных мобильных измерения /tamchy/
         run: npm run check:lighthouse
       - name: Явный выбор проверенного выпуска /tamchy/
         id: verified

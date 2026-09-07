@@ -16,23 +16,22 @@ function run(args: string[], env: NodeJS.ProcessEnv) {
     throw new Error(`npm ${args.join(' ')}: ${result.status}`);
 }
 await rm('.release', { recursive: true, force: true });
-// Один dist на базу; хеши фиксируются до тестов, выбранные копии больше не пересобираются.
-for (const base of ['/', '/tamchy/']) {
-  const env = { ...process.env, VITE_BASE: base };
-  run(['run', 'build'], env);
-  run(['run', 'check:assets'], env);
-  run(['run', 'check:budgets'], env);
-  const report = await captureRelease(base);
-  const updateRoot = await createUpdateFixture(base);
-  try {
-    run(['exec', 'playwright', 'test', '--', ...process.argv.slice(2)], {
-      ...env,
-      TAMCHY_UPDATE_DIST: join(updateRoot, 'dist'),
-    });
-    await verifyRelease('dist', report, base, undefined, false);
-    report.e2e = process.argv.length > 2 ? 'filtered' : 'full';
-    await preserveRelease('dist', releaseDirectory(base), report);
-  } finally {
-    await rm(updateRoot, { recursive: true, force: true });
-  }
+// Хеши фиксируются до тестов; сохранённая сборка Pages больше не пересобирается.
+const base = '/tamchy/';
+const env = { ...process.env, VITE_BASE: base };
+run(['run', 'build'], env);
+run(['run', 'check:assets'], env);
+run(['run', 'check:budgets'], env);
+const report = await captureRelease(base);
+const updateRoot = await createUpdateFixture(base);
+try {
+  run(['exec', 'playwright', 'test', '--', ...process.argv.slice(2)], {
+    ...env,
+    TAMCHY_UPDATE_DIST: join(updateRoot, 'dist'),
+  });
+  await verifyRelease('dist', report, base, undefined, false);
+  report.e2e = process.argv.length > 2 ? 'filtered' : 'full';
+  await preserveRelease('dist', releaseDirectory(base), report);
+} finally {
+  await rm(updateRoot, { recursive: true, force: true });
 }

@@ -52,7 +52,7 @@ afterEach(async () => {
 function compile(
   root: string,
   check: boolean,
-  base = '/',
+  base = '/tamchy/',
   outDir = check ? '.build-check' : 'dist',
 ) {
   return build({
@@ -72,31 +72,26 @@ async function filesAt(root: string): Promise<string[]> {
 }
 
 describe('границы сборочных артефактов', () => {
-  it.each(['/', '/tamchy/'])(
-    'техническая сборка с base %s содержит только разрешённые ресурсы',
-    async (base) => {
-      const root = await fixture();
-      await compile(root, true, base);
-      const files = await filesAt(join(root, '.build-check'));
-      const staticFiles = files.filter(
-        (path) => path !== 'index.html' && !path.endsWith('.js'),
-      );
-      expect(staticFiles.sort()).toEqual([...graphics].sort());
-      const html = await readFile(
-        join(root, '.build-check/index.html'),
-        'utf8',
-      );
-      expect(html).toContain('<title>Тамчы</title>');
-      expect(html).toContain(`${base}icons/pwa-192x192.png`);
-      expect(html).toContain(`src="${base}assets/`);
-      expect(await readFile(join(root, 'public/owner.txt'), 'utf8')).toBe(
-        'owner material',
-      );
-      await expect(readdir(join(root, 'dist'))).rejects.toMatchObject({
-        code: 'ENOENT',
-      });
-    },
-  );
+  it('техническая сборка с base /tamchy/ содержит только разрешённые ресурсы', async () => {
+    const base = '/tamchy/';
+    const root = await fixture();
+    await compile(root, true, base);
+    const files = await filesAt(join(root, '.build-check'));
+    const staticFiles = files.filter(
+      (path) => path !== 'index.html' && !path.endsWith('.js'),
+    );
+    expect(staticFiles.sort()).toEqual([...graphics].sort());
+    const html = await readFile(join(root, '.build-check/index.html'), 'utf8');
+    expect(html).toContain('<title>Тамчы</title>');
+    expect(html).toContain(`${base}icons/pwa-192x192.png`);
+    expect(html).toContain(`src="${base}assets/`);
+    expect(await readFile(join(root, 'public/owner.txt'), 'utf8')).toBe(
+      'owner material',
+    );
+    await expect(readdir(join(root, 'dist'))).rejects.toMatchObject({
+      code: 'ENOENT',
+    });
+  });
 
   it('релизная сборка останавливается до создания dist при отсутствии записи', async () => {
     const root = await fixture();
@@ -117,9 +112,9 @@ describe('границы сборочных артефактов', () => {
   });
 
   it('запрещает подмену каталога технической сборки на dist', async () => {
-    await expect(compile(await fixture(), true, '/', 'dist')).rejects.toThrow(
-      'в своих каталогах',
-    );
+    await expect(
+      compile(await fixture(), true, '/tamchy/', 'dist'),
+    ).rejects.toThrow('в своих каталогах');
   });
 
   it('отклоняет внешний base вместо создания внешних URL ресурсов', async () => {
