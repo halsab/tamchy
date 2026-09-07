@@ -1,4 +1,4 @@
-import { readFile, writeFile, rm } from 'node:fs/promises';
+import { readFile, writeFile, rm, stat } from 'node:fs/promises';
 import { join } from 'node:path';
 import { expect, it } from 'vitest';
 import { createUpdateFixture } from '../../scripts/lib/e2e-update.ts';
@@ -18,9 +18,35 @@ it.each(['/', '/tamchy/'])(
           entry.url.endsWith('.webp'),
         ),
       ).toHaveLength(10);
+      const illustrations = artifact.files.filter((file) =>
+        /\.(webp|png|svg)$/.test(file),
+      );
+      const imageSizes = await Promise.all(
+        illustrations.map(
+          async (file) => (await stat(join(artifact.dist, file))).size,
+        ),
+      );
+      const largestImage = Math.max(...imageSizes);
+      expect(largestImage).toBeGreaterThan(0);
+      expect(largestImage).toBeLessThanOrEqual(150 * 1024);
       await expect(measureBudgets(artifact)).resolves.toMatchObject({
-        illustration: 150650,
+        illustration: largestImage,
       });
+      const imagePath = join(artifact.dist, illustrations[0]!);
+      const image = await readFile(imagePath);
+      try {
+        // Здесь проверяем байтовый бюджет; целостность ресурсов проверяется отдельно.
+        await writeFile(imagePath, Buffer.alloc(150 * 1024));
+        await expect(measureBudgets(artifact)).resolves.toMatchObject({
+          illustration: 150 * 1024,
+        });
+        await writeFile(imagePath, Buffer.alloc(150 * 1024 + 1));
+        await expect(measureBudgets(artifact)).rejects.toThrow(
+          'illustration: 153601 > 153600 байт',
+        );
+      } finally {
+        await writeFile(imagePath, image);
+      }
       const path = join(root, 'dist', artifact.metadata.entries[0]!.url);
       const bytes = await readFile(path);
       await writeFile(path, 'corrupted');
