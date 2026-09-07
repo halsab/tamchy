@@ -43,3 +43,7 @@
 .content {
   overflow-wrap: anywhere;
 }
+
+.content button {
+  margin-bottom: var(--space-2);
+}

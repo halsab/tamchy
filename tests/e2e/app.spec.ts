@@ -1,5 +1,7 @@
 import { mkdir } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
+import { artifactServer } from './pwa-server.ts';
+import { resolve } from 'node:path';
 import { join } from 'node:path';
 import type { Page } from '@playwright/test';
 import strings from '../../src/content/tt.json' with { type: 'json' };
@@ -41,47 +43,59 @@ async function noOverflow(page: Page) {
 test('меню → три раздела → ошибка загрузки → успешный повтор → домой', async ({
   checkedPage: page,
   expectedAudioFailures,
+  appRoot,
 }) => {
-  await page.goto('./');
-  await expect(page).toHaveTitle(strings.app.name);
-  await expect(page.locator('html')).toHaveAttribute('lang', 'tt');
-  await expect(page.getByRole('main')).toBeVisible();
-  await expect(page.getByRole('button')).toHaveText([
-    'Төсләр',
-    'Хайваннар',
-    'Саннар',
-    strings.nav.parents,
-  ]);
-  for (const category of catalog.categories) {
-    const pattern = `**/assets/audio/tt/${category.id}/*-prompt.mp3`;
-    await page.route(pattern, async (route) => {
-      expectedAudioFailures.add(route.request().url());
-      await route.fulfill({
-        status: 503,
-        body: 'Audio temporarily unavailable',
-      });
-    });
-    await page
-      .getByRole('button', { name: category.labelTt, exact: true })
-      .click();
-    await expect(page).toHaveURL(new RegExp(`#/${category.id}$`));
-    await expect(
-      page.getByRole('heading', { name: category.labelTt }),
-    ).toBeVisible();
-    await expect(page.getByRole('alert')).toHaveText(strings.error.audio);
-    await expect(answerButtons(page)).toHaveCount(2);
-    for (const button of await answerButtons(page).all())
-      await expect(button).toBeDisabled();
-    await page.unroute(pattern);
-    const request = page.waitForResponse(
-      (response) =>
-        response.url().endsWith('-prompt.mp3') && response.status() === 200,
+  const server = await artifactServer(
+    resolve('dist'),
+    process.env.VITE_BASE ?? '/',
+  );
+  appRoot.href = server.url;
+  const failing = new Set(catalog.categories.map((category) => category.id));
+  server.fail((path) => {
+    const failure = [...failing].some(
+      (id) =>
+        path.startsWith(`assets/audio/tt/${id}/`) &&
+        path.endsWith('-prompt.mp3'),
     );
-    await page.getByRole('button', { name: strings.action.retry }).click();
-    await request;
-    await answersReady(page);
-    await page.getByRole('button', { name: strings.nav.home }).click();
-    await expect(page).toHaveURL(/#\/$/);
+    if (failure) expectedAudioFailures.add(new URL(path, server.url).href);
+    return failure;
+  });
+  try {
+    await page.goto(server.url);
+    await expect(page).toHaveTitle(strings.app.name);
+    await expect(page.locator('html')).toHaveAttribute('lang', 'tt');
+    await expect(page.getByRole('main')).toBeVisible();
+    await expect(page.getByRole('button')).toHaveText([
+      'Төсләр',
+      'Хайваннар',
+      'Саннар',
+      strings.nav.parents,
+    ]);
+    for (const category of catalog.categories) {
+      await page
+        .getByRole('button', { name: category.labelTt, exact: true })
+        .click();
+      await expect(page).toHaveURL(new RegExp(`#/${category.id}$`));
+      await expect(
+        page.getByRole('heading', { name: category.labelTt }),
+      ).toBeVisible();
+      await expect(page.getByRole('alert')).toHaveText(strings.error.audio);
+      await expect(answerButtons(page)).toHaveCount(2);
+      for (const button of await answerButtons(page).all())
+        await expect(button).toBeDisabled();
+      failing.delete(category.id);
+      const request = page.waitForResponse(
+        (response) =>
+          response.url().endsWith('-prompt.mp3') && response.status() === 200,
+      );
+      await page.getByRole('button', { name: strings.action.retry }).click();
+      await request;
+      await answersReady(page);
+      await page.getByRole('button', { name: strings.nav.home }).click();
+      await expect(page).toHaveURL(/#\/$/);
+    }
+  } finally {
+    await server.stop();
   }
 });
 
@@ -103,9 +117,9 @@ test('прямой адрес, перезагрузка, неизвестный 
   await expect(page.getByRole('main')).toContainText(
     strings.parents.connection,
   );
-  await expect(page.getByRole('main')).not.toContainText(
-    strings.status.offlineReady,
-  );
+  await expect(
+    page.getByRole('status', { name: strings.parents.connectionTitle }),
+  ).toHaveText(strings.status.offlineReady, { timeout: 30_000 });
   await page.goBack();
   await expect(
     page.getByRole('heading', { name: strings.app.name }),

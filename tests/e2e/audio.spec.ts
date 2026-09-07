@@ -61,7 +61,9 @@ for (const category of catalog.categories) {
   }) => {
     const received = new Set<string>();
     page.on('response', (response) => {
-      if (response.ok()) received.add(new URL(response.url()).pathname);
+      // WebKit/Firefox сообщают сетевой 304 при успешной ревалидации HTTP-кэша.
+      if (response.ok() || response.status() === 304)
+        received.add(new URL(response.url()).pathname);
     });
     await page.goto('./');
     await page

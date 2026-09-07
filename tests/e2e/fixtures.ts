@@ -3,20 +3,23 @@ import strings from '../../src/content/tt.json' with { type: 'json' };
 
 export const test = base.extend<{
   checkedPage: Page;
+  appRoot: URL;
   expectedAudioFailures: Set<string>;
 }>({
+  appRoot: async ({ baseURL }, use) => {
+    await use(new URL(baseURL!));
+  },
   // eslint-disable-next-line no-empty-pattern -- Playwright требует деструктуризацию первого аргумента даже без зависимостей.
   expectedAudioFailures: async ({}, use) => {
     await use(new Set());
   },
   checkedPage: async (
-    { page, baseURL, expectedAudioFailures },
+    { page, appRoot: root, expectedAudioFailures },
     use,
     testInfo,
   ) => {
     const unexpected: string[] = [];
     const expected: string[] = [];
-    const root = new URL(baseURL!);
     page.on('pageerror', (error) => unexpected.push(error.message));
     page.on('console', (message) => {
       if (message.type() !== 'error' && message.type() !== 'warning') return;

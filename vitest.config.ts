@@ -27,6 +27,7 @@ export default defineConfig({
       include: [
         'src/services/assets/**/*.ts',
         'src/services/audio/**/*.ts',
+        'src/services/pwa/**/*.ts',
         'src/features/**/*.{ts,tsx}',
         'src/app/**/*.{ts,tsx}',
         'src/shared/ui/**/*.tsx',

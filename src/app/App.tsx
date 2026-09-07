@@ -1,4 +1,5 @@
 import { useCallback, useLayoutEffect, useRef, useState } from 'react';
+import { usePwa } from '../services/pwa/use-pwa.ts';
 import data from '../content/catalog.json';
 import type { Catalog, Category } from '../content/types.ts';
 import {
@@ -18,6 +19,7 @@ export function App({ options }: { options?: GameSessionOptions }) {
   const [route, setRoute] = useState<Route>(
     () => readRoute(location.hash) ?? 'home',
   );
+  const pwa = usePwa(route === 'parents');
   const activeRoute = useRef<Route | null>(null);
   const main = useRef<HTMLElement>(null);
   const synchronize = useCallback(
@@ -90,7 +92,10 @@ export function App({ options }: { options?: GameSessionOptions }) {
       ) : route === 'parents' ? (
         <ParentsScreen
           onHome={home}
-          version={import.meta.env.VITE_APP_VERSION}
+          version={`${import.meta.env.VITE_APP_VERSION} · ${import.meta.env.VITE_APP_RELEASE ?? ''}`}
+          pwa={pwa.state}
+          onRetry={pwa.retry}
+          onInstall={pwa.install}
         />
       ) : (
         <HomeScreen
