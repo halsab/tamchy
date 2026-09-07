@@ -78,6 +78,20 @@ it('проверяет HTML корневого URL и все файлы отчё
   expect(result.passed).toBe(true);
   expect(result.resources).toHaveLength(report.files.length + 1);
 });
+it.each(['audio/mpeg', 'audio/mp3'])(
+  'принимает MP3 с Content-Type %s и проверенным SHA-256',
+  async (type) => {
+    const { url, release, report } = await fixture({ path: 'voice.mp3', type });
+    const result = await checkPublished(url, release, report);
+    expect(result.passed).toBe(true);
+    expect(
+      result.resources.find((file) => file.path === 'voice.mp3'),
+    ).toMatchObject({
+      type,
+      sha256: report.files.find((file) => file.path === 'voice.mp3')!.sha256,
+    });
+  },
+);
 it.each(['voice.mp3', 'image.webp', 'app.js'])(
   'отклоняет HTML вместо %s даже с HTTP 200',
   async (path) => {
@@ -94,6 +108,8 @@ it.each(['voice.mp3', 'image.webp', 'app.js'])(
 it.each([
   { path: 'sw.js', status: 404 },
   { path: 'voice.mp3', body: 'changed audio' },
+  { path: 'voice.mp3', type: 'audio/mp3', body: 'changed audio' },
+  { path: 'voice.mp3', type: 'audio/wav' },
   { path: 'app.js', type: 'text/plain' },
   { path: 'manifest.webmanifest', body: '{"scope":"/","start_url":"/"}' },
   {

@@ -68,7 +68,9 @@ export async function checkPublished(
           ? ['text/javascript', 'application/javascript']
           : extension === '.webmanifest'
             ? ['application/manifest+json', 'application/json']
-            : [mimeTypes[extension]];
+            : extension === '.mp3'
+              ? ['audio/mpeg', 'audio/mp3']
+              : [mimeTypes[extension]];
       assert(allowed.includes(type), `Неверный Content-Type: ${type}`);
       result.sha256 = sha256(bytes);
       assert.equal(
