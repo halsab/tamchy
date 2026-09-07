@@ -1,0 +1,165 @@
+{
+  "categories": [
+    {
+      "id": "colors",
+      "labelTt": "Төсләр",
+      "image": "assets/images/categories/category-colors.webp",
+      "items": [
+        {
+          "id": "color-red",
+          "kind": "color",
+          "labelTt": "Кызыл",
+          "promptTt": "Кызыл төсне тап.",
+          "labelAudio": "assets/audio/tt/colors/color-red-label.mp3",
+          "promptAudio": "assets/audio/tt/colors/color-red-prompt.mp3",
+          "hex": "#D94343"
+        },
+        {
+          "id": "color-yellow",
+          "kind": "color",
+          "labelTt": "Сары",
+          "promptTt": "Сары төсне тап.",
+          "labelAudio": "assets/audio/tt/colors/color-yellow-label.mp3",
+          "promptAudio": "assets/audio/tt/colors/color-yellow-prompt.mp3",
+          "hex": "#F3C63A"
+        },
+        {
+          "id": "color-green",
+          "kind": "color",
+          "labelTt": "Яшел",
+          "promptTt": "Яшел төсне тап.",
+          "labelAudio": "assets/audio/tt/colors/color-green-label.mp3",
+          "promptAudio": "assets/audio/tt/colors/color-green-prompt.mp3",
+          "hex": "#32965B"
+        },
+        {
+          "id": "color-blue",
+          "kind": "color",
+          "labelTt": "Зәңгәр",
+          "promptTt": "Зәңгәр төсне тап.",
+          "labelAudio": "assets/audio/tt/colors/color-blue-label.mp3",
+          "promptAudio": "assets/audio/tt/colors/color-blue-prompt.mp3",
+          "hex": "#347FD4"
+        }
+      ]
+    },
+    {
+      "id": "animals",
+      "labelTt": "Хайваннар",
+      "image": "assets/images/categories/category-animals.webp",
+      "items": [
+        {
+          "id": "animal-cat",
+          "kind": "animal",
+          "labelTt": "Мәче",
+          "promptTt": "Мәчене тап.",
+          "labelAudio": "assets/audio/tt/animals/animal-cat-label.mp3",
+          "promptAudio": "assets/audio/tt/animals/animal-cat-prompt.mp3",
+          "image": "assets/images/animals/animal-cat.webp"
+        },
+        {
+          "id": "animal-dog",
+          "kind": "animal",
+          "labelTt": "Эт",
+          "promptTt": "Этне тап.",
+          "labelAudio": "assets/audio/tt/animals/animal-dog-label.mp3",
+          "promptAudio": "assets/audio/tt/animals/animal-dog-prompt.mp3",
+          "image": "assets/images/animals/animal-dog.webp"
+        },
+        {
+          "id": "animal-cow",
+          "kind": "animal",
+          "labelTt": "Сыер",
+          "promptTt": "Сыерны тап.",
+          "labelAudio": "assets/audio/tt/animals/animal-cow-label.mp3",
+          "promptAudio": "assets/audio/tt/animals/animal-cow-prompt.mp3",
+          "image": "assets/images/animals/animal-cow.webp"
+        },
+        {
+          "id": "animal-horse",
+          "kind": "animal",
+          "labelTt": "Ат",
+          "promptTt": "Атны тап.",
+          "labelAudio": "assets/audio/tt/animals/animal-horse-label.mp3",
+          "promptAudio": "assets/audio/tt/animals/animal-horse-prompt.mp3",
+          "image": "assets/images/animals/animal-horse.webp"
+        },
+        {
+          "id": "animal-sheep",
+          "kind": "animal",
+          "labelTt": "Сарык",
+          "promptTt": "Сарыкны тап.",
+          "labelAudio": "assets/audio/tt/animals/animal-sheep-label.mp3",
+          "promptAudio": "assets/audio/tt/animals/animal-sheep-prompt.mp3",
+          "image": "assets/images/animals/animal-sheep.webp"
+        },
+        {
+          "id": "animal-duck",
+          "kind": "animal",
+          "labelTt": "Үрдәк",
+          "promptTt": "Үрдәкне тап.",
+          "labelAudio": "assets/audio/tt/animals/animal-duck-label.mp3",
+          "promptAudio": "assets/audio/tt/animals/animal-duck-prompt.mp3",
+          "image": "assets/images/animals/animal-duck.webp"
+        }
+      ]
+    },
+    {
+      "id": "numbers",
+      "labelTt": "Саннар",
+      "image": "assets/images/categories/category-numbers.webp",
+      "items": [
+        {
+          "id": "number-1",
+          "kind": "number",
+          "labelTt": "Бер",
+          "promptTt": "Бер алманы тап.",
+          "labelAudio": "assets/audio/tt/numbers/number-1-label.mp3",
+          "promptAudio": "assets/audio/tt/numbers/number-1-prompt.mp3",
+          "value": 1,
+          "countImage": "assets/images/numbers/count-apple.webp"
+        },
+        {
+          "id": "number-2",
+          "kind": "number",
+          "labelTt": "Ике",
+          "promptTt": "Ике алманы тап.",
+          "labelAudio": "assets/audio/tt/numbers/number-2-label.mp3",
+          "promptAudio": "assets/audio/tt/numbers/number-2-prompt.mp3",
+          "value": 2,
+          "countImage": "assets/images/numbers/count-apple.webp"
+        },
+        {
+          "id": "number-3",
+          "kind": "number",
+          "labelTt": "Өч",
+          "promptTt": "Өч алманы тап.",
+          "labelAudio": "assets/audio/tt/numbers/number-3-label.mp3",
+          "promptAudio": "assets/audio/tt/numbers/number-3-prompt.mp3",
+          "value": 3,
+          "countImage": "assets/images/numbers/count-apple.webp"
+        },
+        {
+          "id": "number-4",
+          "kind": "number",
+          "labelTt": "Дүрт",
+          "promptTt": "Дүрт алманы тап.",
+          "labelAudio": "assets/audio/tt/numbers/number-4-label.mp3",
+          "promptAudio": "assets/audio/tt/numbers/number-4-prompt.mp3",
+          "value": 4,
+          "countImage": "assets/images/numbers/count-apple.webp"
+        },
+        {
+          "id": "number-5",
+          "kind": "number",
+          "labelTt": "Биш",
+          "promptTt": "Биш алманы тап.",
+          "labelAudio": "assets/audio/tt/numbers/number-5-label.mp3",
+          "promptAudio": "assets/audio/tt/numbers/number-5-prompt.mp3",
+          "value": 5,
+          "countImage": "assets/images/numbers/count-apple.webp"
+        }
+      ]
+    }
+  ]
+}

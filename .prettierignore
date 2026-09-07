@@ -1,0 +1,9 @@
+package-lock.json
+dist
+.build-check
+coverage
+assets-source
+public
+AGENTS.md
+docs/specification.md
+docs/content-guide.md

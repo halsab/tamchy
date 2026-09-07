@@ -1,0 +1,143 @@
+import { createHash } from 'node:crypto';
+import { readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+import sharp from 'sharp';
+import { writeGenerated } from './lib/generated-files.ts';
+import { readContent } from './lib/read-content.ts';
+import { icons, resourcePaths } from './lib/resources.ts';
+
+const root = resolve(import.meta.dirname, '..');
+const background = '#FFF9F2';
+const illustrationSize = 768;
+const illustrationBudget = 150 * 1024;
+
+async function hashes(paths: string[]) {
+  return Promise.all(
+    paths.map(async (path) =>
+      createHash('sha256')
+        .update(await readFile(resolve(root, path)))
+        .digest('hex'),
+    ),
+  );
+}
+
+try {
+  const { catalog } = await readContent(root);
+  const images = resourcePaths(catalog).images.map((output) => ({
+    source: output
+      .replace('assets/images/', 'assets-source/')
+      .replace(/\.webp$/, '.png'),
+    output,
+  }));
+  const iconMaster = 'assets-source/icons/app-icon-master.png';
+  const masters = [...images.map(({ source }) => source), iconMaster];
+  const before = await hashes(masters);
+  let preparationError: Error | undefined;
+  try {
+    for (const { source, output } of images) {
+      const input = await readFile(resolve(root, source));
+      const metadata = await sharp(input).metadata();
+      if (
+        metadata.format !== 'png' ||
+        metadata.width !== 1254 ||
+        metadata.height !== 1254 ||
+        !metadata.hasAlpha
+      ) {
+        throw new Error(
+          `Мастер не соответствует реестру PNG RGBA 1254×1254: ${source}`,
+        );
+      }
+      const data = await sharp(input)
+        .resize({
+          width: illustrationSize,
+          height: illustrationSize,
+          fit: 'inside',
+          withoutEnlargement: true,
+        })
+        .webp({
+          quality: 84,
+          alphaQuality: 100,
+          effort: 6,
+          smartSubsample: true,
+        })
+        .toBuffer();
+      const derivative = await sharp(data).metadata();
+      const stats = await sharp(data).stats();
+      const alpha = stats.channels[3];
+      if (
+        data.length > illustrationBudget ||
+        derivative.format !== 'webp' ||
+        derivative.width !== illustrationSize ||
+        derivative.height !== illustrationSize ||
+        !derivative.hasAlpha ||
+        !alpha ||
+        alpha.min !== 0 ||
+        alpha.max !== 255
+      ) {
+        throw new Error(
+          `Производная не прошла проверку размера, бюджета или прозрачности: ${output}`,
+        );
+      }
+      await writeGenerated(root, `public/${output}`, data);
+      console.log(
+        `${output}: ${derivative.width}×${derivative.height}, ${(data.length / 1024).toFixed(1)} КиБ, прозрачность сохранена`,
+      );
+    }
+    const input = await readFile(resolve(root, iconMaster));
+    const metadata = await sharp(input).metadata();
+    if (
+      metadata.format !== 'png' ||
+      metadata.width !== 1254 ||
+      metadata.height !== 1254 ||
+      metadata.hasAlpha
+    )
+      throw new Error('Мастер иконки должен быть непрозрачным PNG 1254×1254');
+    for (const icon of icons) {
+      let pipeline = sharp(input).resize(icon.size, icon.size);
+      if (icon.path.includes('maskable')) {
+        // Весь квадрат 288×288 лежит внутри безопасного круга радиусом 40% от 512.
+        const artwork = await sharp(input).resize(288, 288).png().toBuffer();
+        pipeline = sharp({
+          create: { width: 512, height: 512, channels: 3, background },
+        }).composite([{ input: artwork, gravity: 'centre' }]);
+      }
+      const data = await pipeline
+        .flatten({ background })
+        .removeAlpha()
+        .png({
+          compressionLevel: 9,
+          adaptiveFiltering: true,
+          palette: true,
+          colours: 256,
+          dither: 1,
+        })
+        .toBuffer();
+      const derivative = await sharp(data).metadata();
+      if (
+        data.length > illustrationBudget ||
+        derivative.format !== 'png' ||
+        derivative.width !== icon.size ||
+        derivative.height !== icon.size ||
+        derivative.hasAlpha
+      )
+        throw new Error(`Некорректная иконка: ${icon.path}`);
+      await writeGenerated(root, `public/${icon.path}`, data);
+      console.log(
+        `${icon.path}: ${icon.size}×${icon.size}, PNG без прозрачности`,
+      );
+    }
+  } catch (error) {
+    preparationError =
+      error instanceof Error ? error : new Error(String(error));
+  }
+  const after = await hashes(masters);
+  if (before.some((hash, index) => hash !== after[index]))
+    throw new Error('Изменились хеши мастер-файлов', {
+      cause: preparationError,
+    });
+  console.log('SHA-256: все 11 мастер-PNG остались неизменными.');
+  if (preparationError) throw preparationError;
+} catch (error) {
+  console.error(error instanceof Error ? error.message : String(error));
+  process.exitCode = 1;
+}

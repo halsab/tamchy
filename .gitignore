@@ -2,6 +2,9 @@ node_modules/
 .npm/
 
 /dist/
+/.build-check/
+/public/assets/images/
+/public/icons/
 /dev-dist/
 .vite/
 *.tsbuildinfo

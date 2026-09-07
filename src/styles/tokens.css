@@ -1,0 +1,20 @@
+:root {
+  --color-background: #fff9f2;
+  --color-surface: #ffffff;
+  --color-text: #27332f;
+  --color-accent-green: #e3f0e6;
+  --color-accent-peach: #fbe6d9;
+  --color-accent-blue: #e1edf7;
+  --color-learning-red: #d94343;
+  --color-learning-yellow: #f3c63a;
+  --color-learning-green: #32965b;
+  --color-learning-blue: #347fd4;
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --radius-card: 24px;
+  --radius-card-large: 32px;
+  --font-system:
+    system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
