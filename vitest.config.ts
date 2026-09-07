@@ -12,8 +12,23 @@ export default defineConfig({
     ],
     coverage: {
       provider: 'v8',
-      include: ['src/services/assets/**/*.ts', 'scripts/lib/**/*.ts'],
+      reporter: [
+        ['text', { skipFull: false }],
+        'text-summary',
+        'json',
+        'json-summary',
+        'html',
+        'clover',
+      ],
+      include: [
+        'src/services/assets/**/*.ts',
+        'scripts/lib/**/*.ts',
+        'src/domain/game/**/*.ts',
+      ],
       exclude: ['**/*.test.ts'],
+      thresholds: {
+        'src/domain/game/**/*.ts': { lines: 90, branches: 90, perFile: true },
+      },
     },
   },
 });

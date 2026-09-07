@@ -20,4 +20,38 @@ export default defineConfig([
       ],
     },
   },
+  {
+    files: ['src/domain/game/**/*.ts'],
+    ignores: ['**/*.test.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              regex: '^(?!\\./[a-z-]+\\.ts$|\\.\\./\\.\\./content/types\\.ts$)',
+              message:
+                'Домен импортирует только свои модули и существующие типы контента.',
+            },
+          ],
+        },
+      ],
+      'no-restricted-globals': ['error', 'Date', 'globalThis'],
+      'no-restricted-properties': [
+        'error',
+        {
+          object: 'Math',
+          property: 'random',
+          message: 'Передайте источник случайности генератору как зависимость.',
+        },
+      ],
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'ImportExpression',
+          message: 'Домен не загружает внешние модули.',
+        },
+      ],
+    },
+  },
 ]);
