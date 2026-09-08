@@ -20,7 +20,10 @@ export const releaseSchema = z.strictObject({
       z.strictObject({
         path: z
           .string()
-          .regex(/^[a-zA-Z0-9_-]+(?:\/[a-zA-Z0-9_-]+)*\.[a-zA-Z0-9]+$/),
+          .regex(
+            /^[a-zA-Z0-9_-]+(?:\/[a-zA-Z0-9_-]+)*(?:\.[a-zA-Z0-9_-]+)*\.[a-zA-Z0-9]+$/,
+          )
+          .refine((path) => path === path.trim(), 'Пробельные символы в пути'),
         bytes: z.number().int().positive(),
         sha256: z.string().regex(/^[a-f0-9]{64}$/),
       }),

@@ -2,7 +2,12 @@ import { mkdtemp, mkdir, writeFile, rm, symlink } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { afterEach, expect, it } from 'vitest';
-import { snapshotFiles, verifyRelease, preserveRelease } from './release.ts';
+import {
+  snapshotFiles,
+  verifyRelease,
+  preserveRelease,
+  releaseSchema,
+} from './release.ts';
 import type { ReleaseReport } from './release.ts';
 
 const roots: string[] = [];
@@ -95,4 +100,40 @@ it('не допускает символическую ссылку на фай�
   const { root, dist } = await fixture();
   await symlink(root, join(dist, 'linked'));
   await expect(snapshotFiles(dist)).rejects.toThrow('ссылка');
+});
+
+it('сохраняет и проверяет имя worker, сформированное Vite', async () => {
+  const { root, dist, report } = await fixture();
+  await mkdir(join(dist, 'assets'));
+  await writeFile(
+    join(dist, 'assets/tint.worker-Cz83z8ft.js'),
+    'postMessage("ready")',
+  );
+  report.files = await snapshotFiles(dist);
+  const destination = join(root, 'selected');
+  await preserveRelease(dist, destination, report);
+  await expect(
+    verifyRelease(join(destination, 'dist'), report, '/tamchy/'),
+  ).resolves.toBeUndefined();
+});
+
+it.each([
+  '../file.js',
+  '/assets/file.js',
+  'assets/../file.js',
+  'assets/tint..worker.js',
+  'assets/.worker.js',
+  'https://example.com/file.js',
+  'assets/file.js?x',
+  'assets/x\\file.js',
+  'assets/file.js\n',
+  'assets/dir.with.dot/file.js',
+])('отклоняет недопустимый путь отчёта %j', async (path) => {
+  const { report } = await fixture();
+  expect(
+    releaseSchema.safeParse({
+      ...report,
+      files: [{ ...report.files[0]!, path }],
+    }).success,
+  ).toBe(false);
 });
