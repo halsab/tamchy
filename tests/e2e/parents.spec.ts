@@ -1,5 +1,5 @@
 import strings from '../../src/content/tt.json' with { type: 'json' };
-import { test, expect, answersReady } from './fixtures.ts';
+import { test, expect, answerButtons, answersReady } from './fixtures.ts';
 import type { Page } from '@playwright/test';
 
 const sheet = (page: Page) =>
@@ -29,7 +29,7 @@ async function dragHeader(page: Page, distance: number) {
   return { x, y };
 }
 
-test('шестерёнка, шит, режим, перезагрузка и неизменная игра', async ({
+test('шестерёнка, шит, сохранённый возраст и старшая игра', async ({
   checkedPage: page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
@@ -63,6 +63,7 @@ test('шестерёнка, шит, режим, перезагрузка и не
   await expect(settings(page)).toBeFocused();
   await page.getByRole('button', { name: 'Саннар', exact: true }).click();
   await answersReady(page);
+  await expect(answerButtons(page)).toHaveCount(4);
 });
 
 test('фокус остаётся в шите; Escape, фон и история закрывают его', async ({

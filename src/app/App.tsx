@@ -44,11 +44,11 @@ export function App({ options }: { options?: GameSessionOptions }) {
         exit(sayGoodbye);
         activeRoute.current = next;
         const category = categories.find((category) => category.id === next);
-        if (category) start(category, false);
+        if (category) start(category, false, ageMode);
       }
       setRoute(next);
     },
-    [start, exit],
+    [start, exit, ageMode],
   );
 
   useLayoutEffect(() => {
@@ -80,7 +80,7 @@ export function App({ options }: { options?: GameSessionOptions }) {
     synchronize(next, sayGoodbye);
   }
   function enter(category: CategoryDefinition) {
-    start(category);
+    start(category, true, ageMode);
     activeRoute.current = category.id;
     navigate(category.id);
   }

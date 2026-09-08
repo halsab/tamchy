@@ -115,24 +115,110 @@ it('масштабирующие жесты отменяются на всех �
   ).toBe(true);
 });
 
-it('оба положения режима используют младший v2 и сохраняют выбор взрослого', async () => {
+it('выбор старшего режима запускает четыре ответа во всех разделах и сохраняется после mount', async () => {
   const s = setupApp();
   await s.click(strings.nav.parents);
-  await s.user.click(screen.getByRole('radio', { name: '5–7 яшь' }));
+  await s.user.click(
+    screen.getByRole('radio', { name: strings.parents.senior }),
+  );
   expect(localStorage.getItem('tamchy.age-mode')).toBe('senior');
   await s.click(strings.nav.home);
-  await s.click('Саннар');
-  expect(answers()).toHaveLength(2);
-  expect(catalog.numbers.filter((number) => number.value <= 10)).toHaveLength(
-    10,
-  );
-  await s.click(strings.nav.home);
+  for (const category of catalog.categories) {
+    await s.click(category.labelTt);
+    expect(answers()).toHaveLength(4);
+    expect(answers().every((button) => !button.hasAttribute('disabled'))).toBe(
+      true,
+    );
+    if (category.id === 'numbers')
+      expect(
+        answers().every(
+          (button) => button.querySelector('img, canvas') === null,
+        ),
+      ).toBe(true);
+    await s.click(strings.nav.home);
+  }
+  expect(s.createSessionId).toHaveBeenCalledTimes(3);
+  expect(Object.keys(localStorage)).toEqual(['tamchy.age-mode']);
   await s.click(strings.nav.parents);
-  expect(screen.getByRole('radio', { name: '5–7 яшь' })).toBeChecked();
+  expect(
+    screen.getByRole('radio', { name: strings.parents.senior }),
+  ).toBeChecked();
   s.view.unmount();
   const next = setupApp('#/parents');
   await next.settle();
-  expect(screen.getByRole('radio', { name: '5–7 яшь' })).toBeChecked();
+  expect(
+    screen.getByRole('radio', { name: strings.parents.senior }),
+  ).toBeChecked();
+});
+
+it.each(['junior', 'senior'] as const)(
+  '%s: прямой вход и повторный mount читают возраст без автозвука и двойной сессии',
+  async (mode) => {
+    localStorage.setItem('tamchy.age-mode', mode);
+    for (const category of catalog.categories) {
+      const s = setupApp(`#/${category.id}`);
+      await s.settle();
+      expect(s.createSessionId).toHaveBeenCalledTimes(1);
+      expect(s.createContext).not.toHaveBeenCalled();
+      await s.click(strings.action.listen);
+      expect(answers()).toHaveLength(mode === 'senior' ? 4 : 2);
+      act(() => {
+        window.dispatchEvent(new PopStateEvent('popstate'));
+        window.dispatchEvent(new HashChangeEvent('hashchange'));
+      });
+      await s.settle();
+      expect(s.createSessionId).toHaveBeenCalledTimes(1);
+      const source = s.learningSources.at(-1)!;
+      s.view.unmount();
+      expect(source.stop).toHaveBeenCalledTimes(1);
+      const next = setupApp(`#/${category.id}`);
+      await next.settle();
+      expect(next.createContext).not.toHaveBeenCalled();
+      await next.click(strings.action.listen);
+      expect(answers()).toHaveLength(mode === 'senior' ? 4 : 2);
+      next.view.unmount();
+    }
+  },
+);
+
+it('изменённый возраст применяется при возврате по истории; старое подтверждение не меняет новую сессию', async () => {
+  localStorage.setItem('tamchy.age-mode', 'senior');
+  const s = setupApp();
+  await s.click('Төсләр');
+  expect(answers()).toHaveLength(4);
+  await s.click(target().labelTt);
+  const confirmation = s.learningSources.at(-1)!;
+  const lateEnd = confirmation.onended!;
+  await s.route('#/parents');
+  expect(confirmation.stop).toHaveBeenCalledTimes(1);
+  await s.user.click(
+    screen.getByRole('radio', { name: strings.parents.junior }),
+  );
+  act(() => {
+    history.replaceState(null, '', '#/colors');
+    window.dispatchEvent(new PopStateEvent('popstate'));
+  });
+  await s.settle();
+  expect(answers()).toHaveLength(2);
+  expect(s.createSessionId).toHaveBeenCalledTimes(2);
+  act(lateEnd);
+  await act(() => vi.advanceTimersByTimeAsync(20000));
+  await s.settle();
+  expect(answers()).toHaveLength(2);
+  expect(s.createSessionId).toHaveBeenCalledTimes(2);
+  expect(
+    screen.queryByRole('img', { name: strings.game.correct }),
+  ).not.toBeInTheDocument();
+  await s.click(strings.nav.home);
+  await s.click(strings.nav.parents);
+  await s.user.click(
+    screen.getByRole('radio', { name: strings.parents.senior }),
+  );
+  await s.click(strings.nav.home);
+  await s.click('Төсләр');
+  expect(answers()).toHaveLength(4);
+  expect(s.createSessionId).toHaveBeenCalledTimes(3);
+  expect(Object.keys(localStorage)).toEqual(['tamchy.age-mode']);
 });
 
 it('при недоступном хранилище режим переживает переходы в памяти приложения', async () => {
@@ -144,6 +230,9 @@ it('при недоступном хранилище режим пережива
   await s.user.click(screen.getByRole('radio', { name: '5–7 яшь' }));
   await s.click(strings.nav.home);
   await s.click('Төсләр');
+  expect(answers()).toHaveLength(4);
+  await s.route('#/numbers');
+  expect(answers()).toHaveLength(4);
   await s.click(strings.nav.home);
   await s.click(strings.nav.parents);
   expect(screen.getByRole('radio', { name: '5–7 яшь' })).toBeChecked();
@@ -272,40 +361,37 @@ function target() {
     })!;
 }
 
-it.each(['junior', 'senior'] as const)(
-  '%s: адаптация проходит 2→3→4→3→2; новая сессия начинается с двух',
-  async (mode) => {
-    localStorage.setItem('tamchy.age-mode', mode);
-    const s = setupApp();
-    await s.click('Төсләр');
-    const sizes: number[] = [];
-    for (let index = 0; index < 14; index++) {
-      const options = answers();
-      sizes.push(options.length);
-      const item = target();
-      if (index >= 10) {
-        await s.user.click(
-          options.find(
-            (button) => button.getAttribute('aria-label') !== item.labelTt,
-          )!,
-        );
-        await act(() => vi.advanceTimersByTimeAsync(250));
-        await s.settle();
-        expect(answers()).toEqual(options);
-      }
-      await s.click(item.labelTt);
-      act(() => s.learningSources.at(-1)!.onended!());
-      await act(() => vi.advanceTimersByTimeAsync(1200));
+it('младшая адаптация проходит 2→3→4→3→2; новая сессия начинается с двух', async () => {
+  localStorage.setItem('tamchy.age-mode', 'junior');
+  const s = setupApp();
+  await s.click('Төсләр');
+  const sizes: number[] = [];
+  for (let index = 0; index < 14; index++) {
+    const options = answers();
+    sizes.push(options.length);
+    const item = target();
+    if (index >= 10) {
+      await s.user.click(
+        options.find(
+          (button) => button.getAttribute('aria-label') !== item.labelTt,
+        )!,
+      );
+      await act(() => vi.advanceTimersByTimeAsync(250));
       await s.settle();
+      expect(answers()).toEqual(options);
     }
-    expect(sizes).toEqual([2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 3, 3]);
-    expect(answers()).toHaveLength(2);
-    await s.click(strings.nav.home);
-    await s.click('Хайваннар');
-    expect(answers()).toHaveLength(2);
-    expect(Object.keys(localStorage)).toEqual(['tamchy.age-mode']);
-  },
-);
+    await s.click(item.labelTt);
+    act(() => s.learningSources.at(-1)!.onended!());
+    await act(() => vi.advanceTimersByTimeAsync(1200));
+    await s.settle();
+  }
+  expect(sizes).toEqual([2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 3, 3]);
+  expect(answers()).toHaveLength(2);
+  await s.click(strings.nav.home);
+  await s.click('Хайваннар');
+  expect(answers()).toHaveLength(2);
+  expect(Object.keys(localStorage)).toEqual(['tamchy.age-mode']);
+});
 
 it('ошибки и повтор сохраняют карточки; две ошибки показывают подсказку, верный ответ — знак', async () => {
   const s = setupApp();

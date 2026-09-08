@@ -9,36 +9,42 @@ import { setupApp } from '../helpers/app-ui.tsx';
 import { deferred } from '../helpers/browser.ts';
 
 beforeEach(() => {
+  localStorage.clear();
   vi.useFakeTimers();
   configure({ asyncWrapper: async (callback) => act(callback) });
 });
 afterEach(() => {
   cleanup();
+  localStorage.clear();
   vi.useRealTimers();
   history.replaceState(null, '', '#/');
 });
 
-it('сессия останавливается при переходе к взрослым и другому разделу; поздние запросы игнорируются', async () => {
-  const s = setupApp();
-  const network = deferred<Response>();
-  s.fetch.mockReturnValueOnce(network.promise);
-  await s.click('Хайваннар');
-  await s.route('#/parents');
-  expect(s.fetch.mock.calls[0]![1]!.signal!.aborted).toBe(true);
-  network.resolve(new Response('late'));
-  await s.settle();
-  expect(s.learningSources).toHaveLength(0);
-  await s.route('#/numbers');
-  expect(
-    screen.getByRole('button', { name: strings.action.listen }),
-  ).toBeVisible();
-  await s.click(strings.action.listen);
-  const previous = s.learningSources[0]!;
-  await s.route('#/colors');
-  expect(previous.stop).toHaveBeenCalledTimes(1);
-  expect(s.createSessionId).toHaveBeenCalledTimes(3);
-  await s.click(strings.nav.home);
-});
+it.each(['junior', 'senior'] as const)(
+  '%s: сессия останавливается при переходе к взрослым и другому разделу; поздние запросы игнорируются',
+  async (mode) => {
+    localStorage.setItem('tamchy.age-mode', mode);
+    const s = setupApp();
+    const network = deferred<Response>();
+    s.fetch.mockReturnValueOnce(network.promise);
+    await s.click('Хайваннар');
+    await s.route('#/parents');
+    expect(s.fetch.mock.calls[0]![1]!.signal!.aborted).toBe(true);
+    network.resolve(new Response('late'));
+    await s.settle();
+    expect(s.learningSources).toHaveLength(0);
+    await s.route('#/numbers');
+    expect(
+      screen.getByRole('button', { name: strings.action.listen }),
+    ).toBeVisible();
+    await s.click(strings.action.listen);
+    const previous = s.learningSources[0]!;
+    await s.route('#/colors');
+    expect(previous.stop).toHaveBeenCalledTimes(1);
+    expect(s.createSessionId).toHaveBeenCalledTimes(3);
+    await s.click(strings.nav.home);
+  },
+);
 
 it('быстрые старт, выход и новая категория согласуются даже в одном пакете React', async () => {
   const s = setupApp();
