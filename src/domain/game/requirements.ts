@@ -1,7 +1,11 @@
 import { gameTiming } from './timing.ts';
 import type { InteractionId } from '../../content/types.ts';
 import type { GameState, OperationScope, Resource } from './models.ts';
-import { audioResource, audioResources } from './resources.ts';
+import {
+  audioResource,
+  audioResources,
+  confirmationResources,
+} from './resources.ts';
 import type { AnswerCount } from './exercise.ts';
 
 export type GameRequirements = Readonly<{
@@ -17,6 +21,7 @@ export type GameRequirements = Readonly<{
         resource: Resource;
         sequence: readonly string[];
         started: boolean;
+        optional?: true;
         introduction: InteractionId | null;
         timeoutAt: number | null;
       }>
@@ -31,6 +36,10 @@ export type GameRequirements = Readonly<{
         kind: 'next-round';
         roundId: number;
         optionCount: AnswerCount;
+        planning?: Readonly<{
+          correctCount: number;
+          recentKinds: readonly import('./exercise.ts').ExerciseKind[];
+        }>;
       }>
     | Readonly<{ kind: 'stop' }>;
 }>;
@@ -101,17 +110,16 @@ export function getGameRequirements(state: GameState): GameRequirements {
               type: 'ADVANCE_DUE',
               at: Math.max(
                 state.acceptedAt + gameTiming.correctReaction,
-                confirmation.endedAt + gameTiming.afterConfirmation,
+                confirmation.endedAt === null
+                  ? 0
+                  : confirmation.endedAt + gameTiming.afterConfirmation,
               ),
             },
           },
         };
       }
-      const resource = audioResource(
-        state.session,
-        state.round,
-        'confirmation',
-      );
+      const sequence = confirmationResources(state);
+      const resource = sequence[0]!;
       if (
         confirmation.status === 'loading' ||
         confirmation.status === 'repairing-image'
@@ -134,17 +142,22 @@ export function getGameRequirements(state: GameState): GameRequirements {
         work: {
           kind: 'play',
           resource,
-          sequence: audioResources(
-            state.session,
-            state.round,
-            'confirmation',
-          ).map((resource) => resource.path),
+          sequence: sequence.map((resource) => resource.path),
+          ...(state.round.confirmation.type === 'visual'
+            ? { optional: true as const }
+            : {}),
           started: confirmation.status === 'playing',
-          introduction: state.introduction,
+          introduction:
+            state.round.confirmation.type === 'visual'
+              ? null
+              : state.introduction,
           timeoutAt:
             confirmation.status === 'playing'
               ? null
-              : confirmation.requestedAt + gameTiming.resourceTimeout,
+              : confirmation.requestedAt +
+                (state.round.confirmation.type === 'visual'
+                  ? 2000
+                  : gameTiming.resourceTimeout),
         },
       };
     }
@@ -160,6 +173,14 @@ export function getGameRequirements(state: GameState): GameRequirements {
           kind: 'next-round',
           roundId: state.round.id + 1,
           optionCount: state.adaptation.answerCount,
+          ...('correctCount' in state.adaptation
+            ? {
+                planning: {
+                  correctCount: state.adaptation.correctCount,
+                  recentKinds: state.recentKinds,
+                },
+              }
+            : {}),
         },
       };
     case 'paused':

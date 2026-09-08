@@ -1,3 +1,4 @@
+import type { CountIllustration } from './exercise.ts';
 import { audioClipIds } from './exercise.ts';
 import type {
   Failure,
@@ -32,25 +33,46 @@ export function roundResources(
   session: GameSession,
   round: Round,
 ): readonly Resource[] {
-  const images: Resource[] =
-    round.kind === 'A1'
-      ? round.options.map((option) => ({ kind: 'image', path: option.image }))
-      : round.kind === 'N1-A'
-        ? [
-            round.countObject.kind === 'raster'
-              ? { kind: 'image', path: round.countObject.image }
-              : {
-                  kind: 'tinted-image',
-                  path: round.countObject.image,
-                  hex: round.countObject.hex,
-                },
-          ]
-        : [];
-  return [
+  const images: Resource[] = [];
+  const addObject = (object: CountIllustration) =>
+    images.push(
+      object.kind === 'raster'
+        ? { kind: 'image', path: object.image }
+        : { kind: 'tinted-image', path: object.image, hex: object.hex },
+    );
+  for (const option of round.options) {
+    if (option.kind === 'animal')
+      images.push({ kind: 'image', path: option.image });
+    if (option.kind === 'shape' || option.kind === 'sized-shape') {
+      const shape = session.content.shapes.find(
+        (x) => x.id === option.shapeId,
+      )!;
+      const object = session.content.countObjects.find(
+        (x) => x.id === shape.countObjectId,
+      )!;
+      addObject({
+        kind: 'tinted',
+        id: object.id,
+        image: object.image,
+        hex: session.content.colors.find((x) => x.id === option.colorId)!.hex,
+      });
+    }
+  }
+  if ('countObject' in round) addObject(round.countObject);
+  const prompt = round.prompt;
+  if ('countObject' in prompt) addObject(prompt.countObject);
+  if (prompt.kind === 'tinted-object') addObject(prompt.object);
+  if (prompt.kind === 'silhouette')
+    images.push({ kind: 'image', path: prompt.image });
+  const resources = [
     ...images,
     ...audioResources(session, round, 'prompt'),
     ...audioResources(session, round, 'confirmation'),
   ];
+  return resources.filter(
+    (resource, index) =>
+      !resources.slice(0, index).some((other) => sameResource(resource, other)),
+  );
 }
 
 export function isImageResource(resource: Resource) {
@@ -91,11 +113,10 @@ export function pendingWork(state: GameState): {
   if (state.status === 'correct' && state.confirmation.status !== 'ended') {
     return {
       phase: 'confirmation',
-      resources: [
+      resources:
         state.confirmation.status === 'repairing-image'
-          ? state.confirmation.resource
-          : audioResource(state.session, state.round, 'confirmation'),
-      ],
+          ? [state.confirmation.resource]
+          : confirmationResources(state),
       requestedAt:
         state.confirmation.status === 'playing'
           ? null
@@ -103,4 +124,19 @@ export function pendingWork(state: GameState): {
     };
   }
   return null;
+}
+
+export function confirmationResources(state: GameState): readonly Resource[] {
+  if (state.round.confirmation.type !== 'visual')
+    return audioResources(state.session, state.round, 'confirmation');
+  return state.introduction
+    ? [
+        {
+          kind: 'confirmation',
+          path: state.session.content.audio.find(
+            (x) => x.id === `interaction.${state.introduction}`,
+          )!.path,
+        },
+      ]
+    : [];
 }

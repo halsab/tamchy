@@ -1,3 +1,4 @@
+import { seniorSchemas, validateSeniorContent } from './senior-content.ts';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { z } from 'zod';
@@ -18,6 +19,7 @@ const recipe = z.strictObject({
   ending: z.enum(['.', '?']),
 });
 const schema = z.strictObject({
+  ...seniorSchemas,
   categories: z
     .array(
       z.strictObject({
@@ -62,6 +64,17 @@ const schema = z.strictObject({
     C1: z.array(recipe).length(3),
     A1: z.array(recipe).length(5),
     'N1-A': z.array(recipe).length(5),
+    C2: z.array(recipe).length(1),
+    'C3-A': z.array(recipe).length(3),
+    'C3-B': z.array(recipe).length(3),
+    C4: z.array(recipe).length(1),
+    A2: z.array(recipe).length(4),
+    A3: z.array(recipe).length(1),
+    'N1-B': z.array(recipe).length(2),
+    'N1-C': z.array(recipe).length(4),
+    N2: z.array(recipe).length(2),
+    'N3-A': z.array(recipe).length(2),
+    'N3-B': z.array(recipe).length(2),
   }),
 });
 const palette: Record<string, string> = {
@@ -224,7 +237,8 @@ export function parseV2Content(input: unknown): ContentV2 {
       `Основа ${object.id}`,
     );
   }
-  for (const [kind, recipes] of Object.entries(content.recipes)) {
+  for (const kind of ['C1', 'A1', 'N1-A'] as const) {
+    const recipes = content.recipes[kind];
     const verbs =
       kind === 'C1'
         ? ['find', 'choose', 'show']
@@ -258,6 +272,7 @@ export function parseV2Content(input: unknown): ContentV2 {
         );
     }
   }
+  validateSeniorContent(content);
   return content;
 }
 
@@ -271,6 +286,10 @@ export async function readV2Content(root: string): Promise<ContentV2> {
       countObjects: 'count-objects',
       audio: 'audio',
       recipes: 'recipes',
+      shapes: 'shapes',
+      sizes: 'sizes',
+      animalTraits: 'animal-traits',
+      silhouetteConflicts: 'silhouette-conflicts',
     }).map(async ([key, file]) => [
       key,
       JSON.parse(

@@ -1,7 +1,7 @@
-import type { AnswerCount } from './exercise.ts';
+import type { JuniorAnswerCount } from './exercise.ts';
 
 export type JuniorAdaptation = Readonly<{
-  answerCount: AnswerCount;
+  answerCount: JuniorAnswerCount;
   streak: Readonly<{ kind: 'clean' | 'mistake'; count: number }> | null;
 }>;
 export const juniorBalance = { advanceAfter: 5, reduceAfter: 2 } as const;

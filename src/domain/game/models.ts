@@ -1,14 +1,17 @@
+import type { SeniorAdaptation } from './senior-adaptation.ts';
 import type { CategoryId, ContentV2 } from '../../content/types.ts';
 import type { InteractionId } from '../../content/types.ts';
-import type { Exercise } from './exercise.ts';
+import type { AgeMode, Exercise, ExerciseKind } from './exercise.ts';
 import type { JuniorAdaptation } from './adaptation.ts';
 
 export type GameCategory = Readonly<{
+  mode?: AgeMode;
   id: CategoryId;
   content: ContentV2;
 }>;
 
 export type GameSession = Readonly<{
+  mode: AgeMode;
   sessionId: string;
   categoryId: CategoryId;
   content: ContentV2;
@@ -43,7 +46,7 @@ type Confirmation =
     }>
   | Readonly<{ status: 'loading' | 'starting'; requestedAt: number }>
   | Readonly<{ status: 'playing'; startedAt: number }>
-  | Readonly<{ status: 'ended'; endedAt: number }>;
+  | Readonly<{ status: 'ended'; endedAt: number | null }>;
 
 export type ActivePhase =
   | Readonly<{
@@ -79,7 +82,8 @@ export type RoundContext = Readonly<{
   mistakes: number;
   reminderUsed: boolean;
   introduction: InteractionId | null;
-  adaptation: JuniorAdaptation;
+  adaptation: JuniorAdaptation | SeniorAdaptation;
+  recentKinds: readonly ExerciseKind[];
 }>;
 
 export type GameState = RoundContext &
@@ -102,7 +106,10 @@ export type GameEventData =
       resource: Resource;
       at: number;
     }>
-  | Readonly<{ type: 'AUDIO_STARTED' | 'AUDIO_ENDED'; at: number }>
+  | Readonly<{
+      type: 'AUDIO_STARTED' | 'AUDIO_ENDED' | 'REACTION_SKIPPED';
+      at: number;
+    }>
   | Readonly<{ type: 'ANSWER'; itemId: string; at: number }>
   | Readonly<{
       type:

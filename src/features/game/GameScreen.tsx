@@ -24,8 +24,8 @@ export function GameScreen({
     game.state.status !== 'ended'
       ? game.state
       : null;
-  const countObject =
-    state?.round.kind === 'N1-A' ? state.round.countObject : undefined;
+  const round = state?.round.mode === 'junior' ? state.round : null;
+  const countObject = round?.kind === 'N1-A' ? round.countObject : undefined;
   const pixels =
     countObject?.kind === 'tinted'
       ? game.tintedPixels(countObject.image, countObject.hex)
@@ -71,39 +71,41 @@ export function GameScreen({
         role="group"
         aria-label={strings.game.answers}
       >
-        {state?.round.options.map((item) => {
-          const { id } = item;
-          const correct = accepted && id === state.round.correctOptionId;
-          const hinted = hint && id === state.round.correctOptionId;
-          const wrong = state.status === 'retrying' && state.selectedId === id;
-          return (
-            <button
-              key={`${state.session.sessionId}:${state.round.id}:${id}`}
-              className={`${styles.answer} ${correct ? styles.correct : ''} ${hinted ? styles.hint : ''} ${wrong ? styles.wrong : ''}`}
-              disabled={state.status !== 'awaiting'}
-              aria-label={item.labelTt}
-              aria-describedby={hinted ? 'game-hint' : undefined}
-              onClick={() => game.answer(id)}
-            >
-              <AnswerContent
-                item={item}
-                countObject={countObject}
-                pixels={pixels}
-                imageUrl={game.imageUrl}
-                onImageError={game.imageFailed}
-              />
-              {correct && !blocking && (
-                <span
-                  className={styles.check}
-                  role="img"
-                  aria-label={strings.game.correct}
-                >
-                  <Icon name="check" />
-                </span>
-              )}
-            </button>
-          );
-        })}
+        {state &&
+          round?.options.map((item) => {
+            const { id } = item;
+            const correct = accepted && id === state.round.correctOptionId;
+            const hinted = hint && id === state.round.correctOptionId;
+            const wrong =
+              state.status === 'retrying' && state.selectedId === id;
+            return (
+              <button
+                key={`${state.session.sessionId}:${state.round.id}:${id}`}
+                className={`${styles.answer} ${correct ? styles.correct : ''} ${hinted ? styles.hint : ''} ${wrong ? styles.wrong : ''}`}
+                disabled={state.status !== 'awaiting'}
+                aria-label={item.labelTt}
+                aria-describedby={hinted ? 'game-hint' : undefined}
+                onClick={() => game.answer(id)}
+              >
+                <AnswerContent
+                  item={item}
+                  countObject={countObject}
+                  pixels={pixels}
+                  imageUrl={game.imageUrl}
+                  onImageError={game.imageFailed}
+                />
+                {correct && !blocking && (
+                  <span
+                    className={styles.check}
+                    role="img"
+                    aria-label={strings.game.correct}
+                  >
+                    <Icon name="check" />
+                  </span>
+                )}
+              </button>
+            );
+          })}
       </div>
       <div className={styles.feedback}>
         {accepted && blocking && (

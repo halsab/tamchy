@@ -1,7 +1,7 @@
 import { useEffectEvent, useLayoutEffect, useRef } from 'react';
 import type {
   CountIllustration,
-  Exercise,
+  JuniorExercise,
 } from '../../domain/game/exercise.ts';
 import { drawTintedImage } from '../../services/assets/tinted-images.ts';
 import type { TintedPixels } from '../../services/assets/tint.ts';
@@ -58,7 +58,7 @@ export function AnswerContent({
   imageUrl,
   onImageError,
 }: {
-  item: Exercise['options'][number];
+  item: JuniorExercise['options'][number];
   countObject?: CountIllustration | undefined;
   pixels?: TintedPixels | undefined;
   imageUrl: (path: string) => string;

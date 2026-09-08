@@ -40,6 +40,12 @@ async function fixture() {
     await mkdir(dirname(join(root, path)), { recursive: true });
     await writeFile(join(root, path), contents);
   }
+  // Сборочная проверка теперь сверяет просмотренные силуэты, поэтому здесь нужны исходные производные.
+  await cp(
+    'public/assets/images/animals',
+    join(root, 'public/assets/images/animals'),
+    { recursive: true },
+  );
   return root;
 }
 
@@ -91,6 +97,15 @@ describe('границы сборочных артефактов', () => {
     await expect(readdir(join(root, 'dist'))).rejects.toMatchObject({
       code: 'ENOENT',
     });
+  });
+
+  it('отклоняет изменённое изображение просмотренного силуэта', async () => {
+    const root = await fixture();
+    await writeFile(
+      join(root, 'public/assets/images/animals/animal-cat.webp'),
+      'changed',
+    );
+    await expect(compile(root, true)).rejects.toThrow('силуэта');
   });
 
   it('релизная сборка останавливается до создания dist при отсутствии записи', async () => {

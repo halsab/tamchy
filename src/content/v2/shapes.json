@@ -1,0 +1,32 @@
+[
+  {
+    "id": "circle",
+    "countObjectId": "shape-circle",
+    "targetClipId": "shape.circle.target"
+  },
+  {
+    "id": "square",
+    "countObjectId": "shape-square",
+    "targetClipId": "shape.square.target"
+  },
+  {
+    "id": "triangle",
+    "countObjectId": "shape-triangle",
+    "targetClipId": "shape.triangle.target"
+  },
+  {
+    "id": "rectangle",
+    "countObjectId": "shape-rectangle",
+    "targetClipId": "shape.rectangle.target"
+  },
+  {
+    "id": "oval",
+    "countObjectId": "shape-oval",
+    "targetClipId": "shape.oval.target"
+  },
+  {
+    "id": "star",
+    "countObjectId": "shape-star",
+    "targetClipId": "shape.star.target"
+  }
+]

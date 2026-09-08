@@ -1,3 +1,4 @@
+import { validateReviewedGraphics } from './senior-content.ts';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import type { Plugin } from 'vite';
@@ -32,6 +33,7 @@ export function contentPlugin(check: boolean): Plugin {
       if (!building) return;
       const { catalog } = await readContent(root);
       const report = await inspectResources(resolve(root, 'public'), catalog);
+      await validateReviewedGraphics(root, catalog);
       if (report.errors.length) throw new Error(report.errors.join('\n'));
       if (!check) assertCompleteContent(report);
       available = report.available;

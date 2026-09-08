@@ -1,5 +1,9 @@
 export type { InteractionId } from './interactions.ts';
 export type {
+  ShapeId,
+  SizeId,
+  TraitId,
+  ExerciseKind,
   AudioClip,
   AudioRecipe,
   ContentV2,

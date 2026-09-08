@@ -33,12 +33,13 @@ export async function createLegacyFixture(base: string) {
     execFileSync('tar', ['-x', '-C', root], { input: source });
     await cp(resolve('public'), join(root, 'public'), { recursive: true });
     await symlink(resolve('node_modules'), join(root, 'node_modules'), 'dir');
+    // Vitest задаёт NODE_ENV=test; проверяем релизный React и тот же бюджет, что у выпуска.
     execFileSync(
       process.execPath,
       [resolve('node_modules/vite/bin/vite.js'), 'build'],
       {
         cwd: root,
-        env: { ...process.env, VITE_BASE: base },
+        env: { ...process.env, NODE_ENV: 'production', VITE_BASE: base },
         stdio: 'pipe',
       },
     );
@@ -79,10 +80,15 @@ export async function createUpdateFixture(base: string) {
         await readFile(audio),
       ]),
     );
+    // Vitest задаёт NODE_ENV=test; проверяем релизный React и тот же бюджет, что у выпуска.
     execFileSync(
       process.execPath,
       [resolve('node_modules/vite/bin/vite.js'), 'build'],
-      { cwd: root, env: { ...process.env, VITE_BASE: base }, stdio: 'pipe' },
+      {
+        cwd: root,
+        env: { ...process.env, NODE_ENV: 'production', VITE_BASE: base },
+        stdio: 'pipe',
+      },
     );
     await measureBudgets(await inspectArtifact(root, base));
     return root;

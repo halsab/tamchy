@@ -69,5 +69,152 @@
       "parts": ["common.which", "$label"],
       "ending": "?"
     }
+  ],
+  "C2": [
+    {
+      "id": "color",
+      "parts": ["colors.objectColor.prompt"],
+      "ending": "?"
+    }
+  ],
+  "C3-A": [
+    {
+      "id": "find",
+      "parts": ["$color", "$shapeTarget", "common.find"],
+      "ending": "."
+    },
+    {
+      "id": "choose",
+      "parts": ["$color", "$shapeTarget", "common.choose"],
+      "ending": "."
+    },
+    {
+      "id": "show",
+      "parts": ["$color", "$shapeTarget", "common.show"],
+      "ending": "."
+    }
+  ],
+  "C3-B": [
+    {
+      "id": "find",
+      "parts": ["$size", "$color", "$shapeTarget", "common.find"],
+      "ending": "."
+    },
+    {
+      "id": "choose",
+      "parts": ["$size", "$color", "$shapeTarget", "common.choose"],
+      "ending": "."
+    },
+    {
+      "id": "show",
+      "parts": ["$size", "$color", "$shapeTarget", "common.show"],
+      "ending": "."
+    }
+  ],
+  "C4": [
+    {
+      "id": "next",
+      "parts": ["colors.sequence.prompt"],
+      "ending": "."
+    }
+  ],
+  "A2": [
+    {
+      "id": "bird",
+      "parts": ["animals.trait.bird"],
+      "ending": "?"
+    },
+    {
+      "id": "domestic",
+      "parts": ["animals.trait.domestic"],
+      "ending": "?"
+    },
+    {
+      "id": "wild",
+      "parts": ["animals.trait.wild"],
+      "ending": "?"
+    },
+    {
+      "id": "canFly",
+      "parts": ["animals.trait.canFly"],
+      "ending": "?"
+    }
+  ],
+  "A3": [
+    {
+      "id": "silhouette",
+      "parts": ["animals.silhouette.prompt"],
+      "ending": "?"
+    }
+  ],
+  "N1-B": [
+    {
+      "id": "howMany",
+      "parts": ["common.howMany", "$countObject", "common.has"],
+      "ending": "?"
+    },
+    {
+      "id": "countHowMany",
+      "parts": ["common.countHowMany", "$countObject", "common.has"],
+      "ending": "?"
+    }
+  ],
+  "N1-C": [
+    {
+      "id": "whichIn",
+      "parts": ["common.whichIn", "$number", "$countObject", "common.has"],
+      "ending": "?"
+    },
+    {
+      "id": "find",
+      "parts": ["$number", "$countObject", "common.with", "common.find"],
+      "ending": "."
+    },
+    {
+      "id": "choose",
+      "parts": ["$number", "$countObject", "common.with", "common.choose"],
+      "ending": "."
+    },
+    {
+      "id": "show",
+      "parts": ["$number", "$countObject", "common.with", "common.show"],
+      "ending": "."
+    }
+  ],
+  "N2": [
+    {
+      "id": "more",
+      "parts": ["numbers.more.prompt"],
+      "ending": "?"
+    },
+    {
+      "id": "less",
+      "parts": ["numbers.less.prompt"],
+      "ending": "?"
+    }
+  ],
+  "N3-A": [
+    {
+      "id": "totalHowMany",
+      "parts": ["common.totalHowMany", "$countObject"],
+      "ending": "?"
+    },
+    {
+      "id": "countTotalHowMany",
+      "parts": ["common.countTotalHowMany", "$countObject"],
+      "ending": "?"
+    }
+  ],
+  "N3-B": [
+    {
+      "id": "howMany",
+      "parts": ["common.howMany", "$countObject", "common.left"],
+      "ending": "?"
+    },
+    {
+      "id": "countHowMany",
+      "parts": ["common.countHowMany", "$countObject", "common.left"],
+      "ending": "?"
+    }
   ]
 }

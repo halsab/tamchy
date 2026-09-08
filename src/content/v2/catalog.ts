@@ -5,6 +5,10 @@ import numbers from './numbers.json' with { type: 'json' };
 import countObjects from './count-objects.json' with { type: 'json' };
 import audio from './audio.json' with { type: 'json' };
 import recipes from './recipes.json' with { type: 'json' };
+import shapes from './shapes.json' with { type: 'json' };
+import sizes from './sizes.json' with { type: 'json' };
+import animalTraits from './animal-traits.json' with { type: 'json' };
+import silhouetteConflicts from './silhouette-conflicts.json' with { type: 'json' };
 import type { ContentV2 } from './types.ts';
 
 // Строгая проверка каталогов выполняется до сборки, Zod не попадает в браузер.
@@ -16,4 +20,8 @@ export const contentV2 = {
   countObjects,
   audio,
   recipes,
-} as ContentV2;
+  shapes,
+  sizes,
+  animalTraits,
+  silhouetteConflicts,
+} as unknown as ContentV2;

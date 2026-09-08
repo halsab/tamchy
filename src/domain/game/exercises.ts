@@ -1,15 +1,17 @@
+import { resolveRecipe } from './audio-recipes.ts';
+import { shuffle as shuffled } from './random.ts';
 import type {
   AudioRecipe,
   CategoryId,
   ContentV2,
 } from '../../content/types.ts';
-import type { AnswerCount, Exercise, Prompt } from './exercise.ts';
+import type { AnswerCount, JuniorExercise, SpokenPrompt } from './exercise.ts';
 
 export function createExerciseGenerator(
   content: ContentV2,
   categoryId: CategoryId,
   random: () => number,
-): (count: AnswerCount) => Exercise {
+): (count: AnswerCount) => JuniorExercise {
   const pool =
     categoryId === 'colors'
       ? content.colors
@@ -22,27 +24,13 @@ export function createExerciseGenerator(
     throw new Error('Недостаточно элементов раздела младшего режима.');
   const kind =
     categoryId === 'colors' ? 'C1' : categoryId === 'animals' ? 'A1' : 'N1-A';
-  const clips = new Map(content.audio.map((x) => [x.id, x]));
   let remaining: number[] = [];
   let previous: number | undefined;
   let nextId = 1;
   let objects: number[] = [];
   const formulations = new Map<string, AudioRecipe[]>();
-  function indexBelow(length: number) {
-    const value = random();
-    if (!(value >= 0 && value < 1))
-      throw new RangeError('Случайное значение должно быть в [0, 1).');
-    return Math.floor(value * length);
-  }
-  function shuffle<T>(input: readonly T[]): T[] {
-    const result = [...input];
-    for (let index = result.length - 1; index > 0; index--) {
-      const other = indexBelow(index + 1);
-      [result[index], result[other]] = [result[other]!, result[index]!];
-    }
-    return result;
-  }
-  function promptFor(target: (typeof pool)[number]): Prompt {
+  const shuffle = <T>(input: readonly T[]) => shuffled(input, random);
+  function promptFor(target: (typeof pool)[number]): SpokenPrompt {
     let recipes = formulations.get(target.id);
     if (!recipes?.length) {
       recipes = shuffle(content.recipes[kind]);
@@ -50,27 +38,10 @@ export function createExerciseGenerator(
     }
     // Отдельный цикл формулировок гарантирует все варианты для каждой учебной цели.
     const recipe = recipes.shift()!;
-    const ids = recipe.parts.map((part) =>
-      part === '$label'
-        ? target.labelClipId
-        : part === '$target' && 'targetClipId' in target
-          ? target.targetClipId
-          : part,
-    );
-    const text =
-      ids
-        .map((id, index) => {
-          const clip = clips.get(id);
-          if (!clip) throw new Error(`Неизвестный клип ${id}`);
-          const word = clip.textTt.replace(/[.?!]+$/u, '');
-          return index === 0 ? word : word.toLowerCase();
-        })
-        .join(' ') + recipe.ending;
-    return {
-      kind: 'spoken',
-      textTt: text,
-      audio: { type: 'sequence', clipIds: ids },
-    };
+    return resolveRecipe(content, recipe, {
+      $label: target.labelClipId,
+      ...('targetClipId' in target ? { $target: target.targetClipId } : {}),
+    });
   }
   return (count) => {
     if (count !== 2 && count !== 3 && count !== 4)
@@ -94,6 +65,7 @@ export function createExerciseGenerator(
     const indices = shuffle([targetIndex, ...distractors.slice(0, count - 1)]);
     previous = targetIndex;
     const base = {
+      mode: 'junior' as const,
       id: nextId++,
       difficulty: 1 as const,
       prompt: promptFor(target),

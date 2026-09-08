@@ -1,0 +1,12 @@
+[
+  {
+    "id": "big",
+    "labelTt": "Зур",
+    "labelClipId": "size.big"
+  },
+  {
+    "id": "small",
+    "labelTt": "Кечкенә",
+    "labelClipId": "size.small"
+  }
+]

@@ -125,12 +125,10 @@ export function createGameExecutor({
 
     function expire(resource: Resource) {
       if (!live()) return;
-      const event: GameEvent = {
-        ...token,
-        type: 'RESOURCE_TIMEOUT',
-        resource,
-        at: clock.now(),
-      };
+      const event: GameEvent =
+        work.kind === 'play' && work.optional
+          ? { ...token, type: 'REACTION_SKIPPED', at: clock.now() }
+          : { ...token, type: 'RESOURCE_TIMEOUT', resource, at: clock.now() };
       cancel();
       send(event);
     }
@@ -219,15 +217,19 @@ export function createGameExecutor({
                 else emit({ type: 'AUDIO_STARTED', at: clock.now() });
               },
               ended: () => emit({ type: 'AUDIO_ENDED', at: clock.now() }),
-              failed: (reason, path) =>
-                emit({
-                  type: 'RESOURCE_FAILED',
-                  resource:
-                    path && work.sequence.includes(path)
-                      ? { ...work.resource, path }
-                      : work.resource,
-                  reason,
-                }),
+              failed: (reason, path) => {
+                if (work.optional && reason !== 'blocked')
+                  emit({ type: 'REACTION_SKIPPED', at: clock.now() });
+                else
+                  emit({
+                    type: 'RESOURCE_FAILED',
+                    resource:
+                      path && work.sequence.includes(path)
+                        ? { ...work.resource, path }
+                        : work.resource,
+                    reason,
+                  });
+              },
             },
             work.introduction ? interactionPath(work.introduction) : undefined,
           );
