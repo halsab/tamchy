@@ -22,7 +22,7 @@ await verifyRelease(
   join(directory, 'dist'),
   report,
   '/tamchy/',
-  process.env.GITHUB_SHA,
+  process.env.TAMCHY_EXPECTED_COMMIT ?? process.env.GITHUB_SHA,
 );
 console.log(
   `Проверен выпуск ${report.release}, commit ${report.commit}, ${report.files.length} файлов, отчёт SHA-256 ${digest}.`,
