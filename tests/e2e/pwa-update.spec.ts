@@ -5,8 +5,10 @@ import { createHash } from 'node:crypto';
 import strings from '../../src/content/tt.json' with { type: 'json' };
 import { contentV2 as catalog } from '../../src/content/v2/catalog.ts';
 import legacyCatalog from '../../src/content/catalog.json' with { type: 'json' };
+import type { OfflineManifest } from '../../src/services/pwa/worker.ts';
 import { artifactServer } from './pwa-server.ts';
-import { answersReady, currentExercise } from './fixtures.ts';
+import { answerButtons, answersReady, currentExercise } from './fixtures.ts';
+import { installSeniorRandom, startSeniorPlayer } from './senior-player.ts';
 const base = process.env.VITE_BASE ?? '/';
 const changedAudio = catalog.audio.find(
   (clip) => clip.id === 'color.red',
@@ -67,15 +69,21 @@ async function neighborIntact(page: Page) {
   });
 }
 
-for (const migration of [false, true])
+for (const baseline of ['current', 'mvp', 'junior'] as const)
   for (const failure of [false, true]) {
-    test(`T15–T16: ${migration ? 'MVP→v2' : 'v2→v2'}, ${failure ? 'неудачная B сохраняет A, явный повтор' : 'A→B без прерывания игры'}, несколько окон и соседнее приложение`, async ({
+    test(`T15–T16: ${baseline === 'mvp' ? 'MVP→v2' : baseline === 'junior' ? 'младший→старший' : 'v2→v2'}, ${failure ? 'неудачная B сохраняет A, явный повтор' : 'A→B без прерывания игры'}, несколько окон и соседнее приложение`, async ({
       page,
       context,
       browserName,
     }, testInfo) => {
       test.setTimeout(60_000);
-      const a = migration ? process.env.TAMCHY_MVP_DIST : resolve('dist');
+      const migration = baseline !== 'current';
+      const legacy = baseline === 'mvp';
+      const a = legacy
+        ? process.env.TAMCHY_MVP_DIST
+        : baseline === 'junior'
+          ? process.env.TAMCHY_JUNIOR_DIST
+          : resolve('dist');
       const b = migration ? resolve('dist') : process.env.TAMCHY_UPDATE_DIST;
       expect(
         a,
@@ -85,17 +93,19 @@ for (const migration of [false, true])
         b,
         'Запускайте через npm run test:e2e: B собирается в отдельном каталоге',
       ).toBeTruthy();
-      const sourceAudio = migration
+      const sourceAudio = legacy
         ? legacyCatalog.categories[0]!.items[0]!.labelAudio
         : changedAudio;
       const server = await artifactServer(a!, base);
       try {
         const versionA = JSON.parse(
           await readFile(resolve(a!, 'offline-manifest.json'), 'utf8'),
-        ) as { release: string; resources: string[] };
+        ) as OfflineManifest;
         const versionB = JSON.parse(
           await readFile(resolve(b!, 'offline-manifest.json'), 'utf8'),
-        ) as { release: string; resources: string[] };
+        ) as OfflineManifest;
+        const resourcesA = versionA.entries.map((entry) => entry.url);
+        const resourcesB = versionB.entries.map((entry) => entry.url);
         const hashA = createHash('sha256')
           .update(await readFile(resolve(a!, sourceAudio)))
           .digest('hex');
@@ -103,34 +113,59 @@ for (const migration of [false, true])
           .update(await readFile(resolve(b!, changedAudio)))
           .digest('hex');
         expect(versionA.release).not.toBe(versionB.release);
-        expect(hashA).not.toBe(hashB);
+        if (baseline === 'junior') expect(hashA).toBe(hashB);
+        else expect(hashA).not.toBe(hashB);
+        const changedCode = resourcesB.find(
+          (path) => path.endsWith('.js') && !resourcesA.includes(path),
+        )!;
+        expect(changedCode).toBeTruthy();
+        await installSeniorRandom(page);
         await page.goto(server.url);
         await ready(page);
         await page.reload();
         await expect(status(page)).toHaveText(strings.status.offlineReady);
+        if (!legacy)
+          await page.getByText(strings.parents.senior, { exact: true }).click();
         await neighbor(page);
         const other = await context.newPage();
         await other.goto(server.url);
         await ready(other);
         await page.bringToFront();
         await page.getByRole('button', { name: strings.nav.home }).click();
-        await page
-          .getByRole('button', {
-            name: catalog.categories[0]!.labelTt,
-            exact: true,
-          })
-          .click();
-        await answersReady(page);
-        const exercise = migration
-          ? await legacyExercise(page)
-          : await currentExercise(page, 'colors');
+        let exercise: { target: { labelTt: string }; textTt: string };
+        if (baseline === 'current') {
+          const player = await startSeniorPlayer(page, 'colors');
+          exercise = {
+            target: player.exercise.options.find(
+              (x) => x.id === player.exercise.correctOptionId,
+            )!,
+            textTt: player.exercise.prompt.textTt,
+          };
+          await expect(answerButtons(page)).toHaveCount(4);
+        } else {
+          await page
+            .getByRole('button', {
+              name: catalog.categories[0]!.labelTt,
+              exact: true,
+            })
+            .click();
+          await answersReady(page);
+          await expect(answerButtons(page)).toHaveCount(2);
+          exercise = legacy
+            ? await legacyExercise(page)
+            : await currentExercise(page, 'colors');
+        }
         const { target } = exercise;
         let navigations = 0;
         page.on('framenavigated', (frame) => {
           if (frame === page.mainFrame()) navigations++;
         });
         server.use(b!);
-        if (failure) server.fail((path) => path === changedAudio);
+        if (failure)
+          server.fail(
+            (path) =>
+              path === (baseline === 'junior' ? changedCode : changedAudio),
+          );
         await page.evaluate(async () => {
           await (await navigator.serviceWorker.getRegistration(
             document.baseURI,
@@ -169,13 +204,17 @@ for (const migration of [false, true])
         ).toBeVisible();
         await answersReady(page);
         expect(navigations).toBe(0);
+        const originalAnswer = await answerButtons(page)
+          .first()
+          .elementHandle();
         await page
           .getByRole('button', { name: target.labelTt, exact: true })
           .click();
         await expect(page.getByRole('status')).toHaveText(strings.game.correct);
-        await expect(
-          page.getByText(exercise.textTt, { exact: true }),
-        ).not.toBeVisible();
+        await expect
+          .poll(() => originalAnswer!.evaluate((button) => button.isConnected))
+          .toBe(false);
+        await answersReady(page);
         await neighborIntact(other);
         await page.close();
         await expect(updateStatus(other)).toHaveText(strings.pwa.updateWaiting);
@@ -233,7 +272,14 @@ for (const migration of [false, true])
         const oldRevision = createHash('md5')
           .update(await readFile(resolve(a!, sourceAudio)))
           .digest('hex');
-        expect(oldKeys.some((url) => url.includes(oldRevision))).toBe(false);
+        if (baseline !== 'junior')
+          expect(oldKeys.some((url) => url.includes(oldRevision))).toBe(false);
+        for (const path of resourcesA.filter(
+          (path) => path.endsWith('.js') && !resourcesB.includes(path),
+        ))
+          expect(
+            oldKeys.some((url) => new URL(url).pathname === `${base}${path}`),
+          ).toBe(false);
         const cachedAudio = new Set(
           oldKeys
             .filter((url) => new URL(url).pathname.endsWith('.mp3'))
@@ -242,6 +288,19 @@ for (const migration of [false, true])
         expect(cachedAudio.size).toBe(189);
         for (const clip of catalog.audio)
           expect(cachedAudio.has(`${base}${clip.path}`), clip.path).toBe(true);
+        if (!legacy) {
+          await expect(
+            reopened.getByRole('radio', { name: strings.parents.senior }),
+          ).toBeChecked();
+          await reopened
+            .getByRole('button', { name: strings.nav.home })
+            .click();
+          await reopened
+            .getByRole('button', { name: 'Хайваннар', exact: true })
+            .click();
+          await answersReady(reopened);
+          await expect(answerButtons(reopened)).toHaveCount(4);
+        }
         await testInfo.attach('update-evidence', {
           body: JSON.stringify(
             {
@@ -251,10 +310,12 @@ for (const migration of [false, true])
               hashB,
               failure,
               migration,
+              baseline,
               cachedAudio: cachedAudio.size,
               navigations,
               neighborIntact: true,
-              oldRevisionRemovedAfterActivation: true,
+              oldRevisionRemovedAfterActivation: baseline !== 'junior',
+              oldCodeRemovedAfterActivation: true,
             },
             null,
             2,

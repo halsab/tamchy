@@ -14,6 +14,13 @@ import { juniorItems } from '../helpers/junior-content.ts';
 import strings from '../../src/content/tt.json' with { type: 'json' };
 import { artifactServer } from './pwa-server.ts';
 import { answersReady, currentExercise } from './fixtures.ts';
+import { installSeniorRandom, startSeniorPlayer } from './senior-player.ts';
+import { traceAudio } from './audio-trace.ts';
+import {
+  audioClipIds,
+  exerciseDefinitions,
+  type ExerciseKind,
+} from '../../src/domain/game/exercise.ts';
 
 const base = process.env.VITE_BASE ?? '/';
 const engines = { chromium, webkit, firefox };
@@ -50,10 +57,10 @@ async function parents(page: Page) {
 const offlineStatus = (page: Page) =>
   page.getByRole('status', { name: strings.parents.connectionTitle });
 
-test('T13: только главное меню → закрытие браузера → тот же профиль без сети → 62 цели и 189 записей', async ({
+test('T13: только главное меню → закрытие браузера → тот же профиль без сети → 62 младшие цели, все старшие виды и 189 записей', async ({
   browserName,
 }, testInfo) => {
-  test.setTimeout(300_000);
+  test.setTimeout(450_000);
   const server = await artifactServer(resolve('dist'), base);
   const profile = await mkdtemp(join(tmpdir(), 'tamchy-offline-profile-'));
   const engine = engines[browserName];
@@ -82,6 +89,8 @@ test('T13: только главное меню → закрытие брауз�
       viewport: { width: 390, height: 844 },
     });
     page = context.pages()[0]!;
+    await installSeniorRandom(page);
+    const audioTrace = await traceAudio(page);
     const fromWorker = new Set<string>();
     const errors: string[] = [];
     page.on('pageerror', (error) => errors.push(error.message));
@@ -151,6 +160,35 @@ test('T13: только главное меню → закрытие брауз�
       await page.getByRole('button', { name: strings.nav.home }).click();
     }
     expect(visited).toHaveLength(62);
+    await parents(page);
+    await page.getByText(strings.parents.senior, { exact: true }).click();
+    await page.getByRole('button', { name: strings.nav.home }).click();
+    const seniorVisited: { kind: string; count: number }[] = [];
+    for (const category of catalog.categories) {
+      const player = await startSeniorPlayer(page, category.id);
+      for (let round = 0; round < 8; round++)
+        await player.advance(false, undefined, true);
+      const kinds = (Object.keys(exerciseDefinitions) as ExerciseKind[]).filter(
+        (kind) => exerciseDefinitions[kind].categoryId === category.id,
+      );
+      for (const kind of kinds) {
+        await player.select(kind);
+        const exercise = player.exercise;
+        const prompt = audioClipIds(exercise.prompt.audio).map(
+          (id) => catalog.audio.find((x) => x.id === id)!.path,
+        );
+        await expect
+          .poll(async () => (await audioTrace()).starts.slice(-prompt.length), {
+            timeout: 15000,
+          })
+          .toEqual(prompt);
+        seniorVisited.push({ kind, count: exercise.options.length });
+        await player.advance();
+      }
+      await page.getByRole('button', { name: strings.nav.home }).click();
+    }
+    expect(seniorVisited).toHaveLength(14);
+    expect((await audioTrace()).overlaps).toEqual([]);
     expect(errors).toEqual([]);
     await testInfo.attach('offline-evidence', {
       body: JSON.stringify(
@@ -158,6 +196,7 @@ test('T13: только главное меню → закрытие брауз�
           release: metadata.release,
           browser: context.browser()?.version(),
           visited,
+          seniorVisited,
           decoded,
           responsesFromServiceWorker: [...fromWorker],
           httpServerStopped: true,

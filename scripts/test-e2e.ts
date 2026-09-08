@@ -3,7 +3,11 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { cp, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { z } from 'zod';
-import { createLegacyFixture, createUpdateFixture } from './lib/e2e-update.ts';
+import {
+  createLegacyFixture,
+  createJuniorFixture,
+  createUpdateFixture,
+} from './lib/e2e-update.ts';
 import {
   browsers,
   collectTests,
@@ -35,6 +39,7 @@ const planSchema = z.strictObject({
   fixtures: z.strictObject({
     update: releaseSchema.shape.files,
     mvp: releaseSchema.shape.files,
+    junior: releaseSchema.shape.files,
   }),
 });
 
@@ -85,6 +90,7 @@ async function prepare() {
   for (const [name, create] of [
     ['update', createUpdateFixture],
     ['mvp', createLegacyFixture],
+    ['junior', createJuniorFixture],
   ] as const) {
     const root = await create(base);
     try {
@@ -111,6 +117,7 @@ async function prepare() {
       fixtures: {
         update: await snapshotFiles(join(fixturesDirectory, 'update')),
         mvp: await snapshotFiles(join(fixturesDirectory, 'mvp')),
+        junior: await snapshotFiles(join(fixturesDirectory, 'junior')),
       },
     }),
   );
@@ -133,7 +140,7 @@ async function verifyInputs() {
     process.env.CI ? process.env.GITHUB_SHA : undefined,
     false,
   );
-  for (const name of ['update', 'mvp'] as const)
+  for (const name of ['update', 'mvp', 'junior'] as const)
     assert.deepEqual(
       await snapshotFiles(join(fixturesDirectory, name)),
       plan.fixtures[name],
@@ -158,6 +165,7 @@ async function execute(args: string[], selected?: Browser) {
     PLAYWRIGHT_JSON_OUTPUT_FILE: output,
     TAMCHY_UPDATE_DIST: join(fixturesDirectory, 'update'),
     TAMCHY_MVP_DIST: join(fixturesDirectory, 'mvp'),
+    TAMCHY_JUNIOR_DIST: join(fixturesDirectory, 'junior'),
   });
   await verifyInputs();
   await verifyRelease('dist', input.report, base, undefined, false);

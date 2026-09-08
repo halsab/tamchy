@@ -108,6 +108,62 @@ describe('границы сборочных артефактов', () => {
     await expect(compile(root, true)).rejects.toThrow('силуэта');
   });
 
+  it.each(['recipe', 'trait', 'silhouette'] as const)(
+    'релизная сборка отклоняет недопустимый старший каталог: %s',
+    async (failure) => {
+      const root = await fixture();
+      const source = contentV2;
+      const variants = {
+        recipe: {
+          ...source.recipes,
+          'C3-A': source.recipes['C3-A'].map((recipe, index) =>
+            index
+              ? recipe
+              : {
+                  ...recipe,
+                  parts: ['unknown.clip', ...recipe.parts.slice(1)],
+                },
+          ),
+        },
+        trait: {
+          ...source.animalTraits,
+          animals: source.animalTraits.animals.map((animal) => ({
+            ...animal,
+            values: { ...animal.values, bird: 'yes' },
+          })),
+        },
+        silhouette: {
+          ...source.silhouetteConflicts,
+          pairs: source.animals.slice(1).map((animal) => ({
+            animalIds: [source.animals[0]!.id, animal.id],
+            reasonRu: 'Проверка невозможного набора.',
+          })),
+        },
+      };
+      const filename =
+        failure === 'recipe'
+          ? 'recipes.json'
+          : failure === 'trait'
+            ? 'animal-traits.json'
+            : 'silhouette-conflicts.json';
+      const value = variants[failure];
+      await writeFile(
+        join(root, 'src/content/v2', filename),
+        JSON.stringify(value),
+      );
+      await expect(compile(root, false)).rejects.toThrow(
+        failure === 'recipe'
+          ? /Рецепт|клип/
+          : failure === 'trait'
+            ? /A2/
+            : /A3/,
+      );
+      await expect(readdir(join(root, 'dist'))).rejects.toMatchObject({
+        code: 'ENOENT',
+      });
+    },
+  );
+
   it('релизная сборка останавливается до создания dist при отсутствии записи', async () => {
     const root = await fixture();
     await expect(compile(root, false)).rejects.toThrow(paths.audio[0]);

@@ -12,15 +12,35 @@ import { execFileSync } from 'node:child_process';
 import { inspectArtifact, measureBudgets } from './artifact.ts';
 import { readContent } from './read-content.ts';
 
-export async function createLegacyFixture(base: string) {
-  const root = await mkdtemp(join(tmpdir(), 'tamchy-mvp-'));
+export function createLegacyFixture(base: string) {
+  return createHistoricalFixture(
+    base,
+    '5a2aece6a3e53e9792ae7867c47de488a9d5941b',
+    'mvp',
+  );
+}
+
+export function createJuniorFixture(base: string) {
+  return createHistoricalFixture(
+    base,
+    '0837e9087a1d7b112d8be95a9a1b3ac525582afc',
+    'junior',
+  );
+}
+
+async function createHistoricalFixture(
+  base: string,
+  commit: string,
+  name: string,
+) {
+  const root = await mkdtemp(join(tmpdir(), `tamchy-${name}-`));
   try {
-    // Последний работающий MVP до миграции; проверяем обновление настоящего старого приложения.
+    // Исторический коммит проверяет миграцию настоящего приложения, а не переименованной текущей сборки.
     const source = execFileSync(
       'git',
       [
         'archive',
-        '5a2aece6a3e53e9792ae7867c47de488a9d5941b',
+        commit,
         'src',
         'scripts',
         'index.html',
