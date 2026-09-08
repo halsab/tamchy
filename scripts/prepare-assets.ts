@@ -6,7 +6,6 @@ import { writeGenerated } from './lib/generated-files.ts';
 import { readContent } from './lib/read-content.ts';
 import { icons, resourcePaths } from './lib/resources.ts';
 import { prepareNeutralAssets } from './lib/neutral-png.ts';
-import { readV2Content, v2ResourcePaths } from './lib/v2-content.ts';
 import graphics from '../src/content/v2/graphics.json' with { type: 'json' };
 
 const root = resolve(import.meta.dirname, '..');
@@ -25,9 +24,7 @@ async function hashes(paths: string[]) {
 }
 
 try {
-  const resources = process.argv.includes('--v2')
-    ? v2ResourcePaths(await readV2Content(root))
-    : resourcePaths((await readContent(root)).catalog);
+  const resources = resourcePaths((await readContent(root)).catalog);
   const images = resources.images
     .filter((path) => path.endsWith('.webp'))
     .map((output) => ({

@@ -1,4 +1,6 @@
-import type { Category } from '../../content/types.ts';
+import type { CSSProperties } from 'react';
+import type { CategoryDefinition } from '../../content/v2/types.ts';
+import { isImageResource } from '../../domain/game/resources.ts';
 import strings from '../../content/tt.json';
 import { hasHint } from '../../domain/game/reducer.ts';
 import type { GameSessionController } from './use-game-session.ts';
@@ -13,7 +15,7 @@ export function GameScreen({
   game,
   onHome,
 }: {
-  category: Category;
+  category: CategoryDefinition;
   game: GameSessionController;
   onHome: () => void;
 }) {
@@ -22,9 +24,12 @@ export function GameScreen({
     game.state.status !== 'ended'
       ? game.state
       : null;
-  const target = state?.session.items.find(
-    (item) => item.id === state.round.targetId,
-  );
+  const countObject =
+    state?.round.kind === 'N1-A' ? state.round.countObject : undefined;
+  const pixels =
+    countObject?.kind === 'tinted'
+      ? game.tintedPixels(countObject.image, countObject.hex)
+      : undefined;
   const phase = state?.status === 'paused' ? state.resume : state;
   const accepted =
     phase?.status === 'correct' ||
@@ -34,7 +39,14 @@ export function GameScreen({
   const blocked =
     state?.status === 'error' && state.failure.reason === 'blocked';
   return (
-    <div className={styles.game}>
+    <div
+      className={styles.game}
+      data-count={state?.round.options.length ?? 2}
+      data-blocking={state?.status === 'error' || state?.status === 'paused'}
+      style={
+        { '--answer-count': state?.round.options.length ?? 2 } as CSSProperties
+      }
+    >
       <header className={styles.header}>
         <HomeButton onClick={onHome} />
         <h1>{category.labelTt}</h1>
@@ -51,22 +63,22 @@ export function GameScreen({
         </button>
       </header>
       <p className={styles.prompt}>
-        {target?.promptTt ?? strings.status.loading}
+        {state?.round.prompt.textTt ?? strings.status.loading}
       </p>
       <div
         className={styles.answers}
         role="group"
         aria-label={strings.game.answers}
       >
-        {state?.round.optionIds.map((id) => {
-          const item = state.session.items.find((item) => item.id === id)!;
-          const correct = accepted && id === state.round.targetId;
-          const hinted = hint && id === state.round.targetId;
+        {state?.round.options.map((item) => {
+          const { id } = item;
+          const correct = accepted && id === state.round.correctOptionId;
+          const hinted = hint && id === state.round.correctOptionId;
           const wrong = state.status === 'retrying' && state.selectedId === id;
           return (
             <button
-              key={`${state.session.sessionId}:${state.round.roundId}:${id}`}
-              className={`${styles.answer} ${item.kind === 'number' ? styles.numberAnswer : ''} ${correct ? styles.correct : ''} ${hinted ? styles.hint : ''} ${wrong ? styles.wrong : ''}`}
+              key={`${state.session.sessionId}:${state.round.id}:${id}`}
+              className={`${styles.answer} ${correct ? styles.correct : ''} ${hinted ? styles.hint : ''} ${wrong ? styles.wrong : ''}`}
               disabled={state.status !== 'awaiting'}
               aria-label={item.labelTt}
               aria-describedby={hinted ? 'game-hint' : undefined}
@@ -74,6 +86,8 @@ export function GameScreen({
             >
               <AnswerContent
                 item={item}
+                countObject={countObject}
+                pixels={pixels}
                 imageUrl={game.imageUrl}
                 onImageError={game.imageFailed}
               />
@@ -121,7 +135,7 @@ export function GameScreen({
             <p role={blocked ? 'status' : 'alert'}>
               {blocked
                 ? strings.game.activate
-                : state.failure.resource.kind === 'image'
+                : isImageResource(state.failure.resource)
                   ? strings.error.load
                   : strings.error.audio}
             </p>

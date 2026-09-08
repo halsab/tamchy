@@ -1,17 +1,19 @@
 import { describe, expect, it } from 'vitest';
-import data from '../../content/catalog.json';
-import type { Catalog } from '../../content/types.ts';
+import {
+  gameCategories as categories,
+  categoryIds,
+} from '../../../tests/helpers/game-content.ts';
+import { audioResource, isImageResource } from './resources.ts';
 import type {
   GameEvent,
   GameEventData,
   GameState,
   Resource,
+  Round,
 } from './models.ts';
 import { createGame, gameReducer, hasHint } from './reducer.ts';
 import { createRoundGenerator } from './rounds.ts';
 import { getGameRequirements } from './requirements.ts';
-
-const categories = (data as Catalog).categories;
 
 function setup(categoryIndex = 0) {
   const selected = categories[categoryIndex]!;
@@ -22,7 +24,7 @@ function setup(categoryIndex = 0) {
 function event(state: GameState, body: GameEventData): GameEvent {
   return {
     sessionId: state.session.sessionId,
-    roundId: state.round.roundId,
+    roundId: state.round.id,
     operationId: state.operationId,
     ...body,
   };
@@ -56,27 +58,20 @@ function begin(state = setup().state, at = 20) {
 }
 
 function label(state: GameState): Resource {
-  return {
-    kind: 'confirmation',
-    path: state.session.items.find(({ id }) => id === state.round.targetId)!
-      .labelAudio,
-  };
+  return audioResource(state.session, state.round, 'confirmation');
 }
-
 function prompt(state: GameState): Resource {
-  return {
-    kind: 'prompt',
-    path: state.session.items.find(({ id }) => id === state.round.targetId)!
-      .promptAudio,
-  };
+  return audioResource(state.session, state.round, 'prompt');
 }
 
 function answer(state: GameState, at = 100, correct = true) {
   return step(state, {
     type: 'ANSWER',
     itemId: correct
-      ? state.round.targetId
-      : state.round.optionIds.find((id) => id !== state.round.targetId)!,
+      ? state.round.correctOptionId
+      : state.round.options
+          .map((option) => option.id)
+          .find((id) => id !== state.round.correctOptionId)!,
     at,
   });
 }
@@ -99,7 +94,7 @@ describe('подготовка и ответы', () => {
       if (state.status !== 'preparing' || state.stage !== 'resources')
         throw new Error('Нет подготовки');
       const pending = state.pending;
-      expect(pending.filter(({ kind }) => kind === 'image')).toHaveLength(
+      expect(pending.filter(isImageResource)).toHaveLength(
         index === 1 ? 2 : index === 2 ? 1 : 0,
       );
       expect(pending).toContainEqual(prompt(state));
@@ -197,14 +192,13 @@ describe('подготовка и ответы', () => {
     const before = structuredClone(state);
     const action = event(state, {
       type: 'ANSWER',
-      itemId: state.round.targetId,
+      itemId: state.round.correctOptionId,
       at: 100,
     });
     Object.freeze(action);
-    Object.freeze(state.round.optionIds);
+    Object.freeze(state.round.options);
     Object.freeze(state.round);
-    state.session.items.forEach(Object.freeze);
-    Object.freeze(state.session.items);
+    Object.freeze(state.session.content);
     Object.freeze(state.session);
     Object.freeze(state);
     expect(step(state, { type: 'ANSWER', itemId: 'animal-cat', at: 100 })).toBe(
@@ -376,13 +370,13 @@ describe('пауза, выход и следующий раунд', () => {
       expect(answer(continued)).toBe(continued);
       const generated = event(continued, {
         type: 'ROUND_GENERATED',
-        round: generate(),
+        round: generate(state.adaptation.answerCount),
         at: 2010,
       });
       const next = gameReducer(continued, generated);
       expect(next).toMatchObject({
         status: 'preparing',
-        round: { roundId: 2 },
+        round: { id: 2 },
         mistakes: 0,
         reminderUsed: false,
       });
@@ -412,7 +406,7 @@ describe('пауза, выход и следующий раунд', () => {
       status: 'awaiting',
       reminderUsed: true,
       mistakes: 3,
-      round: { roundId: 1 },
+      round: { id: 1 },
     });
   });
 
@@ -468,22 +462,32 @@ describe('пауза, выход и следующий раунд', () => {
     });
     for (const round of [
       initial.round,
-      { ...nextRound, roundId: 3 },
-      { ...nextRound, categoryId: 'animals' as const },
+      { ...nextRound, id: 3 },
+      { ...nextRound, categoryId: 'animals' } as Round,
       {
         ...nextRound,
-        optionIds: [nextRound.targetId, nextRound.targetId] as const,
+        options: [nextRound.options[0]!, nextRound.options[0]!],
       },
-      { ...nextRound, optionIds: [nextRound.targetId, 'animal-cat'] as const },
-      { ...nextRound, targetId: 'unknown' },
       {
         ...nextRound,
-        targetId: initial.round.targetId,
-        optionIds: [initial.round.targetId, nextRound.targetId] as const,
+        options: [
+          nextRound.options[0]!,
+          { ...nextRound.options[1]!, id: 'animal-cat' },
+        ],
+      },
+      { ...nextRound, correctOptionId: 'unknown' },
+      {
+        ...nextRound,
+        correctOptionId: initial.round.correctOptionId,
+        options: initial.round.options,
       },
     ])
       expect(
-        step(transition, { type: 'ROUND_GENERATED', round, at: 1400 }),
+        step(transition, {
+          type: 'ROUND_GENERATED',
+          round: round as Round,
+          at: 1400,
+        }),
       ).toBe(transition);
     const action = event(transition, {
       type: 'ROUND_GENERATED',
@@ -494,24 +498,23 @@ describe('пауза, выход и следующий раунд', () => {
     expect(next.round).toEqual(nextRound);
     expect(gameReducer(transition, action)).toEqual(next);
     expect(gameReducer(next, action)).toBe(next);
-    expect(next.round.optionIds).not.toBe(nextRound.optionIds);
+    expect(next.round.options).not.toBe(nextRound.options);
+    expect(next.round.options[0]).not.toBe(nextRound.options[0]);
   });
 
   it('отклоняет недопустимый первый раунд и копирует данные сессии', () => {
     const category = structuredClone(categories[0]!);
     const generate = createRoundGenerator(category, () => 0);
     const first = generate();
+    expect(() => createGame('s', category, { ...first, id: 2 }, 0)).toThrow();
     expect(() =>
-      createGame('s', category, { ...first, roundId: 2 }, 0),
-    ).toThrow();
-    expect(() =>
-      createGame('s', category, { ...first, targetId: 'missing' }, 0),
+      createGame('s', category, { ...first, correctOptionId: 'missing' }, 0),
     ).toThrow();
     const state = createGame('s', category, first, 0);
-    expect(state.session.items).not.toBe(category.items);
-    expect(state.session.items[0]).not.toBe(category.items[0]);
+    expect(state.session.content).not.toBe(category.content);
+    expect(state.session.content.audio[0]).not.toBe(category.content.audio[0]);
     expect(state.round).not.toBe(first);
-    expect(state.round.optionIds).not.toBe(first.optionIds);
+    expect(state.round.options).not.toBe(first.options);
   });
 });
 
@@ -720,7 +723,7 @@ describe('устаревшие и недопустимые события', () =
     (key) => {
       const state = begin();
       for (const body of [
-        { type: 'ANSWER', itemId: state.round.targetId, at: 100 },
+        { type: 'ANSWER', itemId: state.round.correctOptionId, at: 100 },
         { type: 'REPEAT', at: 100 },
         { type: 'AUDIO_ENDED', at: 100 },
         { type: 'RESOURCE_FAILED', resource: prompt(state), reason: 'decode' },
@@ -752,7 +755,7 @@ describe('устаревшие и недопустимые события', () =
 });
 
 describe('контракт будущих адаптеров', () => {
-  it('подготовка требует обе картинки и задание; частичная готовность не запускает звук', () => {
+  it('подготовка требует картинки и все учебные клипы; частичная готовность не запускает звук', () => {
     const initial = setup(1).state;
     const requirements = getGameRequirements(initial);
     expect(requirements.scope).toEqual({
@@ -761,7 +764,7 @@ describe('контракт будущих адаптеров', () => {
       operationId: initial.operationId,
     });
     if (requirements.work.kind !== 'prepare') throw new Error('Нет подготовки');
-    expect(requirements.work.resources).toHaveLength(3);
+    expect(requirements.work.resources).toHaveLength(5);
     expect(requirements.work.timeoutAt).toBe(15000);
     const resource = requirements.work.resources[0]!;
     const partial = step(initial, { type: 'RESOURCE_READY', resource, at: 10 });
@@ -823,6 +826,7 @@ describe('контракт будущих адаптеров', () => {
     expect(getGameRequirements(starting).work).toEqual({
       kind: 'play',
       resource: label(correct),
+      sequence: [label(correct).path],
       started: false,
       introduction: 'correct',
       timeoutAt: 15110,
@@ -831,6 +835,7 @@ describe('контракт будущих адаптеров', () => {
     expect(getGameRequirements(confirming).work).toEqual({
       kind: 'play',
       resource: label(correct),
+      sequence: [label(correct).path],
       started: true,
       introduction: 'correct',
       timeoutAt: null,
@@ -922,11 +927,11 @@ describe('последовательности событий', () => {
       let at = 0;
       for (
         let roundIndex = 0;
-        roundIndex < categories[index]!.items.length * 3;
+        roundIndex < categoryIds(categories[index]!).length * 3;
         roundIndex++
       ) {
         const round = state.round;
-        targets.push(round.targetId);
+        targets.push(round.correctOptionId);
         state = begin(state, at + 20);
         state = answer(state, at + 100, false);
         state = step(state, { type: 'RETRY_DUE', at: at + 350 });
@@ -938,12 +943,12 @@ describe('последовательности событий', () => {
         expect(state.round).toEqual(round);
         const action = event(state, {
           type: 'ANSWER',
-          itemId: round.targetId,
+          itemId: round.correctOptionId,
           at: at + 700,
         });
         state = gameReducer(state, action);
         expect(state.status).toBe('correct');
-        accepted.push(round.roundId);
+        accepted.push(round.id);
         expect(gameReducer(state, action)).toBe(state);
         state = step(ready(state, at + 710), {
           type: 'AUDIO_STARTED',
@@ -970,12 +975,12 @@ describe('последовательности событий', () => {
           status: 'preparing',
           mistakes: 0,
           reminderUsed: false,
-          round: { roundId: round.roundId + 1 },
+          round: { id: round.id + 1 },
         });
         at += 3000;
       }
       expect(new Set(accepted).size).toBe(accepted.length);
-      const ids = categories[index]!.items.map(({ id }) => id).sort();
+      const ids = categoryIds(categories[index]!).sort();
       for (let cycle = 0; cycle < 3; cycle++)
         expect(
           targets.slice(cycle * ids.length, (cycle + 1) * ids.length).sort(),
@@ -988,9 +993,7 @@ describe('последовательности событий', () => {
 describe('ошибка изображения на экране', () => {
   it('блокирует ответы после подготовки и сохраняет контекст принятого ответа', () => {
     const waiting = begin(setup(1).state);
-    const item = waiting.session.items.find(
-      (item) => item.id === waiting.round.optionIds[0],
-    )!;
+    const item = waiting.round.options[0]!;
     if (item.kind !== 'animal') throw new Error('Ожидается животное');
     const failed = step(waiting, { type: 'IMAGE_FAILED', path: item.image });
     expect(failed.status).toBe('error');
@@ -1142,7 +1145,7 @@ it('похвала звучит через раунд с тремя вариан
     state = step(state, { type: 'ADVANCE_DUE', at: index * 10000 + 2000 });
     state = step(state, {
       type: 'ROUND_GENERATED',
-      round: s.generate(),
+      round: s.generate(state.adaptation.answerCount),
       at: index * 10000 + 2001,
     });
   }
@@ -1175,7 +1178,7 @@ describe('учёт адаптации в существующей сессии',
         continued,
         event(waiting, {
           type: 'ANSWER',
-          itemId: waiting.round.targetId,
+          itemId: waiting.round.correctOptionId,
           at: 301,
         }),
       ),
@@ -1223,7 +1226,7 @@ describe('учёт адаптации в существующей сессии',
       if (i < 4)
         state = step(state, {
           type: 'ROUND_GENERATED',
-          round: prepared.generate(),
+          round: prepared.generate(state.adaptation.answerCount),
           at: at + 1400,
         });
     }

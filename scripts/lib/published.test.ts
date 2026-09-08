@@ -46,7 +46,14 @@ async function fixture(fault?: {
       bytes: Buffer.byteLength(body),
       sha256: sha256(body),
     })),
-    budgets: { js: 0, css: 0, firstScreen: 0, complete: 0, illustration: 0 },
+    budgets: {
+      js: 0,
+      css: 0,
+      firstScreen: 0,
+      complete: 0,
+      illustration: 0,
+      neutralIllustration: 0,
+    },
   };
   const server = createServer((req, res) => {
     const path = req.url!.slice(base.length) || 'index.html';

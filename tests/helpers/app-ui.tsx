@@ -5,6 +5,7 @@ import { vi } from 'vitest';
 import { App } from '../../src/app/App.tsx';
 import { mockDialog } from './dialog.ts';
 import {
+  mockCanvas,
   browserAudio,
   browserImages,
   flush,
@@ -14,6 +15,7 @@ import {
 
 export function setupApp(hash = '#/', autoEndInteractions = true) {
   mockDialog();
+  const canvases = mockCanvas();
   window.history.replaceState(null, '', hash);
   const audio = browserAudio(autoEndInteractions);
   const images = browserImages();
@@ -22,6 +24,17 @@ export function setupApp(hash = '#/', autoEndInteractions = true) {
   const options = {
     audio: { ...audio, fetch: identifyInteractions(fetch) },
     images: { ...images, fetch },
+    tintedImages: {
+      fetch,
+      processor: {
+        run: vi.fn(async () => ({
+          width: 1,
+          height: 1,
+          data: new Uint8ClampedArray([0, 0, 255, 255]),
+        })),
+        dispose: vi.fn(),
+      },
+    },
     random: () => 0,
     createSessionId,
   };
@@ -46,6 +59,7 @@ export function setupApp(hash = '#/', autoEndInteractions = true) {
   return {
     ...audio,
     ...images,
+    canvases,
     options,
     fetch,
     createSessionId,

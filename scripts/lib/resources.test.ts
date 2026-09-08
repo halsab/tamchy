@@ -9,8 +9,7 @@ import {
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import data from '../../src/content/catalog.json' with { type: 'json' };
-import { parseCatalog } from './catalog.ts';
+import { contentV2 as catalog } from '../../src/content/v2/catalog.ts';
 import {
   assertCompleteContent,
   formatResourceReport,
@@ -18,7 +17,6 @@ import {
   resourcePaths,
 } from './resources.ts';
 
-const catalog = parseCatalog(data);
 const directories: string[] = [];
 
 async function fixture() {
@@ -42,11 +40,11 @@ afterEach(async () => {
 });
 
 describe('полнота обязательных ресурсов', () => {
-  it('требует 10 иллюстраций, 4 иконки, 30 учебных записей и все 12 реплик', async () => {
+  it('требует 43 WebP, 12 PNG, 4 иконки, 177 учебных клипов и все 12 реплик', async () => {
     const paths = resourcePaths(catalog);
-    expect(paths.images).toHaveLength(10);
+    expect(paths.images).toHaveLength(55);
     expect(paths.icons).toHaveLength(4);
-    expect(paths.audio).toHaveLength(42);
+    expect(paths.audio).toHaveLength(189);
     expect(
       paths.audio.filter((path) => path.includes('interaction/')),
     ).toHaveLength(12);
@@ -80,7 +78,9 @@ describe('полнота обязательных ресурсов', () => {
 
   it('проверяет точный регистр даже на macOS', async () => {
     const root = await fixture();
-    const path = resourcePaths(catalog).audio[0]!;
+    const path = resourcePaths(catalog).audio.find((path) =>
+      path.endsWith('color-red.mp3'),
+    )!;
     await rename(
       join(root, path),
       join(root, path.replace('color-red', 'Color-red')),

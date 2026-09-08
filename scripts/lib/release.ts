@@ -32,6 +32,7 @@ export const releaseSchema = z.strictObject({
     firstScreen: z.number(),
     complete: z.number(),
     illustration: z.number(),
+    neutralIllustration: z.number(),
   }),
 });
 export type ReleaseReport = z.infer<typeof releaseSchema>;

@@ -1,10 +1,7 @@
+import { resourcePaths } from './resources.ts';
 import { describe, expect, it } from 'vitest';
 import { resolve } from 'node:path';
-import {
-  readV2Content,
-  parseV2Content,
-  v2ResourcePaths,
-} from './v2-content.ts';
+import { readV2Content, parseV2Content } from './v2-content.ts';
 
 const root = resolve(import.meta.dirname, '../..');
 
@@ -35,7 +32,7 @@ describe('полный каталог младшего v2', () => {
   });
 
   it('требует ровно 43 WebP, 12 нейтральных PNG, 4 иконки и 189 MP3', async () => {
-    const paths = v2ResourcePaths(await readV2Content(root));
+    const paths = resourcePaths(await readV2Content(root));
     expect(paths.images.filter((x) => x.endsWith('.webp'))).toHaveLength(43);
     expect(paths.images.filter((x) => x.endsWith('.png'))).toHaveLength(12);
     expect(paths.icons).toHaveLength(4);

@@ -2,8 +2,7 @@ import { StrictMode } from 'react';
 import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
-import catalog from '../../src/content/catalog.json';
-import type { GameCategory } from '../../src/domain/game/models.ts';
+import { contentV2 } from '../../src/content/v2/catalog.ts';
 import { hasHint } from '../../src/domain/game/reducer.ts';
 import {
   browserAudio,
@@ -21,7 +20,7 @@ export function Harness({ options }: { options: GameSessionOptions }) {
   const game = useGameSession(options);
   return (
     <>
-      <button onClick={() => game.start(catalog.categories[1] as GameCategory)}>
+      <button onClick={() => game.start(contentV2.categories[1]!)}>
         Хайваннар
       </button>
       <button onClick={() => game.exit(true)}>Өйгә</button>
@@ -29,15 +28,17 @@ export function Harness({ options }: { options: GameSessionOptions }) {
       <button onClick={game.retry}>Яңадан</button>
       <button onClick={game.continueGame}>Дәвам ит</button>
       <button onClick={game.activity}>Кагылу</button>
-      <button onClick={() => game.answer(game.state?.round.targetId ?? '')}>
+      <button
+        onClick={() => game.answer(game.state?.round.correctOptionId ?? '')}
+      >
         Җавап
       </button>
       <button
         onClick={() =>
           game.answer(
-            game.state?.round.optionIds.find(
-              (id) => id !== game.state?.round.targetId,
-            ) ?? '',
+            game.state?.round.options
+              .map((x) => x.id)
+              .find((id) => id !== game.state?.round.correctOptionId) ?? '',
           )
         }
       >
@@ -46,12 +47,14 @@ export function Harness({ options }: { options: GameSessionOptions }) {
       <output data-testid="hint">
         {game.state && hasHint(game.state) ? 'hint' : 'none'}
       </output>
-      <output data-testid="target">{game.state?.round.targetId ?? ''}</output>
+      <output data-testid="target">
+        {game.state?.round.correctOptionId ?? ''}
+      </output>
       <output data-testid="options">
-        {game.state?.round.optionIds.join(',') ?? ''}
+        {game.state?.round.options.map((x) => x.id).join(',') ?? ''}
       </output>
       <output data-testid="state">{game.state?.status ?? 'home'}</output>
-      <output data-testid="round">{game.state?.round.roundId ?? 0}</output>
+      <output data-testid="round">{game.state?.round.id ?? 0}</output>
       <output data-testid="session">
         {game.state?.session.sessionId ?? ''}
       </output>

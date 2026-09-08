@@ -1,6 +1,7 @@
+import { audioClipIds } from './exercise.ts';
 import { gameTiming } from './timing.ts';
 import { initialAdaptation, recordRoundResult } from './adaptation.ts';
-import type { InteractionId } from '../../content/types.ts';
+import type { ContentV2, InteractionId } from '../../content/types.ts';
 import type {
   ActivePhase,
   GameCategory,
@@ -15,6 +16,7 @@ import {
   pendingWork,
   roundResources,
   sameResource,
+  isImageResource,
 } from './resources.ts';
 
 function context(state: RoundContext): RoundContext {
@@ -75,18 +77,117 @@ function startPrompt(
   );
 }
 
-function validRound(session: GameSession, round: Round) {
-  return (
-    round.categoryId === session.categoryId &&
-    round.optionIds.length === 2 &&
-    round.optionIds[0] !== round.optionIds[1] &&
-    round.optionIds.includes(round.targetId) &&
-    round.optionIds.every((id) => session.items.some((item) => item.id === id))
-  );
+function validRound(session: GameSession, round: Round, count: number) {
+  if (
+    round.categoryId !== session.categoryId ||
+    !Number.isSafeInteger(round.id) ||
+    round.id < 1 ||
+    round.difficulty !== 1 ||
+    round.options.length !== count ||
+    new Set(round.options.map((x) => x.id)).size !== count ||
+    !round.options.some((x) => x.id === round.correctOptionId) ||
+    !round.prompt.textTt.trim()
+  )
+    return false;
+  const { content } = session;
+  if (
+    ![
+      ...audioClipIds(round.prompt.audio),
+      ...audioClipIds(round.confirmation),
+    ].every((id) => content.audio.some((clip) => clip.id === id)) ||
+    !audioClipIds(round.prompt.audio).length ||
+    round.confirmation.type !== 'clip'
+  )
+    return false;
+  switch (round.kind) {
+    case 'C1':
+      return (
+        round.categoryId === 'colors' &&
+        round.options.every(
+          (option) =>
+            option.kind === 'color' &&
+            content.colors.some(
+              (color) =>
+                option.id === `color-${color.id}` &&
+                option.hex === color.hex &&
+                option.labelTt === color.labelTt,
+            ),
+        )
+      );
+    case 'A1':
+      return (
+        round.categoryId === 'animals' &&
+        round.options.every(
+          (option) =>
+            option.kind === 'animal' &&
+            content.animals.some(
+              (animal) =>
+                option.id === animal.id &&
+                option.image === animal.image &&
+                option.labelTt === animal.labelTt,
+            ),
+        )
+      );
+    case 'N1-A':
+      return (
+        round.categoryId === 'numbers' &&
+        round.options.every(
+          (option) =>
+            option.kind === 'number' &&
+            option.value <= 10 &&
+            content.numbers.some(
+              (number) =>
+                option.id === number.id &&
+                option.value === number.value &&
+                option.labelTt === number.labelTt,
+            ),
+        ) &&
+        content.countObjects.some(
+          (object) =>
+            object.id === round.countObject.id &&
+            object.kind === round.countObject.kind &&
+            object.image === round.countObject.image,
+        ) &&
+        (round.countObject.kind === 'raster' ||
+          content.colors.some(
+            (color) =>
+              color.hex ===
+              ('hex' in round.countObject ? round.countObject.hex : null),
+          ))
+      );
+  }
 }
 
 function copyRound(round: Round): Round {
-  return { ...round, optionIds: [...round.optionIds] };
+  const copyAudio = (audio: Round['confirmation']) =>
+    audio.type === 'clip'
+      ? { ...audio }
+      : { ...audio, clipIds: [...audio.clipIds] };
+  const base = {
+    prompt: { ...round.prompt, audio: copyAudio(round.prompt.audio) },
+    confirmation: copyAudio(round.confirmation),
+  };
+  switch (round.kind) {
+    case 'C1':
+      return {
+        ...round,
+        ...base,
+        options: round.options.map((option) => ({ ...option })),
+      };
+    case 'A1':
+      return {
+        ...round,
+        ...base,
+        options: round.options.map((option) => ({ ...option })),
+      };
+    case 'N1-A':
+      return {
+        ...round,
+        ...base,
+        countObject: { ...round.countObject },
+        options: round.options.map((option) => ({ ...option })),
+      };
+  }
 }
 
 export function createGame(
@@ -99,9 +200,10 @@ export function createGame(
   const session: GameSession = {
     sessionId,
     categoryId: category.id,
-    items: category.items.map((item) => ({ ...item })),
+    // Каталог — проверенные JSON-данные; снимок изолирует сессию от изменений владельца.
+    content: JSON.parse(JSON.stringify(category.content)) as ContentV2,
   };
-  if (round.roundId !== 1 || !validRound(session, round))
+  if (round.id !== 1 || !validRound(session, round, 2))
     throw new Error('Недопустимый первый раунд.');
   return prepareRound(
     {
@@ -133,7 +235,7 @@ export function gameReducer(state: GameState, event: GameEvent): GameState {
   if (
     state.status === 'ended' ||
     event.sessionId !== state.session.sessionId ||
-    event.roundId !== state.round.roundId ||
+    event.roundId !== state.round.id ||
     event.operationId !== state.operationId
   )
     return state;
@@ -193,9 +295,9 @@ export function gameReducer(state: GameState, event: GameEvent): GameState {
     case 'ROUND_GENERATED':
       if (
         state.status !== 'transitioning' ||
-        event.round.roundId !== state.round.roundId + 1 ||
-        event.round.targetId === state.round.targetId ||
-        !validRound(state.session, event.round)
+        event.round.id !== state.round.id + 1 ||
+        event.round.correctOptionId === state.round.correctOptionId ||
+        !validRound(state.session, event.round, state.adaptation.answerCount)
       )
         return state;
       return prepareRound(
@@ -206,11 +308,11 @@ export function gameReducer(state: GameState, event: GameEvent): GameState {
           reminderUsed: false,
         },
         event.at,
-        event.round.roundId % 5 === 0 ? 'next-one' : null,
+        event.round.id % 5 === 0 ? 'next-one' : null,
       );
     case 'IMAGE_FAILED': {
       const resource = roundResources(state.session, state.round).find(
-        (resource) => resource.kind === 'image' && resource.path === event.path,
+        (resource) => isImageResource(resource) && resource.path === event.path,
       );
       if (!resource) return state;
       if (state.status === 'paused') {
@@ -293,14 +395,13 @@ export function gameReducer(state: GameState, event: GameEvent): GameState {
           {
             status: 'correct',
             acceptedAt: state.failure.acceptedAt,
-            confirmation:
-              state.failure.resource.kind === 'image'
-                ? {
-                    status: 'repairing-image',
-                    resource: state.failure.resource,
-                    requestedAt: event.at,
-                  }
-                : { status: 'loading', requestedAt: event.at },
+            confirmation: isImageResource(state.failure.resource)
+              ? {
+                  status: 'repairing-image',
+                  resource: state.failure.resource,
+                  requestedAt: event.at,
+                }
+              : { status: 'loading', requestedAt: event.at },
           },
           null,
         );
@@ -397,10 +498,10 @@ export function gameReducer(state: GameState, event: GameEvent): GameState {
     case 'ANSWER':
       if (
         state.status !== 'awaiting' ||
-        !state.round.optionIds.includes(event.itemId)
+        !state.round.options.some((option) => option.id === event.itemId)
       )
         return state;
-      if (event.itemId === state.round.targetId) {
+      if (event.itemId === state.round.correctOptionId) {
         return changeOperation(
           {
             ...context(state),
@@ -411,9 +512,9 @@ export function gameReducer(state: GameState, event: GameEvent): GameState {
             acceptedAt: event.at,
             confirmation: { status: 'loading', requestedAt: event.at },
           },
-          state.round.roundId % 2 === 1
+          state.round.id % 2 === 1
             ? (['correct', 'well-done', 'very-good'] as const)[
-                ((state.round.roundId - 1) / 2) % 3
+                ((state.round.id - 1) / 2) % 3
               ]!
             : null,
         );

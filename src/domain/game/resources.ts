@@ -1,3 +1,4 @@
+import { audioClipIds } from './exercise.ts';
 import type {
   Failure,
   GameSession,
@@ -6,41 +7,63 @@ import type {
   Round,
 } from './models.ts';
 
+export function audioResources(
+  session: GameSession,
+  round: Round,
+  kind: 'prompt' | 'confirmation',
+): readonly Resource[] {
+  return audioClipIds(
+    kind === 'prompt' ? round.prompt.audio : round.confirmation,
+  ).map((id) => ({
+    kind,
+    path: session.content.audio.find((clip) => clip.id === id)!.path,
+  }));
+}
+
 export function audioResource(
   session: GameSession,
   round: Round,
   kind: 'prompt' | 'confirmation',
 ): Resource {
-  const target = session.items.find(({ id }) => id === round.targetId)!;
-  return {
-    kind,
-    path: kind === 'prompt' ? target.promptAudio : target.labelAudio,
-  };
+  return audioResources(session, round, kind)[0]!;
 }
 
 export function roundResources(
   session: GameSession,
   round: Round,
 ): readonly Resource[] {
-  const paths = round.optionIds.flatMap((id) => {
-    const item = session.items.find((item) => item.id === id)!;
-    switch (item.kind) {
-      case 'color':
-        return [];
-      case 'animal':
-        return [item.image];
-      case 'number':
-        return [item.countImage];
-    }
-  });
+  const images: Resource[] =
+    round.kind === 'A1'
+      ? round.options.map((option) => ({ kind: 'image', path: option.image }))
+      : round.kind === 'N1-A'
+        ? [
+            round.countObject.kind === 'raster'
+              ? { kind: 'image', path: round.countObject.image }
+              : {
+                  kind: 'tinted-image',
+                  path: round.countObject.image,
+                  hex: round.countObject.hex,
+                },
+          ]
+        : [];
   return [
-    ...[...new Set(paths)].map((path): Resource => ({ kind: 'image', path })),
-    audioResource(session, round, 'prompt'),
+    ...images,
+    ...audioResources(session, round, 'prompt'),
+    ...audioResources(session, round, 'confirmation'),
   ];
 }
 
+export function isImageResource(resource: Resource) {
+  return resource.kind === 'image' || resource.kind === 'tinted-image';
+}
+
 export function sameResource(left: Resource, right: Resource) {
-  return left.kind === right.kind && left.path === right.path;
+  return (
+    left.kind === right.kind &&
+    left.path === right.path &&
+    (left.kind !== 'tinted-image' ||
+      (right.kind === 'tinted-image' && left.hex === right.hex))
+  );
 }
 
 export function pendingWork(state: GameState): {
@@ -54,14 +77,14 @@ export function pendingWork(state: GameState): {
       resources:
         state.stage === 'resources'
           ? state.pending
-          : [audioResource(state.session, state.round, 'prompt')],
+          : audioResources(state.session, state.round, 'prompt'),
       requestedAt: state.requestedAt,
     };
   }
   if (state.status === 'awaiting' && state.prompt.status === 'playing') {
     return {
       phase: 'prompt',
-      resources: [audioResource(state.session, state.round, 'prompt')],
+      resources: audioResources(state.session, state.round, 'prompt'),
       requestedAt: null,
     };
   }

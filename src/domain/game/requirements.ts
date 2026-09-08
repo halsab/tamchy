@@ -1,7 +1,7 @@
 import { gameTiming } from './timing.ts';
 import type { InteractionId } from '../../content/types.ts';
 import type { GameState, OperationScope, Resource } from './models.ts';
-import { audioResource } from './resources.ts';
+import { audioResource, audioResources } from './resources.ts';
 import type { AnswerCount } from './exercise.ts';
 
 export type GameRequirements = Readonly<{
@@ -15,6 +15,7 @@ export type GameRequirements = Readonly<{
     | Readonly<{
         kind: 'play';
         resource: Resource;
+        sequence: readonly string[];
         started: boolean;
         introduction: InteractionId | null;
         timeoutAt: number | null;
@@ -37,7 +38,7 @@ export type GameRequirements = Readonly<{
 export function getGameRequirements(state: GameState): GameRequirements {
   const scope: OperationScope = {
     sessionId: state.session.sessionId,
-    roundId: state.round.roundId,
+    roundId: state.round.id,
     operationId: state.operationId,
   };
   switch (state.status) {
@@ -54,6 +55,11 @@ export function getGameRequirements(state: GameState): GameRequirements {
             : {
                 kind: 'play',
                 resource: audioResource(state.session, state.round, 'prompt'),
+                sequence: audioResources(
+                  state.session,
+                  state.round,
+                  'prompt',
+                ).map((resource) => resource.path),
                 started: false,
                 introduction: state.introduction,
                 timeoutAt: state.requestedAt + gameTiming.resourceTimeout,
@@ -67,6 +73,11 @@ export function getGameRequirements(state: GameState): GameRequirements {
             ? {
                 kind: 'play',
                 resource: audioResource(state.session, state.round, 'prompt'),
+                sequence: audioResources(
+                  state.session,
+                  state.round,
+                  'prompt',
+                ).map((resource) => resource.path),
                 started: true,
                 introduction: state.introduction,
                 timeoutAt: null,
@@ -123,6 +134,11 @@ export function getGameRequirements(state: GameState): GameRequirements {
         work: {
           kind: 'play',
           resource,
+          sequence: audioResources(
+            state.session,
+            state.round,
+            'confirmation',
+          ).map((resource) => resource.path),
           started: confirmation.status === 'playing',
           introduction: state.introduction,
           timeoutAt:
@@ -142,7 +158,7 @@ export function getGameRequirements(state: GameState): GameRequirements {
         scope,
         work: {
           kind: 'next-round',
-          roundId: state.round.roundId + 1,
+          roundId: state.round.id + 1,
           optionCount: state.adaptation.answerCount,
         },
       };

@@ -1,6 +1,6 @@
 {
   "name": "tamchy",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "engines": {
@@ -11,10 +11,10 @@
   "scripts": {
     "dev": "npm run assets:prepare && vite --host 127.0.0.1",
     "assets:prepare": "node scripts/prepare-assets.ts",
-    "assets:prepare:v2": "node scripts/prepare-assets.ts --v2",
+    "assets:prepare:v2": "npm run assets:prepare",
     "validate:catalog": "npm run assets:prepare && node scripts/validate-content.ts catalog",
     "validate:content": "npm run assets:prepare && node scripts/validate-content.ts content",
-    "validate:content:v2": "npm run assets:prepare:v2 && node scripts/validate-content.ts v2",
+    "validate:content:v2": "npm run validate:content",
     "build": "npm run typecheck && npm run validate:content && vite build",
     "build:check": "npm run typecheck && npm run validate:catalog && vite build --mode check",
     "preview": "vite preview --host 127.0.0.1",

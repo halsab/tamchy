@@ -9,7 +9,7 @@ import {
 import { createTintWorker, type TintProcessor } from './tint-worker.ts';
 import type { TintedPixels } from './tint.ts';
 
-type TintBoundary = {
+export type TintBoundary = {
   fetch: typeof fetch;
   resolveUrl: (path: string) => string;
   processor: TintProcessor;
@@ -77,6 +77,12 @@ export function createTintedImageService(boundary: Partial<TintBoundary> = {}) {
     }
   });
   return {
+    get(path: string, hex: string) {
+      return cache.get(`${path}|${hex.toUpperCase()}`);
+    },
+    invalidate(path: string, hex: string) {
+      cache.remove(`${path}|${hex.toUpperCase()}`);
+    },
     prepare(path: string, hex: string, signal: AbortSignal) {
       if (
         !/^assets\/images\/(?:shapes\/shape-|color-objects\/color-object-)[a-z-]+\.png$/.test(
@@ -96,6 +102,8 @@ export function createTintedImageService(boundary: Partial<TintBoundary> = {}) {
     },
   };
 }
+
+export type TintedImageService = ReturnType<typeof createTintedImageService>;
 
 // Пиксели в кэше доступны только для чтения; каждый экран рисует в собственный canvas.
 export function drawTintedImage(

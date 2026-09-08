@@ -11,12 +11,14 @@ it('итоговый PWA /tamchy/: один перечень и отклонен
     const artifact = await inspectArtifact(root, base);
     expect(
       artifact.metadata.entries.filter((entry) => entry.url.endsWith('.mp3')),
-    ).toHaveLength(42);
+    ).toHaveLength(189);
     expect(
       artifact.metadata.entries.filter((entry) => entry.url.endsWith('.webp')),
-    ).toHaveLength(10);
-    const illustrations = artifact.files.filter((file) =>
-      /\.(webp|png|svg)$/.test(file),
+    ).toHaveLength(43);
+    const illustrations = artifact.files.filter(
+      (file) =>
+        /\.(webp|png|svg)$/.test(file) &&
+        !/^assets\/images\/(shapes|color-objects)\//.test(file),
     );
     const imageSizes = await Promise.all(
       illustrations.map(
@@ -29,6 +31,24 @@ it('итоговый PWA /tamchy/: один перечень и отклонен
     await expect(measureBudgets(artifact)).resolves.toMatchObject({
       illustration: largestImage,
     });
+    const neutral = artifact.files.filter((file) =>
+      /^assets\/images\/(?:shapes|color-objects)\/.+\.png$/.test(file),
+    );
+    expect(neutral).toHaveLength(12);
+    const neutralPath = join(artifact.dist, neutral[0]!);
+    const neutralBytes = await readFile(neutralPath);
+    try {
+      await writeFile(neutralPath, Buffer.alloc(300 * 1024));
+      await expect(measureBudgets(artifact)).resolves.toMatchObject({
+        neutralIllustration: 300 * 1024,
+      });
+      await writeFile(neutralPath, Buffer.alloc(300 * 1024 + 1));
+      await expect(measureBudgets(artifact)).rejects.toThrow(
+        'neutralIllustration',
+      );
+    } finally {
+      await writeFile(neutralPath, neutralBytes);
+    }
     const imagePath = join(artifact.dist, illustrations[0]!);
     const image = await readFile(imagePath);
     try {

@@ -32,7 +32,7 @@ export async function createUpdateFixture(base: string) {
     const audio = join(
       root,
       'public',
-      catalog.categories[0]!.items[0]!.labelAudio,
+      catalog.audio.find((clip) => clip.id === 'color.red')!.path,
     );
     // В изолированной B добавляем пустой ID3v2-тег: голос не меняется, байты и ревизия меняются.
     await writeFile(

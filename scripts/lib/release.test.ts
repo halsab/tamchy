@@ -30,7 +30,14 @@ async function fixture(base: '/' | '/tamchy/' = '/tamchy/') {
     dirty: false,
     e2e: 'full',
     files: await snapshotFiles(dist),
-    budgets: { js: 0, css: 0, firstScreen: 0, complete: 0, illustration: 0 },
+    budgets: {
+      js: 0,
+      css: 0,
+      firstScreen: 0,
+      complete: 0,
+      illustration: 0,
+      neutralIllustration: 0,
+    },
   };
   return { root, dist, report };
 }

@@ -6,12 +6,18 @@ import {
   useState,
 } from 'react';
 import type {
-  GameCategory,
   GameEvent,
   GameEventData,
   GameState,
 } from '../../domain/game/models.ts';
 import { createGame, gameReducer } from '../../domain/game/reducer.ts';
+import { contentV2 } from '../../content/v2/catalog.ts';
+import type { CategoryDefinition, ContentV2 } from '../../content/v2/types.ts';
+import {
+  createTintedImageService,
+  type TintBoundary,
+  type TintedImageService,
+} from '../../services/assets/tinted-images.ts';
 import { assetUrl } from '../../services/assets/asset-url.ts';
 import { audioResource } from '../../domain/game/resources.ts';
 import { getGameRequirements } from '../../domain/game/requirements.ts';
@@ -37,6 +43,8 @@ import { interactionPath } from '../../content/interactions.ts';
 export type GameSessionOptions = {
   audio?: Partial<AudioBoundary>;
   images?: Partial<ImageBoundary>;
+  tintedImages?: Partial<TintBoundary>;
+  content?: ContentV2;
   clock?: GameClock;
   random?: () => number;
   createSessionId?: () => string;
@@ -79,6 +87,7 @@ function sessionReducer(
 type Owner = {
   audio: AudioService;
   images: ImageService;
+  tintedImages: TintedImageService;
   executor: GameExecutor | null;
   restoring: boolean;
   farewell: AbortController | null;
@@ -107,6 +116,7 @@ export function useGameSession(
     const owner: Owner = {
       audio: createAudioService(options.audio),
       images: createImageService(options.images),
+      tintedImages: createTintedImageService(options.tintedImages),
       executor: null,
       restoring: roundsRef.current !== null,
       farewell: null,
@@ -137,6 +147,7 @@ export function useGameSession(
       stopFarewell(owner, clock);
       owner.audio.dispose();
       owner.images.dispose();
+      owner.tintedImages.dispose();
       ownerRef.current = null;
     };
   }, [options, clock]);
@@ -157,13 +168,17 @@ export function useGameSession(
         send: dispatch,
       });
     const phase = state.status === 'paused' ? state.resume : state;
-    if (phase.status === 'error' && phase.failure.resource.kind === 'image')
-      owner.images.invalidate(phase.failure.resource.path);
+    if (phase.status === 'error') {
+      const resource = phase.failure.resource;
+      if (resource.kind === 'image') owner.images.invalidate(resource.path);
+      if (resource.kind === 'tinted-image')
+        owner.tintedImages.invalidate(resource.path, resource.hex);
+    }
     owner.executor.reconcile(getGameRequirements(state));
   }, [state, clock, options]);
 
   const start = useCallback(
-    (category: GameCategory, activateAudio = true) => {
+    (category: CategoryDefinition, activateAudio = true) => {
       const owner = ownerRef.current;
       if (!owner) return;
       stopFarewell(owner, clock);
@@ -172,15 +187,19 @@ export function useGameSession(
       owner.restoring = false;
       if (activateAudio) void owner.audio.activate();
       const sessionId = options.createSessionId?.() ?? crypto.randomUUID();
+      const definition = {
+        id: category.id,
+        content: options.content ?? contentV2,
+      };
       const rounds = createSessionRounds(
         sessionId,
-        category,
+        definition,
         options.random ?? Math.random,
       );
       roundsRef.current = rounds;
       const initial = createGame(
         sessionId,
-        category,
+        definition,
         rounds.get(1),
         clock.now(),
         greetedRef.current ? 'game-start' : 'hello',
@@ -263,6 +282,8 @@ export function useGameSession(
         path,
       });
     },
+    tintedPixels: (path: string, hex: string) =>
+      ownerRef.current?.tintedImages.get(path, hex),
     imageUrl: (path: string) =>
       ownerRef.current?.images.get(path)?.src ?? assetUrl(path),
   };

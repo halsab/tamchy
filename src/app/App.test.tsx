@@ -10,11 +10,9 @@ import {
 import '@testing-library/jest-dom/vitest';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import strings from '../content/tt.json';
-import data from '../content/catalog.json';
-import type { Catalog } from '../content/types.ts';
-const catalog = data as Catalog;
+import { contentV2 as catalog } from '../content/v2/catalog.ts';
 import { setupApp } from '../../tests/helpers/app-ui.tsx';
-import { deferred } from '../../tests/helpers/browser.ts';
+import { deferred, failNextConfirmation } from '../../tests/helpers/browser.ts';
 
 beforeEach(() => {
   localStorage.clear();
@@ -51,7 +49,7 @@ it('главное меню: название, порядок трёх разд�
   expect(
     screen.getByRole('heading', { name: strings.nav.parents }),
   ).toBeVisible();
-  expect(screen.getByRole('main')).toHaveTextContent('0.1.0');
+  expect(screen.getByRole('main')).toHaveTextContent('0.2.0');
   expect(
     screen.queryByText(strings.status.offlineReady),
   ).not.toBeInTheDocument();
@@ -61,7 +59,7 @@ it('главное меню: название, порядок трёх разд�
   expect(location.hash).toBe('#/');
 });
 
-it('режим сохраняется, но не меняет текущий набор и два ответа MVP', async () => {
+it('оба положения режима используют младший v2 и сохраняют выбор взрослого', async () => {
   const s = setupApp();
   await s.click(strings.nav.parents);
   await s.user.click(screen.getByRole('radio', { name: '5–7 яшь' }));
@@ -69,7 +67,9 @@ it('режим сохраняется, но не меняет текущий н�
   await s.click(strings.nav.home);
   await s.click('Саннар');
   expect(answers()).toHaveLength(2);
-  expect(catalog.categories[2]!.items).toHaveLength(5);
+  expect(catalog.numbers.filter((number) => number.value <= 10)).toHaveLength(
+    10,
+  );
   await s.click(strings.nav.home);
   await s.click(strings.nav.parents);
   expect(screen.getByRole('radio', { name: '5–7 яшь' })).toBeChecked();
@@ -195,10 +195,61 @@ function answers() {
   ).getAllByRole('button');
 }
 function target() {
-  return catalog.categories
-    .flatMap((category) => category.items)
-    .find((item) => screen.queryByText(item.promptTt))!;
+  const pool =
+    location.hash === '#/colors'
+      ? catalog.colors
+      : location.hash === '#/animals'
+        ? catalog.animals
+        : catalog.numbers.filter((x) => x.value <= 10);
+  const group = screen.getByRole('group', { name: strings.game.answers });
+  const phrase = ` ${group.previousElementSibling!.textContent!.toLowerCase().replace(/[.?]$/u, '')} `;
+  return [...pool]
+    .sort((a, b) => b.labelTt.length - a.labelTt.length)
+    .find((item) => {
+      const forms = [
+        item.labelTt,
+        'targetClipId' in item
+          ? catalog.audio.find((clip) => clip.id === item.targetClipId)!.textTt
+          : item.labelTt,
+      ];
+      return forms.some((word) => phrase.includes(` ${word.toLowerCase()} `));
+    })!;
 }
+
+it.each(['junior', 'senior'] as const)(
+  '%s: адаптация проходит 2→3→4→3→2; новая сессия начинается с двух',
+  async (mode) => {
+    localStorage.setItem('tamchy.age-mode', mode);
+    const s = setupApp();
+    await s.click('Төсләр');
+    const sizes: number[] = [];
+    for (let index = 0; index < 14; index++) {
+      const options = answers();
+      sizes.push(options.length);
+      const item = target();
+      if (index >= 10) {
+        await s.user.click(
+          options.find(
+            (button) => button.getAttribute('aria-label') !== item.labelTt,
+          )!,
+        );
+        await act(() => vi.advanceTimersByTimeAsync(250));
+        await s.settle();
+        expect(answers()).toEqual(options);
+      }
+      await s.click(item.labelTt);
+      act(() => s.learningSources.at(-1)!.onended!());
+      await act(() => vi.advanceTimersByTimeAsync(1200));
+      await s.settle();
+    }
+    expect(sizes).toEqual([2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 3, 3]);
+    expect(answers()).toHaveLength(2);
+    await s.click(strings.nav.home);
+    await s.click('Хайваннар');
+    expect(answers()).toHaveLength(2);
+    expect(Object.keys(localStorage)).toEqual(['tamchy.age-mode']);
+  },
+);
 
 it('ошибки и повтор сохраняют карточки; две ошибки показывают подсказку, верный ответ — знак', async () => {
   const s = setupApp();
@@ -240,40 +291,46 @@ it('ошибки и повтор сохраняют карточки; две о�
   expect(s.createSessionId).toHaveBeenCalledTimes(1);
 });
 
-it('все числа 1–5 содержат точное количество яблок и цифру текстом', async () => {
+it('все числа 1–10 содержат точное количество предметов и цифру текстом', async () => {
   const s = setupApp();
   await s.click('Саннар');
   const seen = new Set<string>();
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 10; i++) {
     const item = target();
     seen.add(item.id);
     for (const button of answers()) {
-      const number = catalog.categories[2]!.items.find(
+      const number = catalog.numbers.find(
         (item) => item.labelTt === button.getAttribute('aria-label'),
       )!;
       if (!('value' in number)) throw new Error('Ожидается число');
       expect(button).toHaveTextContent(String(number.value));
-      expect(button.querySelectorAll('img')).toHaveLength(number.value!);
-      for (const image of button.querySelectorAll('img'))
-        expect(image).toHaveAttribute('width', '768');
+      const canvas = button.querySelector('canvas');
+      if (canvas)
+        expect(s.canvases.get(canvas)!.drawImage).toHaveBeenCalledTimes(
+          number.value,
+        );
+      else {
+        expect(button.querySelectorAll('img')).toHaveLength(number.value);
+        for (const image of button.querySelectorAll('img'))
+          expect(image).toHaveAttribute('width', '768');
+      }
     }
     await s.click(item.labelTt);
     act(() => s.learningSources.at(-1)!.onended!());
     await act(() => vi.advanceTimersByTimeAsync(1200));
     await s.settle();
   }
-  expect(seen.size).toBe(5);
+  expect(seen.size).toBe(10);
 });
 
 it('цвета имеют одинаковую форму с точными учебными значениями', async () => {
   const s = setupApp();
   await s.click('Төсләр');
   for (const button of answers()) {
-    const item = catalog.categories[0]!.items.find(
+    const item = catalog.colors.find(
       (item) => item.labelTt === button.getAttribute('aria-label'),
     )!;
     expect(button.querySelector('img')).toBeNull();
-    if (item.kind !== 'color') throw new Error('Ожидается цвет');
     expect(button.firstElementChild).toHaveStyle({ backgroundColor: item.hex });
   }
 });
@@ -299,7 +356,7 @@ it('ошибка подтверждения не отменяет ответ; я
   const s = setupApp();
   await s.click('Төсләр');
   const item = target();
-  s.fetch.mockResolvedValueOnce(new Response(null, { status: 404 }));
+  failNextConfirmation(s.context);
   await s.click(item.labelTt);
   expect(screen.getByRole('alert')).toHaveTextContent(strings.error.audio);
   expect(screen.getByRole('img', { name: strings.game.correct })).toBeVisible();
@@ -324,10 +381,12 @@ it('активность за пределами игровых кнопок с�
   await s.click('Төсләр');
   act(() => s.learningSources.at(-1)!.onended!());
   await s.settle();
+  act(() => s.learningSources.at(-1)!.onended!());
+  await s.settle();
   fireEvent.pointerDown(screen.getByRole('main'));
   await act(() => vi.advanceTimersByTimeAsync(10000));
   await s.settle();
-  expect(s.learningSources).toHaveLength(1);
+  expect(s.learningSources).toHaveLength(2);
 });
 
 it('Tab, Enter и Space управляют настоящими кнопками', async () => {
@@ -345,9 +404,9 @@ it('Tab, Enter и Space управляют настоящими кнопками
   expect(location.hash).toBe('#/');
 });
 
-it('сбой яблока после правильного ответа восстанавливает картинку и подтверждение без второго зачёта', async () => {
+it('сбой животного после правильного ответа восстанавливает картинку и подтверждение без второго зачёта', async () => {
   const s = setupApp();
-  await s.click('Саннар');
+  await s.click('Хайваннар');
   const item = target();
   await s.click(item.labelTt);
   fireEvent.error(

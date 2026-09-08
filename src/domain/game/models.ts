@@ -1,24 +1,20 @@
-import type { CategoryId, LearningItem } from '../../content/types.ts';
+import type { CategoryId, ContentV2 } from '../../content/types.ts';
 import type { InteractionId } from '../../content/types.ts';
+import type { Exercise } from './exercise.ts';
 import type { JuniorAdaptation } from './adaptation.ts';
 
 export type GameCategory = Readonly<{
   id: CategoryId;
-  items: readonly Readonly<LearningItem>[];
+  content: ContentV2;
 }>;
 
 export type GameSession = Readonly<{
   sessionId: string;
   categoryId: CategoryId;
-  items: readonly Readonly<LearningItem>[];
+  content: ContentV2;
 }>;
 
-export type Round = Readonly<{
-  roundId: number;
-  categoryId: CategoryId;
-  targetId: string;
-  optionIds: readonly [string, string];
-}>;
+export type Round = Exercise;
 
 export type OperationScope = Readonly<{
   sessionId: string;
@@ -26,10 +22,9 @@ export type OperationScope = Readonly<{
   operationId: number;
 }>;
 
-export type Resource = Readonly<{
-  kind: 'image' | 'prompt' | 'confirmation';
-  path: string;
-}>;
+export type Resource =
+  | Readonly<{ kind: 'image' | 'prompt' | 'confirmation'; path: string }>
+  | Readonly<{ kind: 'tinted-image'; path: string; hex: string }>;
 
 export type Failure = Readonly<{
   resource: Resource;

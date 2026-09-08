@@ -1,20 +1,66 @@
-import type { LearningItem } from '../../content/types.ts';
+import { useEffectEvent, useLayoutEffect, useRef } from 'react';
+import type {
+  CountIllustration,
+  Exercise,
+} from '../../domain/game/exercise.ts';
+import { drawTintedImage } from '../../services/assets/tinted-images.ts';
+import type { TintedPixels } from '../../services/assets/tint.ts';
 import styles from './GameScreen.module.css';
 
-// Позиции в общей сетке 3×3; масштаб яблок не зависит от количества.
-const positions: Record<number, readonly number[]> = {
-  1: [5],
-  2: [4, 6],
-  3: [2, 7, 9],
-  4: [1, 3, 7, 9],
-  5: [1, 3, 5, 7, 9],
-};
+function TintedCountGroup({
+  count,
+  pixels,
+  onError,
+}: {
+  count: number;
+  pixels?: TintedPixels | undefined;
+  onError: () => void;
+}) {
+  const canvas = useRef<HTMLCanvasElement>(null);
+  const reportError = useEffectEvent(onError);
+  useLayoutEffect(() => {
+    const target = canvas.current;
+    if (!target || !pixels) return;
+    try {
+      const source = document.createElement('canvas');
+      drawTintedImage(source, pixels);
+      const context = target.getContext('2d', { colorSpace: 'srgb' });
+      if (!context) throw new Error('Нет canvas');
+      context.clearRect(0, 0, target.width, target.height);
+      // Один небольшой canvas на группу, без отдельного RGBA-буфера 1024×1024 для каждого предмета.
+      for (let index = 0; index < count; index++)
+        context.drawImage(
+          source,
+          (index % 4) * 112,
+          Math.floor(index / 4) * 112,
+          112,
+          112,
+        );
+      source.width = source.height = 0;
+    } catch {
+      reportError();
+    }
+  }, [count, pixels]);
+  return (
+    <canvas
+      ref={canvas}
+      className={styles.tintedCount}
+      width="448"
+      height="336"
+    />
+  );
+}
+
 export function AnswerContent({
   item,
+  countObject,
+  pixels,
   imageUrl,
   onImageError,
 }: {
-  item: LearningItem;
+  item: Exercise['options'][number];
+  countObject?: CountIllustration | undefined;
+  pixels?: TintedPixels | undefined;
   imageUrl: (path: string) => string;
   onImageError: (path: string) => void;
 }) {
@@ -38,25 +84,31 @@ export function AnswerContent({
         onError={() => onImageError(item.image)}
       />
     );
+  if (!countObject)
+    throw new Error('Числовому упражнению нужен счётный объект.');
   return (
     <span className={styles.number} aria-hidden="true">
       <span className={styles.digit}>{item.value}</span>
-      <span className={styles.apples}>
-        {positions[item.value]!.map((position) => (
-          <img
-            key={position}
-            src={imageUrl(item.countImage)}
-            width="768"
-            height="768"
-            alt=""
-            draggable="false"
-            style={{
-              gridRow: Math.ceil(position / 3),
-              gridColumn: ((position - 1) % 3) + 1,
-            }}
-            onError={() => onImageError(item.countImage)}
+      <span className={styles.counts}>
+        {countObject.kind === 'tinted' ? (
+          <TintedCountGroup
+            count={item.value}
+            pixels={pixels}
+            onError={() => onImageError(countObject.image)}
           />
-        ))}
+        ) : (
+          Array.from({ length: item.value }, (_, index) => (
+            <img
+              key={index}
+              src={imageUrl(countObject.image)}
+              width="768"
+              height="768"
+              alt=""
+              draggable="false"
+              onError={() => onImageError(countObject.image)}
+            />
+          ))
+        )}
       </span>
     </span>
   );

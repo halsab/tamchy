@@ -1,4 +1,4 @@
-import type { Category } from '../../content/types.ts';
+import type { CategoryDefinition } from '../../content/v2/types.ts';
 import strings from '../../content/tt.json';
 import { assetUrl } from '../../services/assets/asset-url.ts';
 import { Icon } from '../../shared/ui/Icon.tsx';
@@ -11,8 +11,8 @@ export function HomeScreen({
   onParents,
   parentsButton,
 }: {
-  categories: Category[];
-  onStart: (category: Category) => void;
+  categories: readonly CategoryDefinition[];
+  onStart: (category: CategoryDefinition) => void;
   onParents: () => void;
   parentsButton?: Ref<HTMLButtonElement>;
 }) {

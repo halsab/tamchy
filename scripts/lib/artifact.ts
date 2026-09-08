@@ -201,6 +201,7 @@ const budgets = {
   firstScreen: 750 * 1024,
   complete: 8 * 1024 * 1024,
   illustration: 150 * 1024,
+  neutralIllustration: 300 * 1024,
 };
 export function assertBudgets(sizes: Record<keyof typeof budgets, number>) {
   for (const key of Object.keys(budgets) as (keyof typeof budgets)[])
@@ -213,7 +214,14 @@ export async function measureBudgets(
   artifact: Awaited<ReturnType<typeof inspectArtifact>>,
 ) {
   const { dist, files, catalog } = artifact;
-  const sizes = { js: 0, css: 0, firstScreen: 0, complete: 0, illustration: 0 };
+  const sizes = {
+    js: 0,
+    css: 0,
+    firstScreen: 0,
+    complete: 0,
+    illustration: 0,
+    neutralIllustration: 0,
+  };
   const firstImages = new Set(
     catalog.categories.map((category) => category.image),
   );
@@ -224,8 +232,14 @@ export async function measureBudgets(
     const css = file.endsWith('.css');
     if (js) sizes.js += gzipSync(bytes).length;
     if (css) sizes.css += gzipSync(bytes).length;
-    if (/\.(webp|png|svg)$/.test(file))
-      sizes.illustration = Math.max(sizes.illustration, bytes.length);
+    if (/\.(webp|png|svg)$/.test(file)) {
+      const key = /^assets\/images\/(?:shapes|color-objects)\/.+\.png$/.test(
+        file,
+      )
+        ? 'neutralIllustration'
+        : 'illustration';
+      sizes[key] = Math.max(sizes[key], bytes.length);
+    }
     if (js || css || file === 'index.html' || file === 'manifest.webmanifest')
       sizes.firstScreen += gzipSync(bytes).length;
     if (firstImages.has(file) || file.startsWith('icons/'))

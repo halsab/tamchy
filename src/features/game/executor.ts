@@ -6,6 +6,7 @@ import type {
 } from '../../domain/game/models.ts';
 import type { GameRequirements } from '../../domain/game/requirements.ts';
 import type { AudioService } from '../../services/audio/audio.ts';
+import type { TintedImageService } from '../../services/assets/tinted-images.ts';
 import type { ImageService } from '../../services/assets/images.ts';
 import { ResourceError } from '../../services/assets/resource-loading.ts';
 import type { SessionRounds } from './session-rounds.ts';
@@ -28,11 +29,13 @@ export const browserClock: GameClock = {
 type Dependencies = {
   audio: AudioService;
   images: ImageService;
+  tintedImages: TintedImageService;
   clock: GameClock;
   rounds: SessionRounds;
   send: (event: GameEvent) => void;
 };
-const resourceKey = (resource: Resource) => `${resource.kind}:${resource.path}`;
+const resourceKey = (resource: Resource) =>
+  `${resource.kind === 'prompt' || resource.kind === 'confirmation' ? 'audio' : resource.kind}:${resource.path}${resource.kind === 'tinted-image' ? `:${resource.hex}` : ''}`;
 const sameScope = (left: OperationScope | null, right: OperationScope) =>
   left?.sessionId === right.sessionId &&
   left.roundId === right.roundId &&
@@ -41,6 +44,7 @@ const sameScope = (left: OperationScope | null, right: OperationScope) =>
 export function createGameExecutor({
   audio,
   images,
+  tintedImages,
   clock,
   rounds,
   send,
@@ -152,13 +156,31 @@ export function createGameExecutor({
           if (loads.has(key)) continue;
           const controller = new AbortController();
           loads.set(key, controller);
-          const prepare =
-            resource.kind === 'image' ? images.prepare : audio.prepare;
-          void prepare(resource.path, controller.signal).then(
+          const pending =
+            resource.kind === 'tinted-image'
+              ? tintedImages.prepare(
+                  resource.path,
+                  resource.hex,
+                  controller.signal,
+                )
+              : resource.kind === 'image'
+                ? images.prepare(resource.path, controller.signal)
+                : audio.prepare(resource.path, controller.signal);
+          void pending.then(
             () => {
               if (!live() || controller.signal.aborted) return;
               if (clock.now() >= work.timeoutAt) expire(resource);
-              else emit({ type: 'RESOURCE_READY', resource, at: clock.now() });
+              else {
+                // Название цвета одновременно входит в задание и подтверждение: загрузка у него одна.
+                for (const ready of work.resources.filter(
+                  (candidate) => resourceKey(candidate) === key,
+                ))
+                  emit({
+                    type: 'RESOURCE_READY',
+                    resource: ready,
+                    at: clock.now(),
+                  });
+              }
             },
             (error: unknown) => {
               if (!live() || controller.signal.aborted) return;
@@ -188,7 +210,7 @@ export function createGameExecutor({
           const controller = new AbortController();
           playing = controller;
           audio.play(
-            work.resource.path,
+            work.sequence,
             controller.signal,
             {
               started: () => {
@@ -197,10 +219,13 @@ export function createGameExecutor({
                 else emit({ type: 'AUDIO_STARTED', at: clock.now() });
               },
               ended: () => emit({ type: 'AUDIO_ENDED', at: clock.now() }),
-              failed: (reason) =>
+              failed: (reason, path) =>
                 emit({
                   type: 'RESOURCE_FAILED',
-                  resource: work.resource,
+                  resource:
+                    path && work.sequence.includes(path)
+                      ? { ...work.resource, path }
+                      : work.resource,
                   reason,
                 }),
             },

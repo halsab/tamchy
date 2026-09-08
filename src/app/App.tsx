@@ -1,7 +1,7 @@
 import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { usePwa } from '../services/pwa/use-pwa.ts';
-import data from '../content/catalog.json';
-import type { Catalog, Category } from '../content/types.ts';
+import { contentV2 } from '../content/v2/catalog.ts';
+import type { CategoryDefinition } from '../content/v2/types.ts';
 import {
   useGameSession,
   type GameSessionOptions,
@@ -17,7 +17,7 @@ import {
   type AgeMode,
 } from '../services/preferences/age-mode.ts';
 
-const { categories } = data as Catalog;
+const { categories } = contentV2;
 export function App({ options }: { options?: GameSessionOptions }) {
   const game = useGameSession(options);
   const { start, exit } = game;
@@ -77,7 +77,7 @@ export function App({ options }: { options?: GameSessionOptions }) {
     writeRoute(next);
     synchronize(next, sayGoodbye);
   }
-  function enter(category: Category) {
+  function enter(category: CategoryDefinition) {
     start(category);
     activeRoute.current = category.id;
     navigate(category.id);

@@ -1,10 +1,6 @@
 import { lstat, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
-import type { Catalog } from '../../src/content/types.ts';
-import {
-  interactionIds,
-  interactionPath,
-} from '../../src/content/interactions.ts';
+import type { ContentV2 } from '../../src/content/types.ts';
 
 export const icons = [
   { path: 'icons/pwa-192x192.png', size: 192 },
@@ -13,19 +9,18 @@ export const icons = [
   { path: 'icons/apple-touch-icon.png', size: 180 },
 ] as const;
 
-export function resourcePaths(catalog: Catalog) {
-  const images = new Set<string>();
-  const audio: string[] = [];
-  for (const category of catalog.categories) {
-    images.add(category.image);
-    for (const item of category.items) {
-      audio.push(item.labelAudio, item.promptAudio);
-      if (item.kind === 'animal') images.add(item.image);
-      if (item.kind === 'number') images.add(item.countImage);
-    }
-  }
-  audio.push(...interactionIds.map(interactionPath));
-  return { images: [...images], audio, icons: icons.map(({ path }) => path) };
+export function resourcePaths(content: ContentV2) {
+  return {
+    images: [
+      ...new Set([
+        ...content.categories.map((x) => x.image),
+        ...content.animals.map((x) => x.image),
+        ...content.countObjects.map((x) => x.image),
+      ]),
+    ],
+    audio: content.audio.map((x) => x.path),
+    icons: icons.map((x) => x.path),
+  };
 }
 
 export type ResourceReport = {
@@ -69,7 +64,7 @@ async function fileStatus(
 
 export async function inspectResources(
   root: string,
-  catalog: Catalog,
+  catalog: ContentV2,
 ): Promise<ResourceReport> {
   return inspectResourcePaths(root, resourcePaths(catalog));
 }
@@ -123,7 +118,7 @@ export function formatResourceReport(report: ResourceReport): string {
       : []),
     ...(report.resourcesComplete
       ? [
-          'Все обязательные ресурсы присутствуют; это не подтверждает языковую вычитку, декодирование аудио или приёмку MVP.',
+          'Все обязательные ресурсы присутствуют; это не подтверждает языковую вычитку, декодирование аудио или приёмку на устройствах.',
         ]
       : []),
   ].join('\n');

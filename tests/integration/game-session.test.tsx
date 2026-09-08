@@ -27,7 +27,7 @@ it('верный ответ: название, обе задержки и ров
     s.fetch.mock.calls
       .filter(([path]) => !String(path).includes('/interaction/'))
       .at(-1)?.[0],
-  ).toBe(`/assets/audio/tt/animals/${target}-label.mp3`);
+  ).toBe(`/assets/audio/tt/clips/${target}.mp3`);
   expect(s.learningSources).toHaveLength(2);
   act(oldEnd);
   await act(() => vi.advanceTimersByTimeAsync(1100));
@@ -64,7 +64,7 @@ it('неверные ответы повторяют исходное задан
     s.fetch.mock.calls.filter(
       ([path]) => !String(path).includes('/interaction/'),
     ),
-  ).toHaveLength(3);
+  ).toHaveLength(5);
   expect(
     s.fetch.mock.calls
       .filter(([path]) => String(path).includes('/interaction/'))
@@ -86,13 +86,16 @@ it('повтор, активность, пауза, выход и поздние
     oldEnd();
     s.learningSources[1]!.onended!();
   });
+  await s.settle();
+  act(() => s.learningSources.at(-1)!.onended!());
+  await s.settle();
   await s.click('Кагылу');
   await act(() => vi.advanceTimersByTimeAsync(10000));
-  expect(s.learningSources).toHaveLength(2);
+  expect(s.learningSources).toHaveLength(3);
   act(() => s.changeState('suspended'));
   expect(screen.getByTestId('state')).toHaveTextContent('paused');
   act(() => s.changeState('running'));
-  expect(s.learningSources).toHaveLength(2);
+  expect(s.learningSources).toHaveLength(3);
   await s.click('Дәвам ит');
   expect(screen.getByTestId('round')).toHaveTextContent('1');
   const late = s.learningSources.at(-1)!.onended!;
@@ -100,15 +103,22 @@ it('повтор, активность, пауза, выход и поздние
   act(late);
   await act(() => vi.advanceTimersByTimeAsync(20000));
   expect(screen.getByTestId('state')).toHaveTextContent('ended');
-  expect(s.learningSources).toHaveLength(3);
+  expect(s.learningSources).toHaveLength(4);
 });
 
 it('ошибка подтверждения повторяет название без повторного зачёта', async () => {
   const s = setup();
   await s.click('Хайваннар');
-  s.context.decodeAudioData.mockRejectedValueOnce(
-    new Error('private browser error'),
-  );
+  const makeSource = s.context.createBufferSource.getMockImplementation()!;
+  s.context.createBufferSource
+    .mockImplementationOnce(makeSource)
+    .mockImplementationOnce(() => {
+      const source = makeSource();
+      source.start.mockImplementationOnce(() => {
+        throw new Error('private browser error');
+      });
+      return source;
+    });
   await s.click('Җавап');
   expect(screen.getByTestId('state')).toHaveTextContent('error');
   await s.click('Җавап');

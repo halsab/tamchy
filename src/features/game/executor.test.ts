@@ -1,10 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import catalog from '../../content/catalog.json';
-import type {
-  GameCategory,
-  GameEvent,
-  GameEventData,
-} from '../../domain/game/models.ts';
+import { gameCategories } from '../../../tests/helpers/game-content.ts';
+import { createTintedImageService } from '../../services/assets/tinted-images.ts';
+import type { GameEvent, GameEventData } from '../../domain/game/models.ts';
 import { createGame, gameReducer, hasHint } from '../../domain/game/reducer.ts';
 import { getGameRequirements } from '../../domain/game/requirements.ts';
 import { createAudioService } from '../../services/audio/audio.ts';
@@ -21,7 +18,7 @@ import { createGameExecutor, type GameClock } from './executor.ts';
 import { createSessionRounds } from './session-rounds.ts';
 
 export function setup(categoryIndex = 0, clock?: GameClock) {
-  const category = catalog.categories[categoryIndex] as GameCategory;
+  const category = gameCategories[categoryIndex]!;
   const audioBoundary = browserAudio(true);
   const imageBoundary = browserImages();
   const fetch = successfulFetch();
@@ -30,6 +27,15 @@ export function setup(categoryIndex = 0, clock?: GameClock) {
     fetch: identifyInteractions(fetch),
   });
   const images = createImageService({ ...imageBoundary, fetch });
+  const processor = {
+    run: vi.fn(async () => ({
+      width: 1,
+      height: 1,
+      data: new Uint8ClampedArray(4),
+    })),
+    dispose: vi.fn(),
+  };
+  const tintedImages = createTintedImageService({ fetch, processor });
   const rounds = createSessionRounds('session', category, () => 0);
   const time: GameClock = clock ?? {
     now: () => performance.now(),
@@ -42,6 +48,7 @@ export function setup(categoryIndex = 0, clock?: GameClock) {
   const dependencies = {
     audio,
     images,
+    tintedImages,
     rounds,
     clock: time,
     send: (event: GameEvent) => {
@@ -58,6 +65,8 @@ export function setup(categoryIndex = 0, clock?: GameClock) {
     ...audioBoundary,
     ...imageBoundary,
     audio,
+    processor,
+    tintedImages,
     fetch,
     events,
     rounds,
@@ -69,6 +78,14 @@ export function setup(categoryIndex = 0, clock?: GameClock) {
       return executor;
     },
     event,
+    async endPrompt() {
+      const work = getGameRequirements(state).work;
+      if (work.kind !== 'play') throw new Error('Нет задания');
+      for (let part = 0; part < work.sequence.length; part++) {
+        audioBoundary.learningSources.at(-1)!.onended!();
+        await flush();
+      }
+    },
     async start() {
       void audio.activate();
       executor.reconcile(getGameRequirements(state));
@@ -88,6 +105,7 @@ export function setup(categoryIndex = 0, clock?: GameClock) {
       executor.dispose();
       audio.dispose();
       images.dispose();
+      tintedImages.dispose();
     },
   };
 }
@@ -95,28 +113,114 @@ export function setup(categoryIndex = 0, clock?: GameClock) {
 beforeEach(() => vi.useFakeTimers());
 afterEach(() => vi.useRealTimers());
 
+it('общий клип задания и подтверждения загружается один раз до разрешения ответа', async () => {
+  const s = setup();
+  await s.start();
+  expect(s.state.status).toBe('awaiting');
+  const paths = s.fetch.mock.calls.map(([path]) => String(path));
+  expect(
+    paths.filter((path) => path.endsWith('color-orange.mp3')),
+  ).toHaveLength(1);
+  expect(
+    s.events.filter(
+      (event) =>
+        event.type === 'RESOURCE_READY' &&
+        event.resource.path.endsWith('color-orange.mp3'),
+    ),
+  ).toHaveLength(2);
+  s.dispose();
+});
+
+it('счётное упражнение ждёт готовые пиксели; выход отсекает поздний worker', async () => {
+  const s = setup(2);
+  const pending = deferred<Awaited<ReturnType<typeof s.processor.run>>>();
+  s.processor.run.mockReturnValueOnce(pending.promise);
+  await s.start();
+  expect(s.processor.run).toHaveBeenCalledOnce();
+  expect(s.state.status).toBe('preparing');
+  s.event({ type: 'ANSWER', itemId: s.state.round.correctOptionId, at: 0 });
+  expect(s.state.status).toBe('preparing');
+  s.event({ type: 'EXIT' });
+  pending.resolve({ width: 1, height: 1, data: new Uint8ClampedArray(4) });
+  await flush();
+  expect(s.state.status).toBe('ended');
+  expect(s.sources).toHaveLength(0);
+  expect(s.tintedImages.cacheBytes()).toBe(0);
+  s.dispose();
+});
+
+it('ошибка worker сохраняет упражнение и восстанавливается явным повтором', async () => {
+  const s = setup(2);
+  s.processor.run.mockRejectedValueOnce(new Error('decode'));
+  await s.start();
+  const exercise = s.state.round;
+  expect(s.state).toMatchObject({
+    status: 'error',
+    failure: { phase: 'preparation', resource: { kind: 'tinted-image' } },
+  });
+  s.event({ type: 'RETRY', at: 1 });
+  await flush();
+  expect(s.state.status).toBe('awaiting');
+  expect(s.state.round).toBe(exercise);
+  s.dispose();
+});
+
+it('сбой второй части блокирует ответы и повторяет полную фразу без смены вариантов', async () => {
+  const s = setup();
+  await s.start();
+  const work = getGameRequirements(s.state).work;
+  if (work.kind !== 'play') throw new Error('Нет фразы');
+  const exercise = s.state.round;
+  const makeSource = s.context.createBufferSource.getMockImplementation()!;
+  s.context.createBufferSource.mockImplementationOnce(() => {
+    const source = makeSource();
+    source.start.mockImplementationOnce(() => {
+      throw new Error('blocked');
+    });
+    return source;
+  });
+  s.learningSources.at(-1)!.onended!();
+  await flush();
+  expect(s.state).toMatchObject({
+    status: 'error',
+    failure: { phase: 'prompt', resource: { path: work.sequence[1] } },
+  });
+  s.event({ type: 'ANSWER', itemId: exercise.correctOptionId, at: 1 });
+  expect(s.state.status).toBe('error');
+  s.event({ type: 'RETRY', at: 2 });
+  await flush();
+  expect(s.state.status).toBe('awaiting');
+  expect(s.state.round).toBe(exercise);
+  expect(s.state.adaptation.streak).toBeNull();
+  await s.endPrompt();
+  expect(s.events.filter((event) => event.type === 'AUDIO_ENDED')).toHaveLength(
+    1,
+  );
+  s.dispose();
+});
+
 describe('исполнитель требований с настоящим доменом', () => {
   it('готовит независимые ресурсы параллельно без перезапуска частичного успеха', async () => {
     const s = setup(1);
     const network = deferred<Response>();
     s.fetch.mockImplementation((url) =>
       String(url).endsWith('.mp3')
-        ? network.promise
+        ? network.promise.then((response) => response.clone())
         : Promise.resolve(new Response('image')),
     );
     await s.start();
-    expect(s.fetch).toHaveBeenCalledTimes(3);
+    expect(s.fetch).toHaveBeenCalledTimes(5);
     expect(s.events.filter((e) => e.type === 'RESOURCE_READY')).toHaveLength(2);
     s.reconcile();
     s.reconcile();
-    expect(s.fetch).toHaveBeenCalledTimes(3);
+    expect(s.fetch).toHaveBeenCalledTimes(5);
     network.resolve(new Response('audio'));
     await flush();
     expect(s.state.status).toBe('awaiting');
     expect(s.learningSources).toHaveLength(1);
     s.reconcile();
     expect(s.learningSources[0]!.stop).not.toHaveBeenCalled();
-    s.learningSources[0]!.onended!();
+    await s.endPrompt();
     expect(s.state).toMatchObject({
       status: 'awaiting',
       prompt: { status: 'ended' },
@@ -176,12 +280,12 @@ describe('исполнитель требований с настоящим до
     const oldEnd = s.learningSources[0]!.onended!;
     s.event({
       type: 'ANSWER',
-      itemId: s.state.round.targetId,
+      itemId: s.state.round.correctOptionId,
       at: s.time.now(),
     });
     s.event({
       type: 'ANSWER',
-      itemId: s.state.round.targetId,
+      itemId: s.state.round.correctOptionId,
       at: s.time.now(),
     });
     await flush();
@@ -196,10 +300,10 @@ describe('исполнитель требований с настоящим до
     await vi.advanceTimersByTimeAsync(1100);
     s.learningSources[1]!.onended!();
     await vi.advanceTimersByTimeAsync(299);
-    expect(s.state.round.roundId).toBe(1);
+    expect(s.state.round.id).toBe(1);
     await vi.advanceTimersByTimeAsync(1);
     await flush();
-    expect(s.state.round.roundId).toBe(2);
+    expect(s.state.round.id).toBe(2);
     expect(s.state.status).toBe('awaiting');
     expect(s.events.filter((e) => e.type === 'ROUND_GENERATED')).toHaveLength(
       1,
@@ -211,7 +315,9 @@ describe('исполнитель требований с настоящим до
     const s = setup(2);
     await s.start();
     const round = s.state.round;
-    const wrong = round.optionIds.find((id) => id !== round.targetId)!;
+    const wrong = round.options
+      .map((x) => x.id)
+      .find((id) => id !== round.correctOptionId)!;
     for (let i = 0; i < 2; i++) {
       s.event({ type: 'ANSWER', itemId: wrong, at: s.time.now() });
       await vi.advanceTimersByTimeAsync(249);
@@ -228,7 +334,7 @@ describe('исполнитель требований с настоящим до
       s.fetch.mock.calls.filter(
         ([path]) => !String(path).includes('/interaction/'),
       ),
-    ).toHaveLength(2);
+    ).toHaveLength(4);
     expect(
       s.fetch.mock.calls.filter(([path]) =>
         String(path).includes('/interaction/'),
@@ -251,7 +357,7 @@ describe('исполнитель требований с настоящим до
     };
     const s = setup(0, clock);
     await s.start();
-    s.learningSources[0]!.onended!();
+    await s.endPrompt();
     const idle = callbacks.at(-1)!;
     s.event({ type: 'ACTIVITY' });
     now = 10000;
@@ -277,7 +383,7 @@ describe('исполнитель требований с настоящим до
     };
     const s = setup(0, clock);
     await s.start();
-    s.learningSources[0]!.onended!();
+    await s.endPrompt();
     now = 9999;
     callbacks.at(-1)!();
     expect(s.events.some((e) => e.type === 'IDLE_DUE')).toBe(false);
@@ -309,7 +415,7 @@ describe('исполнитель требований с настоящим до
     await s.start();
     s.event({
       type: 'ANSWER',
-      itemId: s.state.round.targetId,
+      itemId: s.state.round.correctOptionId,
       at: s.time.now(),
     });
     await flush();
@@ -327,17 +433,26 @@ describe('исполнитель требований с настоящим до
     s.reconcile();
     await flush();
     expect(s.state.round).toEqual(prepared);
-    expect(s.state.round.roundId).toBe(2);
+    expect(s.state.round.id).toBe(2);
     s.dispose();
   });
 
   it('ошибка подтверждения и RETRY сохраняют принятый ответ', async () => {
     const s = setup();
     await s.start();
-    s.fetch.mockResolvedValueOnce(new Response(null, { status: 404 }));
+    const makeSource = s.context.createBufferSource.getMockImplementation()!;
+    s.context.createBufferSource
+      .mockImplementationOnce(makeSource)
+      .mockImplementationOnce(() => {
+        const source = makeSource();
+        source.start.mockImplementationOnce(() => {
+          throw new Error('playback');
+        });
+        return source;
+      });
     s.event({
       type: 'ANSWER',
-      itemId: s.state.round.targetId,
+      itemId: s.state.round.correctOptionId,
       at: s.time.now(),
     });
     await flush();
@@ -350,7 +465,7 @@ describe('исполнитель требований с настоящим до
     expect(s.state).toMatchObject({ status: 'correct', acceptedAt: 0 });
     s.learningSources.at(-1)!.onended!();
     await vi.advanceTimersByTimeAsync(1200);
-    expect(s.state.round.roundId).toBe(2);
+    expect(s.state.round.id).toBe(2);
     expect(s.events.filter((e) => e.type === 'ROUND_GENERATED')).toHaveLength(
       1,
     );
@@ -431,7 +546,7 @@ it('старые callbacks таймера не действуют после н�
   };
   const s = setup(0, clock);
   await s.start();
-  s.learningSources[0]!.onended!();
+  await s.endPrompt();
   const oldTimer = callbacks.at(-1)!;
   s.restart();
   s.reconcile();

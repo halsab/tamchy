@@ -22,6 +22,19 @@ function setup(maxCacheBytes = 8) {
 afterEach(() => vi.useRealTimers());
 
 describe('подготовка перекрашенных PNG', () => {
+  it('экран получает готовые пиксели; ошибка изображения сбрасывает только этот цвет', async () => {
+    const s = setup();
+    expect(s.service.get(path, '#D94343')).toBeUndefined();
+    const red = await s.service.prepare(path, '#D94343', s.controller.signal);
+    const white = await s.service.prepare(path, '#FFFFFF', s.controller.signal);
+    expect(s.service.get(path, '#d94343')).toBe(red);
+    s.service.invalidate(path, '#d94343');
+    expect(s.service.get(path, '#D94343')).toBeUndefined();
+    expect(s.service.get(path, '#FFFFFF')).toBe(white);
+    await s.service.prepare(path, '#D94343', s.controller.signal);
+    expect(s.processor.run).toHaveBeenCalledTimes(3);
+    s.service.dispose();
+  });
   it('ожидает обработку, учитывает base и переиспользует готовый цвет', async () => {
     const s = setup();
     const processing = deferred<ReturnType<typeof pixel>>();

@@ -11,6 +11,7 @@ export function createPixelCache<
     entries.delete(key);
   }
   return {
+    remove,
     get(key: string) {
       const value = entries.get(key);
       if (value) {

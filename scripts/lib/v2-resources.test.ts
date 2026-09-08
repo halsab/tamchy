@@ -1,8 +1,9 @@
+import { resourcePaths } from './resources.ts';
 import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 import { afterEach, expect, it } from 'vitest';
-import { readV2Content, v2ResourcePaths } from './v2-content.ts';
+import { readV2Content } from './v2-content.ts';
 import { assertCompleteContent, inspectResourcePaths } from './resources.ts';
 
 const directories: string[] = [];
@@ -15,7 +16,7 @@ afterEach(async () => {
 });
 it('строгий перечень v2 отклоняет новые MP3, нейтральные PNG и животных при отсутствии', async () => {
   const content = await readV2Content(resolve(import.meta.dirname, '../..'));
-  const paths = v2ResourcePaths(content);
+  const paths = resourcePaths(content);
   const directory = await mkdtemp(join(tmpdir(), 'tamchy-v2-resources-'));
   directories.push(directory);
   for (const path of [...paths.images, ...paths.audio, ...paths.icons]) {

@@ -10,7 +10,7 @@ export function createSessionRounds(
   random: () => number,
 ) {
   const generate = createRoundGenerator(category, random);
-  return createSequence(sessionId, generate, (round: Round) => round.roundId);
+  return createSequence(sessionId, generate, (round: Round) => round.id);
 }
 
 export function createSessionExercises(

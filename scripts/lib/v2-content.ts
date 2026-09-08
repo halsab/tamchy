@@ -8,7 +8,6 @@ import {
   interactionIds,
   interactionPath,
 } from '../../src/content/interactions.ts';
-import { icons } from './resources.ts';
 
 const text = z.string().trim().min(1);
 const path = text.refine(isAssetPath, 'Недопустимый путь ресурса');
@@ -280,18 +279,4 @@ export async function readV2Content(root: string): Promise<ContentV2> {
     ]),
   );
   return parseV2Content(Object.fromEntries(entries));
-}
-
-export function v2ResourcePaths(content: ContentV2) {
-  return {
-    images: [
-      ...new Set([
-        ...content.categories.map((x) => x.image),
-        ...content.animals.map((x) => x.image),
-        ...content.countObjects.map((x) => x.image),
-      ]),
-    ],
-    audio: content.audio.map((x) => x.path),
-    icons: icons.map((x) => x.path),
-  };
 }

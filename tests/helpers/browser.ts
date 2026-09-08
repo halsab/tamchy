@@ -1,4 +1,5 @@
 import { vi } from 'vitest';
+import { ResourceError } from '../../src/services/assets/resource-loading.ts';
 
 export function deferred<T>() {
   let resolve!: (value: T) => void;
@@ -118,4 +119,56 @@ export function successfulFetch() {
   return vi.fn<typeof fetch>(
     async () => new Response(new Uint8Array([1, 2, 3])),
   );
+}
+
+export function mockCanvas() {
+  vi.stubGlobal(
+    'ImageData',
+    class {
+      constructor(
+        readonly data: Uint8ClampedArray,
+        readonly width: number,
+        readonly height: number,
+      ) {}
+    },
+  );
+  const contexts = new WeakMap<
+    HTMLCanvasElement,
+    {
+      drawImage: ReturnType<typeof vi.fn>;
+      clearRect: ReturnType<typeof vi.fn>;
+      putImageData: ReturnType<typeof vi.fn>;
+    }
+  >();
+  vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockImplementation(
+    function (this: HTMLCanvasElement) {
+      let context = contexts.get(this);
+      if (!context) {
+        const drawImage = vi.fn();
+        context = {
+          drawImage,
+          clearRect: vi.fn(() => drawImage.mockClear()),
+          putImageData: vi.fn(),
+        };
+        contexts.set(this, context);
+      }
+      return context as unknown as CanvasRenderingContext2D;
+    },
+  );
+  return contexts;
+}
+
+export function failNextConfirmation(
+  context: ReturnType<typeof browserAudio>['context'],
+) {
+  const makeSource = context.createBufferSource.getMockImplementation()!;
+  context.createBufferSource
+    .mockImplementationOnce(makeSource)
+    .mockImplementationOnce(() => {
+      const source = makeSource();
+      source.start.mockImplementationOnce(() => {
+        throw new ResourceError('decode');
+      });
+      return source;
+    });
 }

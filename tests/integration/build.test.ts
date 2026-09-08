@@ -1,4 +1,5 @@
 import {
+  cp,
   mkdtemp,
   mkdir,
   readFile,
@@ -10,21 +11,20 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { build } from 'vite';
 import { afterEach, describe, expect, it } from 'vitest';
-import data from '../../src/content/catalog.json' with { type: 'json' };
+import { contentV2 } from '../../src/content/v2/catalog.ts';
 import strings from '../../src/content/tt.json' with { type: 'json' };
-import { parseCatalog } from '../../scripts/lib/catalog.ts';
 import { contentPlugin } from '../../scripts/lib/content-plugin.ts';
 import { resourcePaths } from '../../scripts/lib/resources.ts';
 
 const roots: string[] = [];
-const paths = resourcePaths(parseCatalog(data));
+const paths = resourcePaths(contentV2);
 const graphics = [...paths.images, ...paths.icons];
 
 async function fixture() {
   const root = await mkdtemp(join(tmpdir(), 'tamchy-build-'));
   roots.push(root);
+  await cp('src/content/v2', join(root, 'src/content/v2'), { recursive: true });
   const files: Record<string, string> = {
-    'src/content/catalog.json': JSON.stringify(data),
     'src/content/tt.json': JSON.stringify(strings),
     'index.html':
       '<html lang="tt"><head><title>%APP_NAME%</title><link rel="icon" href="%BASE_URL%icons/pwa-192x192.png"></head><body><script type="module" src="/main.ts"></script></body></html>',
@@ -104,6 +104,7 @@ describe('границы сборочных артефактов', () => {
   it('включает доступную учебную запись в технический артефакт', async () => {
     const root = await fixture();
     const path = paths.audio[0]!;
+    await mkdir(dirname(join(root, 'public', path)), { recursive: true });
     await writeFile(join(root, 'public', path), 'file-presence-fixture');
     await compile(root, true);
     expect(await readFile(join(root, '.build-check', path), 'utf8')).toBe(
