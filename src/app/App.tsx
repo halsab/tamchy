@@ -10,6 +10,7 @@ import { HomeScreen } from '../features/home/HomeScreen.tsx';
 import { GameScreen } from '../features/game/GameScreen.tsx';
 import { ParentsScreen } from '../features/parents/ParentsScreen.tsx';
 import { readRoute, writeRoute, type Route } from './routes.ts';
+import { useAppGestures } from './use-app-gestures.ts';
 import styles from './App.module.css';
 import {
   readAgeMode,
@@ -19,6 +20,7 @@ import {
 
 const { categories } = contentV2;
 export function App({ options }: { options?: GameSessionOptions }) {
+  useAppGestures();
   const game = useGameSession(options);
   const { start, exit } = game;
   const [route, setRoute] = useState<Route>(

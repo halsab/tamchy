@@ -2,6 +2,11 @@
 
 * {
   box-sizing: border-box;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  /* Вертикальная прокрутка нужна длинному тексту; масштабирование жестами запрещено. */
+  touch-action: pan-y;
 }
 
 html {
@@ -20,7 +25,6 @@ button {
   font-family: inherit;
   border: 0;
   cursor: pointer;
-  touch-action: manipulation;
   transition:
     transform var(--duration-press) ease-out,
     background-color var(--duration-press) ease-out;

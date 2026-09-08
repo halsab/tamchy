@@ -59,6 +59,62 @@ it('главное меню: название, порядок трёх разд�
   expect(location.hash).toBe('#/');
 });
 
+it('все экраны отменяют меню долгого нажатия, выделение и перетаскивание', async () => {
+  const s = setupApp();
+  for (const route of [
+    '#/',
+    '#/colors',
+    '#/animals',
+    '#/numbers',
+    '#/parents',
+    '#/',
+  ]) {
+    await s.route(route);
+    const heading = screen.getByRole('heading', { level: 1 });
+    expect(fireEvent.contextMenu(heading)).toBe(false);
+    expect(fireEvent.dragStart(heading)).toBe(false);
+    expect(
+      fireEvent(
+        heading,
+        new Event('selectstart', { bubbles: true, cancelable: true }),
+      ),
+    ).toBe(false);
+  }
+});
+
+it('масштабирующие жесты отменяются на всех экранах и освобождаются при unmount', async () => {
+  const s = setupApp();
+  const zoomEvents = () => [
+    new Event('gesturestart', { bubbles: true, cancelable: true }),
+    new Event('gesturechange', { bubbles: true, cancelable: true }),
+    new WheelEvent('wheel', {
+      ctrlKey: true,
+      deltaY: -100,
+      bubbles: true,
+      cancelable: true,
+    }),
+  ];
+  for (const route of ['#/', '#/numbers', '#/parents', '#/']) {
+    await s.route(route);
+    for (const event of zoomEvents())
+      expect(fireEvent(document.body, event)).toBe(false);
+    expect(fireEvent.wheel(document.body, { deltaY: 100 })).toBe(true);
+    expect(fireEvent.touchStart(document.body)).toBe(true);
+    expect(fireEvent.touchEnd(document.body)).toBe(true);
+  }
+  s.view.unmount();
+  for (const event of zoomEvents())
+    expect(fireEvent(document.body, event)).toBe(true);
+  expect(fireEvent.contextMenu(document.body)).toBe(true);
+  expect(fireEvent.dragStart(document.body)).toBe(true);
+  expect(
+    fireEvent(
+      document.body,
+      new Event('selectstart', { bubbles: true, cancelable: true }),
+    ),
+  ).toBe(true);
+});
+
 it('оба положения режима используют младший v2 и сохраняют выбор взрослого', async () => {
   const s = setupApp();
   await s.click(strings.nav.parents);
