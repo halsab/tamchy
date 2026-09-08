@@ -29,12 +29,12 @@ describe('каталог MVP', () => {
 
   it('сохраняет точные названия и полные задания приложения A', () => {
     const specification = readFileSync(
-      new URL('../../docs/specification.md', import.meta.url),
+      new URL('../../docs/specification-mvp.md', import.meta.url),
       'utf8',
     );
     const rows = [
       ...specification.matchAll(
-        /^\| ((?:color|animal|number)-[^ |]+) \| ([^|]+) \| ([^|]+) \|$/gm,
+        /^\| ((?:color|animal|number)-[^ |]+)\s+\| ([^|]+) \| ([^|]+) \|$/gm,
       ),
     ];
     const items = parseCatalog(data).categories.flatMap(({ items }) => items);

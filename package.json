@@ -29,7 +29,8 @@
     "check:lighthouse": "node scripts/check-lighthouse.ts",
     "check:published": "node scripts/check-published.ts",
     "check:published:local": "node scripts/check-published-local.ts",
-    "release:verify": "node scripts/verify-release.ts"
+    "release:verify": "node scripts/verify-release.ts",
+    "validate:expansion": "vitest run scripts/lib/expansion.test.ts --reporter=default --silent=false"
   },
   "dependencies": {
     "react": "19.2.8",

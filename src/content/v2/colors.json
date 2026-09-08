@@ -1,0 +1,80 @@
+[
+  {
+    "id": "red",
+    "labelTt": "Кызыл",
+    "hex": "#D94343",
+    "labelClipId": "color.red"
+  },
+  {
+    "id": "orange",
+    "labelTt": "Кишер сары",
+    "hex": "#F28C28",
+    "labelClipId": "color.orange"
+  },
+  {
+    "id": "yellow",
+    "labelTt": "Сары",
+    "hex": "#F3C63A",
+    "labelClipId": "color.yellow"
+  },
+  {
+    "id": "green",
+    "labelTt": "Яшел",
+    "hex": "#32965B",
+    "labelClipId": "color.green"
+  },
+  {
+    "id": "turquoise",
+    "labelTt": "Фирәзә",
+    "hex": "#2CAFA5",
+    "labelClipId": "color.turquoise"
+  },
+  {
+    "id": "light-blue",
+    "labelTt": "Күк зәңгәр",
+    "hex": "#4AA8E8",
+    "labelClipId": "color.light-blue"
+  },
+  {
+    "id": "blue",
+    "labelTt": "Зәңгәр",
+    "hex": "#347FD4",
+    "labelClipId": "color.blue"
+  },
+  {
+    "id": "purple",
+    "labelTt": "Шәмәхә",
+    "hex": "#7959C8",
+    "labelClipId": "color.purple"
+  },
+  {
+    "id": "pink",
+    "labelTt": "Ал",
+    "hex": "#E66D9A",
+    "labelClipId": "color.pink"
+  },
+  {
+    "id": "brown",
+    "labelTt": "Көрән",
+    "hex": "#8A5A3B",
+    "labelClipId": "color.brown"
+  },
+  {
+    "id": "gray",
+    "labelTt": "Соры",
+    "hex": "#7D8583",
+    "labelClipId": "color.gray"
+  },
+  {
+    "id": "white",
+    "labelTt": "Ак",
+    "hex": "#FFFFFF",
+    "labelClipId": "color.white"
+  },
+  {
+    "id": "black",
+    "labelTt": "Кара",
+    "hex": "#222625",
+    "labelClipId": "color.black"
+  }
+]

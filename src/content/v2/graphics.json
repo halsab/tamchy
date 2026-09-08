@@ -1,0 +1,325 @@
+[
+  {
+    "id": "category-colors",
+    "source": "assets-source/categories/category-colors.png",
+    "outputs": ["assets/images/categories/category-colors.webp"],
+    "sha256": "2bec4e54daf759e31fbb8854a5dc28fe15b8bffce944087fbd0b28f88c4f944d"
+  },
+  {
+    "id": "category-animals",
+    "source": "assets-source/categories/category-animals.png",
+    "outputs": ["assets/images/categories/category-animals.webp"],
+    "sha256": "a28c65a0b4886f5f6e0531f36574bcbf1b07ea4087e1c385c1c5d485e25ac4e8"
+  },
+  {
+    "id": "category-numbers",
+    "source": "assets-source/categories/category-numbers.png",
+    "outputs": ["assets/images/categories/category-numbers.webp"],
+    "sha256": "574e5749401a0fd619021ee30d5d6668cdaf0d97a71151d0201aba8d6d861337"
+  },
+  {
+    "id": "animal-cat",
+    "source": "assets-source/animals/animal-cat.png",
+    "outputs": ["assets/images/animals/animal-cat.webp"],
+    "sha256": "e104c64921f8ac0b5eca50f1f1c20697287a16a361dfa92a00e1b81b5f5fe00e"
+  },
+  {
+    "id": "animal-dog",
+    "source": "assets-source/animals/animal-dog.png",
+    "outputs": ["assets/images/animals/animal-dog.webp"],
+    "sha256": "3f5a37bb1ba329f1f5755bd6482a0814ed47eaf40d0729c1faa6ce0f23d0cfef"
+  },
+  {
+    "id": "animal-cow",
+    "source": "assets-source/animals/animal-cow.png",
+    "outputs": ["assets/images/animals/animal-cow.webp"],
+    "sha256": "12df6a98f34a19625462314dd94f64e280ec10416259d8759c25780cc50cf793"
+  },
+  {
+    "id": "animal-horse",
+    "source": "assets-source/animals/animal-horse.png",
+    "outputs": ["assets/images/animals/animal-horse.webp"],
+    "sha256": "fd8d1b9f68cea7e111fea21ace24ae24fb49c83ef4ebd698c19266a4ebb8fa0e"
+  },
+  {
+    "id": "animal-sheep",
+    "source": "assets-source/animals/animal-sheep.png",
+    "outputs": ["assets/images/animals/animal-sheep.webp"],
+    "sha256": "5c3b2f781890e6a2cd28ec343010d2a29cc5e93f310a29e150023d33ed4c7ad5"
+  },
+  {
+    "id": "animal-duck",
+    "source": "assets-source/animals/animal-duck.png",
+    "outputs": ["assets/images/animals/animal-duck.webp"],
+    "sha256": "098392604a3195ee8e0d45445f06f7d8dc9fa99d05cbe9400cdbef455f2c89a0"
+  },
+  {
+    "id": "animal-goat",
+    "source": "assets-source/animals/animal-goat.png",
+    "outputs": ["assets/images/animals/animal-goat.webp"],
+    "sha256": "a919f957c8a7dd29169299bc151710629dc3b87bda8896840fe03d4f847a6c7d"
+  },
+  {
+    "id": "animal-chicken",
+    "source": "assets-source/animals/animal-chicken.png",
+    "outputs": ["assets/images/animals/animal-chicken.webp"],
+    "sha256": "8b4a96e60c246fcf46f7bfbca5e22ea3002d2c508cc44cba2f51fbfee251ac73"
+  },
+  {
+    "id": "animal-goose",
+    "source": "assets-source/animals/animal-goose.png",
+    "outputs": ["assets/images/animals/animal-goose.webp"],
+    "sha256": "fd96d478d6791804ffcafe171f982ac7824e5f9aabbbd868077e5c92d7b0cbf0"
+  },
+  {
+    "id": "animal-mouse",
+    "source": "assets-source/animals/animal-mouse.png",
+    "outputs": ["assets/images/animals/animal-mouse.webp"],
+    "sha256": "d48fdf985c6847e884bfe0867b056954e50eb96c63be85af77c9dea3303616cb"
+  },
+  {
+    "id": "animal-bear",
+    "source": "assets-source/animals/animal-bear.png",
+    "outputs": ["assets/images/animals/animal-bear.webp"],
+    "sha256": "2d65278fb9917d51060a55ba7f281b28799b77818e7a8a1856798aba19ec83da"
+  },
+  {
+    "id": "animal-wolf",
+    "source": "assets-source/animals/animal-wolf.png",
+    "outputs": ["assets/images/animals/animal-wolf.webp"],
+    "sha256": "b6969cc543b97632a12cd729fd136c3001111cc77c8c3cf67138ad20927ddf57"
+  },
+  {
+    "id": "animal-fox",
+    "source": "assets-source/animals/animal-fox.png",
+    "outputs": ["assets/images/animals/animal-fox.webp"],
+    "sha256": "4f3ea0a71fd719c26b7b6102dc871823077f1d697af6a4151ad1f15a10d98063"
+  },
+  {
+    "id": "animal-hare",
+    "source": "assets-source/animals/animal-hare.png",
+    "outputs": ["assets/images/animals/animal-hare.webp"],
+    "sha256": "d3a0004c1991e6cfcfcf49502f6040393b01c14acb91cf2ffb120098b7d655a6"
+  },
+  {
+    "id": "animal-squirrel",
+    "source": "assets-source/animals/animal-squirrel.png",
+    "outputs": ["assets/images/animals/animal-squirrel.webp"],
+    "sha256": "48b84617f0233cc5e35868ef5e4dcb29acac04c0cba4de9dfd744dd87192c888"
+  },
+  {
+    "id": "animal-hedgehog",
+    "source": "assets-source/animals/animal-hedgehog.png",
+    "outputs": ["assets/images/animals/animal-hedgehog.webp"],
+    "sha256": "9c99581f5628f3fbd0b794ca197f9ea545a2e71ddec2ee7c84f995491c61025c"
+  },
+  {
+    "id": "animal-moose",
+    "source": "assets-source/animals/animal-moose.png",
+    "outputs": ["assets/images/animals/animal-moose.webp"],
+    "sha256": "68e6e1125e28a9778b8df6cb3b4d577a2a8e511f50b40c0f6d7a7e6270378086"
+  },
+  {
+    "id": "animal-deer",
+    "source": "assets-source/animals/animal-deer.png",
+    "outputs": ["assets/images/animals/animal-deer.webp"],
+    "sha256": "737ca344a72343f8ce4980ec03f3bfa57a7d7603e594fbb07b3853413fb213b1"
+  },
+  {
+    "id": "animal-wild-boar",
+    "source": "assets-source/animals/animal-wild-boar.png",
+    "outputs": ["assets/images/animals/animal-wild-boar.webp"],
+    "sha256": "d8b10f3af9106939e89b1de4be29636d2f5eecb743e48a89dfa4fd71798e7066"
+  },
+  {
+    "id": "animal-beaver",
+    "source": "assets-source/animals/animal-beaver.png",
+    "outputs": ["assets/images/animals/animal-beaver.webp"],
+    "sha256": "41b07639bf04a01201f65fc9be985a1adf63e37e0a0f3922b4e7ebf3a44480d5"
+  },
+  {
+    "id": "animal-lynx",
+    "source": "assets-source/animals/animal-lynx.png",
+    "outputs": ["assets/images/animals/animal-lynx.webp"],
+    "sha256": "e8615002d5ac9744838b5b7dfffe0b4a64756827ba6dcfacee419dc018d085b7"
+  },
+  {
+    "id": "animal-badger",
+    "source": "assets-source/animals/animal-badger.png",
+    "outputs": ["assets/images/animals/animal-badger.webp"],
+    "sha256": "98e51cfd696304b3314a3593f0464746a33285f59fcc18e73994e5dec663339a"
+  },
+  {
+    "id": "animal-frog",
+    "source": "assets-source/animals/animal-frog.png",
+    "outputs": ["assets/images/animals/animal-frog.webp"],
+    "sha256": "e361ce38f1eb27f8fb806bcee056be173de3852cfdbeb03a5826664f653381b6"
+  },
+  {
+    "id": "animal-lizard",
+    "source": "assets-source/animals/animal-lizard.png",
+    "outputs": ["assets/images/animals/animal-lizard.webp"],
+    "sha256": "eaebe338f1892e524d58d7a7a19cb642c677d1624195391b1e31789ec7ab7f4a"
+  },
+  {
+    "id": "animal-grasshopper",
+    "source": "assets-source/animals/animal-grasshopper.png",
+    "outputs": ["assets/images/animals/animal-grasshopper.webp"],
+    "sha256": "c43acd2559ccb31265c8ef2ccd8652abad0550e23e8714b16b12765ef2eb9df5"
+  },
+  {
+    "id": "animal-ladybug",
+    "source": "assets-source/animals/animal-ladybug.png",
+    "outputs": ["assets/images/animals/animal-ladybug.webp"],
+    "sha256": "6ff499209270bfdf13a2f7885a7df95b6c8f6931b730c8838430705d813b7ae3"
+  },
+  {
+    "id": "animal-snail",
+    "source": "assets-source/animals/animal-snail.png",
+    "outputs": ["assets/images/animals/animal-snail.webp"],
+    "sha256": "49103ec1310add6727f44e56b918d60364e0e72269e9ae500dc6b97c2da59ae2"
+  },
+  {
+    "id": "animal-butterfly",
+    "source": "assets-source/animals/animal-butterfly.png",
+    "outputs": ["assets/images/animals/animal-butterfly.webp"],
+    "sha256": "9761402305679268a768233177795a3421edc114b234986b65784e7e4962ef61"
+  },
+  {
+    "id": "animal-bee",
+    "source": "assets-source/animals/animal-bee.png",
+    "outputs": ["assets/images/animals/animal-bee.webp"],
+    "sha256": "03d62dd4eff390fc3422633399cdf344b9f95eb8934e6764b026f8f1b16a5ea2"
+  },
+  {
+    "id": "animal-ant",
+    "source": "assets-source/animals/animal-ant.png",
+    "outputs": ["assets/images/animals/animal-ant.webp"],
+    "sha256": "c8c4d1b0a35410cb0ee0faff59696bb8968f1509c8f4529782fa7370c7c6d173"
+  },
+  {
+    "id": "animal-turtle",
+    "source": "assets-source/animals/animal-turtle.png",
+    "outputs": ["assets/images/animals/animal-turtle.webp"],
+    "sha256": "14a4e3f2bc66fecf0dcdc44048096f21f9eba7dc28791ef8ea9e6a02f7e51ab6"
+  },
+  {
+    "id": "animal-snake",
+    "source": "assets-source/animals/animal-snake.png",
+    "outputs": ["assets/images/animals/animal-snake.webp"],
+    "sha256": "8d1ddd3fa62f3f403dace03b7ef26784ef4f96789f740e8f18357a7e576e7fc8"
+  },
+  {
+    "id": "animal-dragonfly",
+    "source": "assets-source/animals/animal-dragonfly.png",
+    "outputs": ["assets/images/animals/animal-dragonfly.webp"],
+    "sha256": "1cd095f148b2e87f68c18c44359559065c8afecee8fb7d9a80e7f4eac8486fbb"
+  },
+  {
+    "id": "animal-sparrow",
+    "source": "assets-source/animals/animal-sparrow.png",
+    "outputs": ["assets/images/animals/animal-sparrow.webp"],
+    "sha256": "a8fdf9e55f84807753d50ddd70b66d22d4992a350018b835b39a6e13a4ecd91e"
+  },
+  {
+    "id": "animal-crow",
+    "source": "assets-source/animals/animal-crow.png",
+    "outputs": ["assets/images/animals/animal-crow.webp"],
+    "sha256": "11b6874117aae69be786858790cdb2e587fc916f4585a5105df99d04b707bca3"
+  },
+  {
+    "id": "animal-owl",
+    "source": "assets-source/animals/animal-owl.png",
+    "outputs": ["assets/images/animals/animal-owl.webp"],
+    "sha256": "d583e47f2df9e7cdebf102f7475a50332a620d2ed2a321cc19c183c0ed5c6cfa"
+  },
+  {
+    "id": "animal-woodpecker",
+    "source": "assets-source/animals/animal-woodpecker.png",
+    "outputs": ["assets/images/animals/animal-woodpecker.webp"],
+    "sha256": "102f70cc91cc309d4536cc0a43b33ffc94efa55cce03b866b2a2c76146c0bda9"
+  },
+  {
+    "id": "animal-stork",
+    "source": "assets-source/animals/animal-stork.png",
+    "outputs": ["assets/images/animals/animal-stork.webp"],
+    "sha256": "3246948d47933dd19fc1467d67abe48d9c5ea996b497af4f6a1671aa2991cb8e"
+  },
+  {
+    "id": "animal-fish",
+    "source": "assets-source/animals/animal-fish.png",
+    "outputs": ["assets/images/animals/animal-fish.webp"],
+    "sha256": "278002cd318de043fde9478e6e5178d4370c236bb248980726d82b4bad1b6e18"
+  },
+  {
+    "id": "count-apple",
+    "source": "assets-source/numbers/count-apple.png",
+    "outputs": ["assets/images/numbers/count-apple.webp"],
+    "sha256": "54374cc5411f067b0ee8f9f1708938f27a887416033ab853127c63db493e8723"
+  },
+  {
+    "id": "app-icon-master",
+    "source": "assets-source/icons/app-icon-master.png",
+    "outputs": [
+      "icons/pwa-192x192.png",
+      "icons/pwa-512x512.png",
+      "icons/pwa-maskable-512x512.png",
+      "icons/apple-touch-icon.png"
+    ],
+    "sha256": "4741113364b50d362fe0ab0683add734c656977632abf231b9281d8ae3ef42ad"
+  },
+  {
+    "id": "shape-circle",
+    "source": "assets-source/svg/shapes/shape-circle.svg",
+    "outputs": ["assets/images/shapes/shape-circle.svg"],
+    "sha256": "9fd4f4944c021ed8bcdb4914eec3292ba5ea51fc4af3d73d4e6980a29435b875"
+  },
+  {
+    "id": "shape-square",
+    "source": "assets-source/svg/shapes/shape-square.svg",
+    "outputs": ["assets/images/shapes/shape-square.svg"],
+    "sha256": "35560e570a20b0b07920073e8b6faacb73725932ff340491d93cf94ced38c007"
+  },
+  {
+    "id": "shape-triangle",
+    "source": "assets-source/svg/shapes/shape-triangle.svg",
+    "outputs": ["assets/images/shapes/shape-triangle.svg"],
+    "sha256": "ff39f9258647fe6fad761e2857560b009a11e2fe7ae2e18dd98fa7f8aadd158f"
+  },
+  {
+    "id": "shape-rectangle",
+    "source": "assets-source/svg/shapes/shape-rectangle.svg",
+    "outputs": ["assets/images/shapes/shape-rectangle.svg"],
+    "sha256": "6d2f28ee7d28b03ddcee93621b90b973898accd5989cfb9a956c8e2c64944033"
+  },
+  {
+    "id": "shape-oval",
+    "source": "assets-source/svg/shapes/shape-oval.svg",
+    "outputs": ["assets/images/shapes/shape-oval.svg"],
+    "sha256": "75bb102d0b922c0809e04e9947603c4adb1e0731d0c080886e555dfb7cc69594"
+  },
+  {
+    "id": "shape-star",
+    "source": "assets-source/svg/shapes/shape-star.svg",
+    "outputs": ["assets/images/shapes/shape-star.svg"],
+    "sha256": "5c4ff6798525f94c89802d766470360ee4b2e0e030cac122d0fdf87e76c28243"
+  },
+  {
+    "id": "color-object-ball",
+    "source": "assets-source/svg/color-objects/color-object-ball.svg",
+    "outputs": ["assets/images/color-objects/color-object-ball.svg"],
+    "sha256": "760ee03265066cbb976ef5565866931a8b20c79f5487f8aba60edc3e6d48c913"
+  },
+  {
+    "id": "color-object-ring-toy",
+    "source": "assets-source/svg/color-objects/color-object-ring-toy.svg",
+    "outputs": ["assets/images/color-objects/color-object-ring-toy.svg"],
+    "sha256": "d273295a80d30d29878f84f14063fb8237b465ce4fc1381db777efd8b1920cac"
+  },
+  {
+    "id": "color-object-car-toy",
+    "source": "assets-source/svg/color-objects/color-object-car-toy.svg",
+    "outputs": ["assets/images/color-objects/color-object-car-toy.svg"],
+    "sha256": "8a02629e9cde7b2562ad916474f7078bf12394b454bc4f22da4345fbc834fe33"
+  }
+]

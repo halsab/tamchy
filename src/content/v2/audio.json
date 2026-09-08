@@ -1,0 +1,1124 @@
+[
+  {
+    "id": "color.red",
+    "textTt": "Кызыл",
+    "path": "assets/audio/tt/clips/color-red.mp3",
+    "master": "master-01-colors-shapes-objects.wav"
+  },
+  {
+    "id": "color.orange",
+    "textTt": "Кишер сары",
+    "path": "assets/audio/tt/clips/color-orange.mp3",
+    "master": "master-01-colors-shapes-objects.wav"
+  },
+  {
+    "id": "color.yellow",
+    "textTt": "Сары",
+    "path": "assets/audio/tt/clips/color-yellow.mp3",
+    "master": "master-01-colors-shapes-objects.wav"
+  },
+  {
+    "id": "color.green",
+    "textTt": "Яшел",
+    "path": "assets/audio/tt/clips/color-green.mp3",
+    "master": "master-01-colors-shapes-objects.wav"
+  },
+  {
+    "id": "color.turquoise",
+    "textTt": "Фирәзә",
+    "path": "assets/audio/tt/clips/color-turquoise.mp3",
+    "master": "master-01-colors-shapes-objects.wav"
+  },
+  {
+    "id": "color.light-blue",
+    "textTt": "Күк зәңгәр",
+    "path": "assets/audio/tt/clips/color-light-blue.mp3",
+    "master": "master-01-colors-shapes-objects.wav"
+  },
+  {
+    "id": "color.blue",
+    "textTt": "Зәңгәр",
+    "path": "assets/audio/tt/clips/color-blue.mp3",
+    "master": "master-01-colors-shapes-objects.wav"
+  },
+  {
+    "id": "color.purple",
+    "textTt": "Шәмәхә",
+    "path": "assets/audio/tt/clips/color-purple.mp3",
+    "master": "master-01-colors-shapes-objects.wav"
+  },
+  {
+    "id": "color.pink",
+    "textTt": "Ал",
+    "path": "assets/audio/tt/clips/color-pink.mp3",
+    "master": "master-01-colors-shapes-objects.wav"
+  },
+  {
+    "id": "color.brown",
+    "textTt": "Көрән",
+    "path": "assets/audio/tt/clips/color-brown.mp3",
+    "master": "master-01-colors-shapes-objects.wav"
+  },
+  {
+    "id": "color.gray",
+    "textTt": "Соры",
+    "path": "assets/audio/tt/clips/color-gray.mp3",
+    "master": "master-01-colors-shapes-objects.wav"
+  },
+  {
+    "id": "color.white",
+    "textTt": "Ак",
+    "path": "assets/audio/tt/clips/color-white.mp3",
+    "master": "master-01-colors-shapes-objects.wav"
+  },
+  {
+    "id": "color.black",
+    "textTt": "Кара",
+    "path": "assets/audio/tt/clips/color-black.mp3",
+    "master": "master-01-colors-shapes-objects.wav"
+  },
+  {
+    "id": "size.big",
+    "textTt": "Зур",
+    "path": "assets/audio/tt/clips/size-big.mp3",
+    "master": "master-01-colors-shapes-objects.wav"
+  },
+  {
+    "id": "size.small",
+    "textTt": "Кечкенә",
+    "path": "assets/audio/tt/clips/size-small.mp3",
+    "master": "master-01-colors-shapes-objects.wav"
+  },
+  {
+    "id": "shape.circle",
+    "textTt": "Түгәрәк",
+    "path": "assets/audio/tt/clips/shape-circle.mp3",
+    "master": "master-01-colors-shapes-objects.wav"
+  },
+  {
+    "id": "shape.circle.target",
+    "textTt": "Түгәрәкне",
+    "path": "assets/audio/tt/clips/shape-circle-target.mp3",
+    "master": "master-01-colors-shapes-objects.wav"
+  },
+  {
+    "id": "shape.square",
+    "textTt": "Шакмак",
+    "path": "assets/audio/tt/clips/shape-square.mp3",
+    "master": "master-01-colors-shapes-objects.wav"
+  },
+  {
+    "id": "shape.square.target",
+    "textTt": "Шакмакны",
+    "path": "assets/audio/tt/clips/shape-square-target.mp3",
+    "master": "master-01-colors-shapes-objects.wav"
+  },
+  {
+    "id": "shape.triangle",
+    "textTt": "Өчпочмак",
+    "path": "assets/audio/tt/clips/shape-triangle.mp3",
+    "master": "master-01-colors-shapes-objects.wav"
+  },
+  {
+    "id": "shape.triangle.target",
+    "textTt": "Өчпочмакны",
+    "path": "assets/audio/tt/clips/shape-triangle-target.mp3",
+    "master": "master-01-colors-shapes-objects.wav"
+  },
+  {
+    "id": "shape.rectangle",
+    "textTt": "Турыпочмаклык",
+    "path": "assets/audio/tt/clips/shape-rectangle.mp3",
+    "master": "master-01-colors-shapes-objects.wav"
+  },
+  {
+    "id": "shape.rectangle.target",
+    "textTt": "Турыпочмаклыкны",
+    "path": "assets/audio/tt/clips/shape-rectangle-target.mp3",
+    "master": "master-01-colors-shapes-objects.wav"
+  },
+  {
+    "id": "shape.oval",
+    "textTt": "Овал",
+    "path": "assets/audio/tt/clips/shape-oval.mp3",
+    "master": "master-01-colors-shapes-objects.wav"
+  },
+  {
+    "id": "shape.oval.target",
+    "textTt": "Овалны",
+    "path": "assets/audio/tt/clips/shape-oval-target.mp3",
+    "master": "master-01-colors-shapes-objects.wav"
+  },
+  {
+    "id": "shape.star",
+    "textTt": "Йолдыз",
+    "path": "assets/audio/tt/clips/shape-star.mp3",
+    "master": "master-01-colors-shapes-objects.wav"
+  },
+  {
+    "id": "shape.star.target",
+    "textTt": "Йолдызны",
+    "path": "assets/audio/tt/clips/shape-star-target.mp3",
+    "master": "master-01-colors-shapes-objects.wav"
+  },
+  {
+    "id": "count.apple",
+    "textTt": "Алма",
+    "path": "assets/audio/tt/clips/count-apple.mp3",
+    "master": "master-01-colors-shapes-objects.wav"
+  },
+  {
+    "id": "count.ball",
+    "textTt": "Туп",
+    "path": "assets/audio/tt/clips/count-ball.mp3",
+    "master": "master-01-colors-shapes-objects.wav"
+  },
+  {
+    "id": "count.ring",
+    "textTt": "Боҗра",
+    "path": "assets/audio/tt/clips/count-ring.mp3",
+    "master": "master-01-colors-shapes-objects.wav"
+  },
+  {
+    "id": "count.car",
+    "textTt": "Машина",
+    "path": "assets/audio/tt/clips/count-car.mp3",
+    "master": "master-01-colors-shapes-objects.wav"
+  },
+  {
+    "id": "number.1",
+    "textTt": "Бер",
+    "path": "assets/audio/tt/clips/number-1.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.1.target",
+    "textTt": "Берне",
+    "path": "assets/audio/tt/clips/number-1-target.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.2",
+    "textTt": "Ике",
+    "path": "assets/audio/tt/clips/number-2.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.2.target",
+    "textTt": "Икене",
+    "path": "assets/audio/tt/clips/number-2-target.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.3",
+    "textTt": "Өч",
+    "path": "assets/audio/tt/clips/number-3.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.3.target",
+    "textTt": "Өчне",
+    "path": "assets/audio/tt/clips/number-3-target.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.4",
+    "textTt": "Дүрт",
+    "path": "assets/audio/tt/clips/number-4.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.4.target",
+    "textTt": "Дүртне",
+    "path": "assets/audio/tt/clips/number-4-target.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.5",
+    "textTt": "Биш",
+    "path": "assets/audio/tt/clips/number-5.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.5.target",
+    "textTt": "Бишне",
+    "path": "assets/audio/tt/clips/number-5-target.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.6",
+    "textTt": "Алты",
+    "path": "assets/audio/tt/clips/number-6.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.6.target",
+    "textTt": "Алтыны",
+    "path": "assets/audio/tt/clips/number-6-target.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.7",
+    "textTt": "Җиде",
+    "path": "assets/audio/tt/clips/number-7.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.7.target",
+    "textTt": "Җидене",
+    "path": "assets/audio/tt/clips/number-7-target.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.8",
+    "textTt": "Сигез",
+    "path": "assets/audio/tt/clips/number-8.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.8.target",
+    "textTt": "Сигезне",
+    "path": "assets/audio/tt/clips/number-8-target.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.9",
+    "textTt": "Тугыз",
+    "path": "assets/audio/tt/clips/number-9.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.9.target",
+    "textTt": "Тугызны",
+    "path": "assets/audio/tt/clips/number-9-target.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.10",
+    "textTt": "Ун",
+    "path": "assets/audio/tt/clips/number-10.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.10.target",
+    "textTt": "Унны",
+    "path": "assets/audio/tt/clips/number-10-target.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.11",
+    "textTt": "Унбер",
+    "path": "assets/audio/tt/clips/number-11.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.11.target",
+    "textTt": "Унберне",
+    "path": "assets/audio/tt/clips/number-11-target.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.12",
+    "textTt": "Унике",
+    "path": "assets/audio/tt/clips/number-12.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.12.target",
+    "textTt": "Уникене",
+    "path": "assets/audio/tt/clips/number-12-target.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.13",
+    "textTt": "Унөч",
+    "path": "assets/audio/tt/clips/number-13.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.13.target",
+    "textTt": "Унөчне",
+    "path": "assets/audio/tt/clips/number-13-target.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.14",
+    "textTt": "Ундүрт",
+    "path": "assets/audio/tt/clips/number-14.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.14.target",
+    "textTt": "Ундүртне",
+    "path": "assets/audio/tt/clips/number-14-target.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.15",
+    "textTt": "Унбиш",
+    "path": "assets/audio/tt/clips/number-15.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.15.target",
+    "textTt": "Унбишне",
+    "path": "assets/audio/tt/clips/number-15-target.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.16",
+    "textTt": "Уналты",
+    "path": "assets/audio/tt/clips/number-16.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.16.target",
+    "textTt": "Уналтыны",
+    "path": "assets/audio/tt/clips/number-16-target.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.17",
+    "textTt": "Унҗиде",
+    "path": "assets/audio/tt/clips/number-17.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.17.target",
+    "textTt": "Унҗидене",
+    "path": "assets/audio/tt/clips/number-17-target.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.18",
+    "textTt": "Унсигез",
+    "path": "assets/audio/tt/clips/number-18.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.18.target",
+    "textTt": "Унсигезне",
+    "path": "assets/audio/tt/clips/number-18-target.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.19",
+    "textTt": "Унтугыз",
+    "path": "assets/audio/tt/clips/number-19.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.19.target",
+    "textTt": "Унтугызны",
+    "path": "assets/audio/tt/clips/number-19-target.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.20",
+    "textTt": "Егерме",
+    "path": "assets/audio/tt/clips/number-20.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "number.20.target",
+    "textTt": "Егермене",
+    "path": "assets/audio/tt/clips/number-20-target.mp3",
+    "master": "master-02-numbers.wav"
+  },
+  {
+    "id": "animal.cat",
+    "textTt": "Мәче",
+    "path": "assets/audio/tt/clips/animal-cat.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.dog",
+    "textTt": "Эт",
+    "path": "assets/audio/tt/clips/animal-dog.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.cow",
+    "textTt": "Сыер",
+    "path": "assets/audio/tt/clips/animal-cow.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.horse",
+    "textTt": "Ат",
+    "path": "assets/audio/tt/clips/animal-horse.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.sheep",
+    "textTt": "Сарык",
+    "path": "assets/audio/tt/clips/animal-sheep.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.duck",
+    "textTt": "Үрдәк",
+    "path": "assets/audio/tt/clips/animal-duck.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.goat",
+    "textTt": "Кәҗә",
+    "path": "assets/audio/tt/clips/animal-goat.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.chicken",
+    "textTt": "Тавык",
+    "path": "assets/audio/tt/clips/animal-chicken.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.goose",
+    "textTt": "Каз",
+    "path": "assets/audio/tt/clips/animal-goose.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.mouse",
+    "textTt": "Тычкан",
+    "path": "assets/audio/tt/clips/animal-mouse.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.bear",
+    "textTt": "Аю",
+    "path": "assets/audio/tt/clips/animal-bear.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.wolf",
+    "textTt": "Бүре",
+    "path": "assets/audio/tt/clips/animal-wolf.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.fox",
+    "textTt": "Төлке",
+    "path": "assets/audio/tt/clips/animal-fox.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.hare",
+    "textTt": "Куян",
+    "path": "assets/audio/tt/clips/animal-hare.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.squirrel",
+    "textTt": "Тиен",
+    "path": "assets/audio/tt/clips/animal-squirrel.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.hedgehog",
+    "textTt": "Керпе",
+    "path": "assets/audio/tt/clips/animal-hedgehog.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.moose",
+    "textTt": "Поши",
+    "path": "assets/audio/tt/clips/animal-moose.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.deer",
+    "textTt": "Болан",
+    "path": "assets/audio/tt/clips/animal-deer.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.wild-boar",
+    "textTt": "Кабан",
+    "path": "assets/audio/tt/clips/animal-wild-boar.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.beaver",
+    "textTt": "Кондыз",
+    "path": "assets/audio/tt/clips/animal-beaver.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.lynx",
+    "textTt": "Селәүсен",
+    "path": "assets/audio/tt/clips/animal-lynx.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.badger",
+    "textTt": "Бурсык",
+    "path": "assets/audio/tt/clips/animal-badger.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.frog",
+    "textTt": "Бака",
+    "path": "assets/audio/tt/clips/animal-frog.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.lizard",
+    "textTt": "Кәлтә",
+    "path": "assets/audio/tt/clips/animal-lizard.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.grasshopper",
+    "textTt": "Чикерткә",
+    "path": "assets/audio/tt/clips/animal-grasshopper.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.ladybug",
+    "textTt": "Камка",
+    "path": "assets/audio/tt/clips/animal-ladybug.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.snail",
+    "textTt": "Әкәм-төкәм",
+    "path": "assets/audio/tt/clips/animal-snail.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.butterfly",
+    "textTt": "Күбәләк",
+    "path": "assets/audio/tt/clips/animal-butterfly.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.bee",
+    "textTt": "Бал корты",
+    "path": "assets/audio/tt/clips/animal-bee.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.ant",
+    "textTt": "Кырмыска",
+    "path": "assets/audio/tt/clips/animal-ant.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.turtle",
+    "textTt": "Ташбака",
+    "path": "assets/audio/tt/clips/animal-turtle.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.snake",
+    "textTt": "Елан",
+    "path": "assets/audio/tt/clips/animal-snake.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.dragonfly",
+    "textTt": "Энә карагы",
+    "path": "assets/audio/tt/clips/animal-dragonfly.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.sparrow",
+    "textTt": "Чыпчык",
+    "path": "assets/audio/tt/clips/animal-sparrow.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.crow",
+    "textTt": "Карга",
+    "path": "assets/audio/tt/clips/animal-crow.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.owl",
+    "textTt": "Ябалак",
+    "path": "assets/audio/tt/clips/animal-owl.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.woodpecker",
+    "textTt": "Тукран",
+    "path": "assets/audio/tt/clips/animal-woodpecker.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.stork",
+    "textTt": "Ләкләк",
+    "path": "assets/audio/tt/clips/animal-stork.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.fish",
+    "textTt": "Балык",
+    "path": "assets/audio/tt/clips/animal-fish.mp3",
+    "master": "master-03-animal-labels.wav"
+  },
+  {
+    "id": "animal.cat.target",
+    "textTt": "Мәчене",
+    "path": "assets/audio/tt/clips/animal-cat-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.dog.target",
+    "textTt": "Этне",
+    "path": "assets/audio/tt/clips/animal-dog-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.cow.target",
+    "textTt": "Сыерны",
+    "path": "assets/audio/tt/clips/animal-cow-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.horse.target",
+    "textTt": "Атны",
+    "path": "assets/audio/tt/clips/animal-horse-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.sheep.target",
+    "textTt": "Сарыкны",
+    "path": "assets/audio/tt/clips/animal-sheep-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.duck.target",
+    "textTt": "Үрдәкне",
+    "path": "assets/audio/tt/clips/animal-duck-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.goat.target",
+    "textTt": "Кәҗәне",
+    "path": "assets/audio/tt/clips/animal-goat-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.chicken.target",
+    "textTt": "Тавыкны",
+    "path": "assets/audio/tt/clips/animal-chicken-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.goose.target",
+    "textTt": "Казны",
+    "path": "assets/audio/tt/clips/animal-goose-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.mouse.target",
+    "textTt": "Тычканны",
+    "path": "assets/audio/tt/clips/animal-mouse-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.bear.target",
+    "textTt": "Аюны",
+    "path": "assets/audio/tt/clips/animal-bear-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.wolf.target",
+    "textTt": "Бүрене",
+    "path": "assets/audio/tt/clips/animal-wolf-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.fox.target",
+    "textTt": "Төлкене",
+    "path": "assets/audio/tt/clips/animal-fox-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.hare.target",
+    "textTt": "Куянны",
+    "path": "assets/audio/tt/clips/animal-hare-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.squirrel.target",
+    "textTt": "Тиенне",
+    "path": "assets/audio/tt/clips/animal-squirrel-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.hedgehog.target",
+    "textTt": "Керпене",
+    "path": "assets/audio/tt/clips/animal-hedgehog-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.moose.target",
+    "textTt": "Пошине",
+    "path": "assets/audio/tt/clips/animal-moose-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.deer.target",
+    "textTt": "Боланны",
+    "path": "assets/audio/tt/clips/animal-deer-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.wild-boar.target",
+    "textTt": "Кабанны",
+    "path": "assets/audio/tt/clips/animal-wild-boar-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.beaver.target",
+    "textTt": "Кондызны",
+    "path": "assets/audio/tt/clips/animal-beaver-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.lynx.target",
+    "textTt": "Селәүсенне",
+    "path": "assets/audio/tt/clips/animal-lynx-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.badger.target",
+    "textTt": "Бурсыкны",
+    "path": "assets/audio/tt/clips/animal-badger-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.frog.target",
+    "textTt": "Баканы",
+    "path": "assets/audio/tt/clips/animal-frog-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.lizard.target",
+    "textTt": "Кәлтәне",
+    "path": "assets/audio/tt/clips/animal-lizard-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.grasshopper.target",
+    "textTt": "Чикерткәне",
+    "path": "assets/audio/tt/clips/animal-grasshopper-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.ladybug.target",
+    "textTt": "Камканы",
+    "path": "assets/audio/tt/clips/animal-ladybug-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.snail.target",
+    "textTt": "Әкәм-төкәмне",
+    "path": "assets/audio/tt/clips/animal-snail-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.butterfly.target",
+    "textTt": "Күбәләкне",
+    "path": "assets/audio/tt/clips/animal-butterfly-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.bee.target",
+    "textTt": "Бал кортын",
+    "path": "assets/audio/tt/clips/animal-bee-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.ant.target",
+    "textTt": "Кырмысканы",
+    "path": "assets/audio/tt/clips/animal-ant-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.turtle.target",
+    "textTt": "Ташбаканы",
+    "path": "assets/audio/tt/clips/animal-turtle-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.snake.target",
+    "textTt": "Еланны",
+    "path": "assets/audio/tt/clips/animal-snake-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.dragonfly.target",
+    "textTt": "Энә карагын",
+    "path": "assets/audio/tt/clips/animal-dragonfly-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.sparrow.target",
+    "textTt": "Чыпчыкны",
+    "path": "assets/audio/tt/clips/animal-sparrow-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.crow.target",
+    "textTt": "Карганы",
+    "path": "assets/audio/tt/clips/animal-crow-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.owl.target",
+    "textTt": "Ябалакны",
+    "path": "assets/audio/tt/clips/animal-owl-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.woodpecker.target",
+    "textTt": "Тукранны",
+    "path": "assets/audio/tt/clips/animal-woodpecker-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.stork.target",
+    "textTt": "Ләкләкне",
+    "path": "assets/audio/tt/clips/animal-stork-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "animal.fish.target",
+    "textTt": "Балыкны",
+    "path": "assets/audio/tt/clips/animal-fish-target.mp3",
+    "master": "master-04-animal-target-forms.wav"
+  },
+  {
+    "id": "common.where",
+    "textTt": "кайда?",
+    "path": "assets/audio/tt/clips/common-where.mp3",
+    "master": "master-05-common-prompts.wav"
+  },
+  {
+    "id": "common.find",
+    "textTt": "тап.",
+    "path": "assets/audio/tt/clips/common-find.mp3",
+    "master": "master-05-common-prompts.wav"
+  },
+  {
+    "id": "common.choose",
+    "textTt": "сайла.",
+    "path": "assets/audio/tt/clips/common-choose.mp3",
+    "master": "master-05-common-prompts.wav"
+  },
+  {
+    "id": "common.show",
+    "textTt": "күрсәт.",
+    "path": "assets/audio/tt/clips/common-show.mp3",
+    "master": "master-05-common-prompts.wav"
+  },
+  {
+    "id": "common.which",
+    "textTt": "Кайсысы",
+    "path": "assets/audio/tt/clips/common-which.mp3",
+    "master": "master-05-common-prompts.wav"
+  },
+  {
+    "id": "common.whichIn",
+    "textTt": "Кайсысында",
+    "path": "assets/audio/tt/clips/common-which-in.mp3",
+    "master": "master-05-common-prompts.wav"
+  },
+  {
+    "id": "common.has",
+    "textTt": "бар?",
+    "path": "assets/audio/tt/clips/common-has.mp3",
+    "master": "master-05-common-prompts.wav"
+  },
+  {
+    "id": "common.with",
+    "textTt": "булганын",
+    "path": "assets/audio/tt/clips/common-with.mp3",
+    "master": "master-05-common-prompts.wav"
+  },
+  {
+    "id": "common.howMany",
+    "textTt": "Ничә",
+    "path": "assets/audio/tt/clips/common-how-many.mp3",
+    "master": "master-05-common-prompts.wav"
+  },
+  {
+    "id": "common.countHowMany",
+    "textTt": "Санап кара. Ничә",
+    "path": "assets/audio/tt/clips/common-count-how-many.mp3",
+    "master": "master-05-common-prompts.wav"
+  },
+  {
+    "id": "common.totalHowMany",
+    "textTt": "Барысы ничә",
+    "path": "assets/audio/tt/clips/common-total-how-many.mp3",
+    "master": "master-05-common-prompts.wav"
+  },
+  {
+    "id": "common.countTotalHowMany",
+    "textTt": "Санап кара. Барысы ничә",
+    "path": "assets/audio/tt/clips/common-count-total-how-many.mp3",
+    "master": "master-05-common-prompts.wav"
+  },
+  {
+    "id": "common.left",
+    "textTt": "калды?",
+    "path": "assets/audio/tt/clips/common-left.mp3",
+    "master": "master-05-common-prompts.wav"
+  },
+  {
+    "id": "colors.findTail",
+    "textTt": "төсне тап.",
+    "path": "assets/audio/tt/clips/colors-find-tail.mp3",
+    "master": "master-05-common-prompts.wav"
+  },
+  {
+    "id": "colors.chooseTail",
+    "textTt": "төсне сайла.",
+    "path": "assets/audio/tt/clips/colors-choose-tail.mp3",
+    "master": "master-05-common-prompts.wav"
+  },
+  {
+    "id": "colors.showTail",
+    "textTt": "төсне күрсәт.",
+    "path": "assets/audio/tt/clips/colors-show-tail.mp3",
+    "master": "master-05-common-prompts.wav"
+  },
+  {
+    "id": "colors.objectColor.prompt",
+    "textTt": "Бу нинди төс?",
+    "path": "assets/audio/tt/clips/colors-object-color-prompt.mp3",
+    "master": "master-05-common-prompts.wav"
+  },
+  {
+    "id": "colors.sequence.prompt",
+    "textTt": "Киләсе төсне тап.",
+    "path": "assets/audio/tt/clips/colors-sequence-prompt.mp3",
+    "master": "master-05-common-prompts.wav"
+  },
+  {
+    "id": "animals.trait.bird",
+    "textTt": "Кошны тап.",
+    "path": "assets/audio/tt/clips/animals-trait-bird.mp3",
+    "master": "master-05-common-prompts.wav"
+  },
+  {
+    "id": "animals.trait.domestic",
+    "textTt": "Йорт хайванын тап.",
+    "path": "assets/audio/tt/clips/animals-trait-domestic.mp3",
+    "master": "master-05-common-prompts.wav"
+  },
+  {
+    "id": "animals.trait.wild",
+    "textTt": "Кыргый хайванны тап.",
+    "path": "assets/audio/tt/clips/animals-trait-wild.mp3",
+    "master": "master-05-common-prompts.wav"
+  },
+  {
+    "id": "animals.trait.canFly",
+    "textTt": "Кайсысы оча?",
+    "path": "assets/audio/tt/clips/animals-trait-can-fly.mp3",
+    "master": "master-05-common-prompts.wav"
+  },
+  {
+    "id": "animals.trait.canSwim",
+    "textTt": "Кайсысы йөзә?",
+    "path": "assets/audio/tt/clips/animals-trait-can-swim.mp3",
+    "master": "master-05-common-prompts.wav"
+  },
+  {
+    "id": "animals.silhouette.prompt",
+    "textTt": "Бу кайсы хайванның шәүләсе?",
+    "path": "assets/audio/tt/clips/animals-silhouette-prompt.mp3",
+    "master": "master-05-common-prompts.wav"
+  },
+  {
+    "id": "numbers.more.prompt",
+    "textTt": "Кайсысында күбрәк?",
+    "path": "assets/audio/tt/clips/numbers-more-prompt.mp3",
+    "master": "master-05-common-prompts.wav"
+  },
+  {
+    "id": "numbers.less.prompt",
+    "textTt": "Кайсысында азрак?",
+    "path": "assets/audio/tt/clips/numbers-less-prompt.mp3",
+    "master": "master-05-common-prompts.wav"
+  },
+  {
+    "id": "interaction.hello",
+    "textTt": "Сәлам!",
+    "path": "assets/audio/tt/interaction/hello.mp3",
+    "master": null
+  },
+  {
+    "id": "interaction.game-start",
+    "textTt": "Әйдә, башлыйбыз!",
+    "path": "assets/audio/tt/interaction/game-start.mp3",
+    "master": null
+  },
+  {
+    "id": "interaction.correct",
+    "textTt": "Дөрес!",
+    "path": "assets/audio/tt/interaction/correct.mp3",
+    "master": null
+  },
+  {
+    "id": "interaction.well-done",
+    "textTt": "Афәрин!",
+    "path": "assets/audio/tt/interaction/well-done.mp3",
+    "master": null
+  },
+  {
+    "id": "interaction.very-good",
+    "textTt": "Бик яхшы!",
+    "path": "assets/audio/tt/interaction/very-good.mp3",
+    "master": null
+  },
+  {
+    "id": "interaction.think-again",
+    "textTt": "Тагын уйлап кара.",
+    "path": "assets/audio/tt/interaction/think-again.mp3",
+    "master": null
+  },
+  {
+    "id": "interaction.try-again",
+    "textTt": "Тагын бер тапкыр.",
+    "path": "assets/audio/tt/interaction/try-again.mp3",
+    "master": null
+  },
+  {
+    "id": "interaction.hint",
+    "textTt": "Кайсысы икән?",
+    "path": "assets/audio/tt/interaction/hint.mp3",
+    "master": null
+  },
+  {
+    "id": "interaction.listen",
+    "textTt": "Тыңла әле.",
+    "path": "assets/audio/tt/interaction/listen.mp3",
+    "master": null
+  },
+  {
+    "id": "interaction.next-one",
+    "textTt": "Тагын берәү!",
+    "path": "assets/audio/tt/interaction/next-one.mp3",
+    "master": null
+  },
+  {
+    "id": "interaction.continue",
+    "textTt": "Дәвам итәбез!",
+    "path": "assets/audio/tt/interaction/continue.mp3",
+    "master": null
+  },
+  {
+    "id": "interaction.goodbye",
+    "textTt": "Сау бул!",
+    "path": "assets/audio/tt/interaction/goodbye.mp3",
+    "master": null
+  }
+]
