@@ -12,6 +12,43 @@ import { execFileSync } from 'node:child_process';
 import { inspectArtifact, measureBudgets } from './artifact.ts';
 import { readContent } from './read-content.ts';
 
+export async function createLegacyFixture(base: string) {
+  const root = await mkdtemp(join(tmpdir(), 'tamchy-mvp-'));
+  try {
+    // Последний работающий MVP до миграции; проверяем обновление настоящего старого приложения.
+    const source = execFileSync(
+      'git',
+      [
+        'archive',
+        '5a2aece6a3e53e9792ae7867c47de488a9d5941b',
+        'src',
+        'scripts',
+        'index.html',
+        'package.json',
+        'package-lock.json',
+        'vite.config.ts',
+      ],
+      { maxBuffer: 16 * 1024 * 1024 },
+    );
+    execFileSync('tar', ['-x', '-C', root], { input: source });
+    await cp(resolve('public'), join(root, 'public'), { recursive: true });
+    await symlink(resolve('node_modules'), join(root, 'node_modules'), 'dir');
+    execFileSync(
+      process.execPath,
+      [resolve('node_modules/vite/bin/vite.js'), 'build'],
+      {
+        cwd: root,
+        env: { ...process.env, VITE_BASE: base },
+        stdio: 'pipe',
+      },
+    );
+    return root;
+  } catch (error) {
+    await rm(root, { recursive: true, force: true });
+    throw error;
+  }
+}
+
 export async function createUpdateFixture(base: string) {
   const root = await mkdtemp(join(tmpdir(), 'tamchy-update-'));
   try {

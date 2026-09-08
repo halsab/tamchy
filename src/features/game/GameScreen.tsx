@@ -38,11 +38,12 @@ export function GameScreen({
   const hint = state !== null && hasHint(state);
   const blocked =
     state?.status === 'error' && state.failure.reason === 'blocked';
+  const blocking = state?.status === 'error' || state?.status === 'paused';
   return (
     <div
       className={styles.game}
       data-count={state?.round.options.length ?? 2}
-      data-blocking={state?.status === 'error' || state?.status === 'paused'}
+      data-blocking={blocking}
       style={
         { '--answer-count': state?.round.options.length ?? 2 } as CSSProperties
       }
@@ -91,7 +92,7 @@ export function GameScreen({
                 imageUrl={game.imageUrl}
                 onImageError={game.imageFailed}
               />
-              {correct && (
+              {correct && !blocking && (
                 <span
                   className={styles.check}
                   role="img"
@@ -105,6 +106,15 @@ export function GameScreen({
         })}
       </div>
       <div className={styles.feedback}>
+        {accepted && blocking && (
+          <span
+            className={`${styles.check} ${styles.blockingCheck}`}
+            role="img"
+            aria-label={strings.game.correct}
+          >
+            <Icon name="check" />
+          </span>
+        )}
         {hint && (
           <span id="game-hint" className="visuallyHidden">
             {strings.game.hint}

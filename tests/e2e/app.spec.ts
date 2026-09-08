@@ -5,7 +5,7 @@ import { resolve } from 'node:path';
 import { join } from 'node:path';
 import type { Page } from '@playwright/test';
 import strings from '../../src/content/tt.json' with { type: 'json' };
-import catalog from '../../src/content/catalog.json' with { type: 'json' };
+import { contentV2 as catalog } from '../../src/content/v2/catalog.ts';
 import { test, expect, answerButtons, answersReady } from './fixtures.ts';
 
 async function imagesReady(page: Page) {
@@ -52,10 +52,10 @@ test('меню → три раздела → ошибка загрузки → �
   appRoot.href = server.url;
   const failing = new Set(catalog.categories.map((category) => category.id));
   server.fail((path) => {
-    const failure = [...failing].some(
-      (id) =>
-        path.startsWith(`assets/audio/tt/${id}/`) &&
-        path.endsWith('-prompt.mp3'),
+    const failure = [...failing].some((id) =>
+      path.startsWith(
+        `assets/audio/tt/clips/${id === 'colors' ? 'color' : id === 'animals' ? 'animal' : 'number'}-`,
+      ),
     );
     if (failure) expectedAudioFailures.add(new URL(path, server.url).href);
     return failure;
@@ -89,7 +89,7 @@ test('меню → три раздела → ошибка загрузки → �
       failing.delete(category.id);
       const request = page.waitForResponse(
         (response) =>
-          response.url().endsWith('-prompt.mp3') && response.status() === 200,
+          response.url().includes('/clips/') && response.status() === 200,
       );
       await page.getByRole('button', { name: strings.action.retry }).click();
       await request;
@@ -192,10 +192,6 @@ for (const viewport of viewports) {
     checkedPage: page,
     browserName,
   }, testInfo) => {
-    test.skip(
-      browserName === 'firefox',
-      'Firefox проверяет основные настольные переходы.',
-    );
     await page.setViewportSize(viewport);
     for (const route of ['home', 'colors', 'animals', 'numbers', 'parents']) {
       await page.goto(`./#/${route === 'home' ? '' : route}`);
@@ -274,18 +270,20 @@ for (const viewport of viewports) {
           buttons.every((button) => {
             const card = button.getBoundingClientRect();
             if (button.scrollHeight > button.clientHeight) return false;
-            return [...button.querySelectorAll('img')].every((image) => {
-              const box = image.getBoundingClientRect();
-              return (
-                box.left >= card.left &&
-                box.right <= card.right &&
-                box.top >= card.top &&
-                box.bottom <= card.bottom
-              );
-            });
+            return [...button.querySelectorAll('img, canvas')].every(
+              (image) => {
+                const box = image.getBoundingClientRect();
+                return (
+                  box.left >= card.left &&
+                  box.right <= card.right &&
+                  box.top >= card.top &&
+                  box.bottom <= card.bottom
+                );
+              },
+            );
           }),
         );
-        expect(contained, 'Яблоки целиком внутри своей карточки').toBe(true);
+        expect(contained, 'Предметы целиком внутри своей карточки').toBe(true);
       }
       if (route === 'home') {
         for (const category of catalog.categories)
@@ -315,14 +313,7 @@ for (const viewport of viewports) {
   });
 }
 
-test('увеличение текста и reduced motion', async ({
-  checkedPage: page,
-  browserName,
-}) => {
-  test.skip(
-    browserName === 'firefox',
-    'Firefox проверяет основные настольные переходы.',
-  );
+test('увеличение текста и reduced motion', async ({ checkedPage: page }) => {
   await page.setViewportSize({ width: 320, height: 568 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   for (const route of ['', 'colors', 'animals', 'numbers', 'parents']) {

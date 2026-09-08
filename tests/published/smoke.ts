@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { chromium, expect } from '@playwright/test';
-import catalog from '../../src/content/catalog.json' with { type: 'json' };
+import { contentV2 as catalog } from '../../src/content/v2/catalog.ts';
 import strings from '../../src/content/tt.json' with { type: 'json' };
 
 const [address, release] = process.argv.slice(2);
@@ -46,14 +46,19 @@ try {
   await expect(page).toHaveTitle(strings.app.name);
   await expect(page.getByRole('button')).toHaveText([
     ...catalog.categories.map((category) => category.labelTt),
-    strings.nav.parents,
+    '',
   ]);
+  await expect(page.getByRole('button').last()).toHaveAccessibleName(
+    strings.nav.parents,
+  );
   for (const category of catalog.categories) {
     const responsePromise = page.waitForResponse(
       (response) =>
-        response.url().includes(`/assets/audio/tt/${category.id}/`) &&
-        response.url().endsWith('-prompt.mp3') &&
-        response.status() === 200,
+        response
+          .url()
+          .includes(
+            `/assets/audio/tt/clips/${category.id === 'colors' ? 'color' : category.id === 'animals' ? 'animal' : 'number'}-`,
+          ) && response.status() === 200,
     );
     await page
       .getByRole('button', { name: category.labelTt, exact: true })

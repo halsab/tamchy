@@ -1,23 +1,25 @@
-import {
-  interactionIds,
-  interactionPath,
-} from '../../src/content/interactions.ts';
+import { interactionPath } from '../../src/content/interactions.ts';
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import catalog from '../../src/content/catalog.json' with { type: 'json' };
+import { contentV2 as catalog } from '../../src/content/v2/catalog.ts';
+import { juniorItems } from '../helpers/junior-content.ts';
+import { traceAudio } from './audio-trace.ts';
 import strings from '../../src/content/tt.json' with { type: 'json' };
-import { test, expect, answerButtons, answersReady } from './fixtures.ts';
+import {
+  test,
+  expect,
+  answerButtons,
+  answersReady,
+  currentExercise,
+} from './fixtures.ts';
 
-test('все 42 MP3 из сборки совпадают с исходными файлами и декодируются', async ({
+test('все 189 MP3 из сборки совпадают с исходными файлами и декодируются', async ({
   checkedPage: page,
 }) => {
   const recordings = await Promise.all(
-    catalog.categories
-      .flatMap((category) =>
-        category.items.flatMap((item) => [item.labelAudio, item.promptAudio]),
-      )
-      .concat(interactionIds.map(interactionPath))
+    catalog.audio
+      .map((clip) => clip.path)
       .map(async (path) => ({
         path,
         sha256: createHash('sha256')
@@ -25,7 +27,7 @@ test('все 42 MP3 из сборки совпадают с исходными �
           .digest('hex'),
       })),
   );
-  expect(recordings).toHaveLength(42);
+  expect(recordings).toHaveLength(189);
   await page.goto('./');
   const decoded = await page.evaluate(async (entries) => {
     const context = new AudioContext();
@@ -64,6 +66,11 @@ for (const category of catalog.categories) {
   test(`${category.labelTt}: полный цикл с настоящими заданиями и подтверждениями`, async ({
     checkedPage: page,
   }) => {
+    test.setTimeout(300_000);
+    const trace = await traceAudio(page);
+    const required = new Set<string>();
+    const formulations = new Set<string>();
+    const items = juniorItems(category.id);
     const received = new Set<string>();
     page.on('response', (response) => {
       // WebKit/Firefox сообщают сетевой 304 при успешной ревалидации HTTP-кэша.
@@ -76,15 +83,26 @@ for (const category of catalog.categories) {
       .click();
     const historyLength = await page.evaluate(() => history.length);
     const visited = new Set<string>();
-    for (let round = 0; round < category.items.length; round++) {
+    for (
+      let round = 0;
+      round < items.length ||
+      formulations.size < (category.id === 'colors' ? 3 : 5);
+      round++
+    ) {
       await answersReady(page);
-      const text = await page.getByRole('main').innerText();
-      const target = category.items.find((item) =>
-        text.includes(item.promptTt),
-      )!;
-      expect(target).toBeDefined();
-      expect(visited.has(target.id)).toBe(false);
+      expect(round).toBeLessThan(items.length * 5);
+      const exercise = await currentExercise(page, category.id);
+      const { target } = exercise;
+      if (round < items.length) expect(visited.has(target.id)).toBe(false);
       visited.add(target.id);
+      formulations.add(exercise.recipeId);
+      exercise.promptAudio.forEach((path) => required.add(path));
+      required.add(exercise.labelAudio);
+      await expect
+        .poll(async () =>
+          (await trace()).starts.slice(-exercise.promptAudio.length),
+        )
+        .toEqual(exercise.promptAudio);
 
       if (round === 0) {
         const labels = await answerButtons(page).evaluateAll((buttons) =>
@@ -98,7 +116,7 @@ for (const category of catalog.categories) {
           );
           await answersReady(page);
           await expect(
-            page.getByText(target.promptTt, { exact: true }),
+            page.getByText(exercise.textTt, { exact: true }),
           ).toBeVisible();
           expect(
             await answerButtons(page).evaluateAll((buttons) =>
@@ -114,7 +132,7 @@ for (const category of catalog.categories) {
           .click();
         await answersReady(page);
         await expect(
-          page.getByText(target.promptTt, { exact: true }),
+          page.getByText(exercise.textTt, { exact: true }),
         ).toBeVisible();
       }
 
@@ -125,22 +143,19 @@ for (const category of catalog.categories) {
       for (const button of await answerButtons(page).all())
         await expect(button).toBeDisabled();
       await expect(
-        page.getByText(target.promptTt, { exact: true }),
+        page.getByText(exercise.textTt, { exact: true }),
       ).not.toBeVisible();
       await answersReady(page);
       expect(await page.evaluate(() => history.length)).toBe(historyLength);
       await expect(page).toHaveURL(new RegExp(`#/${category.id}$`));
     }
-    expect([...visited].sort()).toEqual(
-      category.items.map((item) => item.id).sort(),
-    );
-    for (const item of category.items) {
-      for (const path of [item.promptAudio, item.labelAudio])
-        expect(
-          [...received].some((url) => url.endsWith(`/${path}`)),
-          path,
-        ).toBe(true);
-    }
+    expect([...visited].sort()).toEqual(items.map((item) => item.id).sort());
+    for (const path of required)
+      expect(
+        [...received].some((url) => url.endsWith(`/${path}`)),
+        path,
+      ).toBe(true);
+    expect((await trace()).overlaps).toEqual([]);
     await page.getByRole('button', { name: strings.nav.home }).click();
     await expect(
       page.getByRole('heading', { name: strings.app.name }),
@@ -152,56 +167,18 @@ test('реальные реплики идут перед учебной зап�
   checkedPage: page,
 }) => {
   const category = catalog.categories[0]!;
-  const paths = [
-    ...category.items.flatMap((item) => [item.labelAudio, item.promptAudio]),
-    ...interactionIds.map(interactionPath),
-  ];
-  const known = Object.fromEntries(
-    await Promise.all(
-      paths.map(async (path) => [
-        createHash('sha256')
-          .update(await readFile(resolve('public', path)))
-          .digest('hex'),
-        path,
-      ]),
-    ),
-  );
-  await page.addInitScript((known) => {
-    const starts: string[] = [];
-    (window as Window & { audioStarts?: string[] }).audioStarts = starts;
-    const buffers = new WeakMap<AudioBuffer, string>();
-    const decode = AudioContext.prototype.decodeAudioData;
-    AudioContext.prototype.decodeAudioData = async function (data) {
-      const digest = await crypto.subtle.digest('SHA-256', data.slice(0));
-      const buffer = await decode.call(this, data);
-      const hash = [...new Uint8Array(digest)]
-        .map((byte) => byte.toString(16).padStart(2, '0'))
-        .join('');
-      buffers.set(buffer, known[hash] ?? 'unknown');
-      return buffer;
-    };
-    const start = AudioBufferSourceNode.prototype.start;
-    AudioBufferSourceNode.prototype.start = function (...args) {
-      start.apply(this, args);
-      starts.push(
-        this.buffer ? (buffers.get(this.buffer) ?? 'unknown') : 'empty',
-      );
-    };
-  }, known);
-  const starts = () =>
-    page.evaluate(
-      () => (window as Window & { audioStarts?: string[] }).audioStarts ?? [],
-    );
+  const trace = await traceAudio(page);
+  const starts = async () => (await trace()).starts;
   await page.goto('./');
   expect(await starts()).toEqual([]);
   await page
     .getByRole('button', { name: category.labelTt, exact: true })
     .click();
   await answersReady(page);
-  const text = await page.getByRole('main').innerText();
-  const target = category.items.find((item) => text.includes(item.promptTt))!;
-  const expected = [interactionPath('hello'), target.promptAudio];
-  expect(await starts()).toEqual(expected);
+  const exercise = await currentExercise(page, category.id);
+  const { target } = exercise;
+  const expected = [interactionPath('hello'), ...exercise.promptAudio];
+  await expect.poll(starts).toEqual(expected);
   const labels = await answerButtons(page).evaluateAll((buttons) =>
     buttons.map((button) => button.getAttribute('aria-label')),
   );
@@ -210,11 +187,11 @@ test('реальные реплики идут перед учебной зап�
     await page.getByRole('button', { name: wrong, exact: true }).click();
     await expect(page.getByRole('status')).toHaveText(strings.game.tryAgain);
     await answersReady(page);
-    expected.push(interactionPath(introduction), target.promptAudio);
-    expect(await starts()).toEqual(expected);
+    expected.push(interactionPath(introduction), ...exercise.promptAudio);
+    await expect.poll(starts).toEqual(expected);
   }
   await page.getByRole('button', { name: target.labelTt, exact: true }).click();
-  expected.push(interactionPath('correct'), target.labelAudio);
+  expected.push(interactionPath('correct'), exercise.labelAudio);
   await expect.poll(starts).toEqual(expected);
   await page.getByRole('button', { name: strings.nav.home }).click();
   await expect(
@@ -229,5 +206,6 @@ test('реальные реплики идут перед учебной зап�
   expect((await starts()).slice(expected.length, expected.length + 1)).toEqual([
     interactionPath('game-start'),
   ]);
-  expect(await starts()).toHaveLength(expected.length + 2);
+  expect((await trace()).overlaps).toEqual([]);
+  expect((await starts()).length).toBeGreaterThanOrEqual(expected.length + 2);
 });

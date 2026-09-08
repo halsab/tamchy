@@ -1,5 +1,7 @@
 import { test as base, expect, type Page } from '@playwright/test';
 import strings from '../../src/content/tt.json' with { type: 'json' };
+import type { CategoryId } from '../../src/content/types.ts';
+import { juniorPrompts } from '../helpers/junior-content.ts';
 
 export const test = base.extend<{
   checkedPage: Page;
@@ -58,11 +60,27 @@ export const test = base.extend<{
 
 export { expect };
 export const answerButtons = (page: Page) =>
-  page.getByRole('group', { name: strings.game.answers }).getByRole('button');
+  page
+    .getByRole('group', { name: strings.game.answers, includeHidden: true })
+    .getByRole('button', { includeHidden: true });
 
 export async function answersReady(page: Page) {
-  await expect(answerButtons(page)).toHaveCount(2);
+  await expect
+    .poll(() => answerButtons(page).count())
+    .toBeGreaterThanOrEqual(2);
+  expect(await answerButtons(page).count()).toBeLessThanOrEqual(4);
   for (const button of await answerButtons(page).all())
     await expect(button).toBeEnabled();
   await expect(page.getByRole('alert')).toHaveCount(0);
+}
+
+export async function currentExercise(page: Page, categoryId: CategoryId) {
+  const text = await page
+    .getByRole('group', { name: strings.game.answers, includeHidden: true })
+    .evaluate((group) => group.previousElementSibling?.textContent);
+  const exercise = juniorPrompts(categoryId).find(
+    (exercise) => exercise.textTt === text,
+  );
+  expect(exercise, `Неизвестное задание: ${text}`).toBeDefined();
+  return exercise!;
 }

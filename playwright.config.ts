@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import { defineConfig } from '@playwright/test';
 
 const base = process.env.VITE_BASE ?? '/';
+const port = Number(process.env.TAMCHY_E2E_PORT ?? 4173);
 export default defineConfig({
   testDir: './tests/e2e',
   outputDir: join(
@@ -15,7 +16,7 @@ export default defineConfig({
   workers: 3,
   reporter: 'list',
   use: {
-    baseURL: `http://127.0.0.1:4173${base}`,
+    baseURL: `http://127.0.0.1:${port}${base}`,
     viewport: { width: 1024, height: 768 },
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
@@ -26,8 +27,8 @@ export default defineConfig({
     { name: 'firefox', use: { browserName: 'firefox' } },
   ],
   webServer: {
-    command: 'npm run preview -- --port 4173 --strictPort',
-    url: `http://127.0.0.1:4173${base}`,
+    command: `npm run preview -- --port ${port} --strictPort`,
+    url: `http://127.0.0.1:${port}${base}`,
     reuseExistingServer: false,
     timeout: 30000,
   },

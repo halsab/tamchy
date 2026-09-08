@@ -1,7 +1,7 @@
 import { spawnSync } from 'node:child_process';
 import { rm } from 'node:fs/promises';
 import { join } from 'node:path';
-import { createUpdateFixture } from './lib/e2e-update.ts';
+import { createLegacyFixture, createUpdateFixture } from './lib/e2e-update.ts';
 import {
   captureRelease,
   preserveRelease,
@@ -24,14 +24,18 @@ run(['run', 'check:assets'], env);
 run(['run', 'check:budgets'], env);
 const report = await captureRelease(base);
 const updateRoot = await createUpdateFixture(base);
+let legacyRoot: string | undefined;
 try {
+  legacyRoot = await createLegacyFixture(base);
   run(['exec', 'playwright', 'test', '--', ...process.argv.slice(2)], {
     ...env,
     TAMCHY_UPDATE_DIST: join(updateRoot, 'dist'),
+    TAMCHY_MVP_DIST: join(legacyRoot, 'dist'),
   });
   await verifyRelease('dist', report, base, undefined, false);
   report.e2e = process.argv.length > 2 ? 'filtered' : 'full';
   await preserveRelease('dist', releaseDirectory(base), report);
 } finally {
   await rm(updateRoot, { recursive: true, force: true });
+  if (legacyRoot) await rm(legacyRoot, { recursive: true, force: true });
 }

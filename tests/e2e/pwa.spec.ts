@@ -1,8 +1,4 @@
 import {
-  interactionIds,
-  interactionPath,
-} from '../../src/content/interactions.ts';
-import {
   test,
   expect,
   chromium,
@@ -13,10 +9,11 @@ import {
 import { mkdtemp, rm, readFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
-import catalog from '../../src/content/catalog.json' with { type: 'json' };
+import { contentV2 as catalog } from '../../src/content/v2/catalog.ts';
+import { juniorItems } from '../helpers/junior-content.ts';
 import strings from '../../src/content/tt.json' with { type: 'json' };
 import { artifactServer } from './pwa-server.ts';
-import { answersReady } from './fixtures.ts';
+import { answersReady, currentExercise } from './fixtures.ts';
 
 const base = process.env.VITE_BASE ?? '/';
 const engines = { chromium, webkit, firefox };
@@ -53,10 +50,10 @@ async function parents(page: Page) {
 const offlineStatus = (page: Page) =>
   page.getByRole('status', { name: strings.parents.connectionTitle });
 
-test('T13: только главное меню → закрытие браузера → тот же профиль без сети → 15 целей и 42 записи', async ({
+test('T13: только главное меню → закрытие браузера → тот же профиль без сети → 62 цели и 189 записей', async ({
   browserName,
 }, testInfo) => {
-  test.setTimeout(120_000);
+  test.setTimeout(300_000);
   const server = await artifactServer(resolve('dist'), base);
   const profile = await mkdtemp(join(tmpdir(), 'tamchy-offline-profile-'));
   const engine = engines[browserName];
@@ -98,10 +95,7 @@ test('T13: только главное меню → закрытие брауз�
     await parents(page);
     await expect(offlineStatus(page)).toHaveText(strings.status.offlineReady);
     await page.getByRole('button', { name: strings.nav.home }).click();
-    const audio = catalog.categories.flatMap((category) =>
-      category.items.flatMap((item) => [item.labelAudio, item.promptAudio]),
-    );
-    audio.push(...interactionIds.map(interactionPath));
+    const audio = catalog.audio.map((clip) => clip.path);
     const decoded = await page.evaluate(async (paths) => {
       const audio = new AudioContext();
       const results = [];
@@ -125,7 +119,7 @@ test('T13: только главное меню → закрытие брауз�
       }
       return results;
     }, audio);
-    expect(decoded).toHaveLength(42);
+    expect(decoded).toHaveLength(189);
     for (const item of decoded) {
       expect(item.channels).toBe(1);
       expect(item.duration).toBeGreaterThan(0);
@@ -137,12 +131,10 @@ test('T13: только главное меню → закрытие брауз�
         .getByRole('button', { name: category.labelTt, exact: true })
         .click();
       const cycle = new Set<string>();
-      for (let round = 0; round < category.items.length; round++) {
+      for (let round = 0; round < juniorItems(category.id).length; round++) {
         await answersReady(page);
-        const text = await page.getByRole('main').innerText();
-        const target = category.items.find((item) =>
-          text.includes(item.promptTt),
-        )!;
+        const exercise = await currentExercise(page, category.id);
+        const { target } = exercise;
         expect(target).toBeDefined();
         expect(cycle.has(target.id)).toBe(false);
         cycle.add(target.id);
@@ -152,13 +144,13 @@ test('T13: только главное меню → закрытие брауз�
           .click();
         await expect(page.getByRole('status')).toHaveText(strings.game.correct);
         await expect(
-          page.getByText(target.promptTt, { exact: true }),
+          page.getByText(exercise.textTt, { exact: true }),
         ).not.toBeVisible();
       }
-      expect(cycle.size).toBe(category.items.length);
+      expect(cycle.size).toBe(juniorItems(category.id).length);
       await page.getByRole('button', { name: strings.nav.home }).click();
     }
-    expect(visited).toHaveLength(15);
+    expect(visited).toHaveLength(62);
     expect(errors).toEqual([]);
     await testInfo.attach('offline-evidence', {
       body: JSON.stringify(
@@ -220,7 +212,7 @@ test('потеря сохранённого MP3 обнаруживается б�
   try {
     await page.goto(server.url);
     await verifyHome(page);
-    const path = catalog.categories[0]!.items[0]!.labelAudio;
+    const path = catalog.audio.find((clip) => clip.id === 'color.red')!.path;
     const removed = await page.evaluate(async (path) => {
       let removed = false;
       for (const name of await caches.keys()) {
