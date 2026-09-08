@@ -19,7 +19,7 @@ export type AudioBoundary = {
 export type PlaybackCallbacks = {
   started: () => void;
   ended: () => void;
-  failed: (reason: ResourceError['reason']) => void;
+  failed: (reason: ResourceError['reason'], path?: string) => void;
 };
 
 export function createAudioService(boundary: Partial<AudioBoundary> = {}) {
@@ -124,11 +124,15 @@ export function createAudioService(boundary: Partial<AudioBoundary> = {}) {
   }
 
   function play(
-    path: string,
+    path: string | readonly string[],
     signal: AbortSignal,
     callbacks: PlaybackCallbacks,
     introduction?: string,
   ) {
+    const parts = typeof path === 'string' ? [path] : [...path];
+    if (!parts.length)
+      throw new RangeError('Аудиозадание не может быть пустым.');
+    let partIndex = 0;
     stop();
     if (signal.aborted || disposed) return;
     const controller = new AbortController();
@@ -145,7 +149,7 @@ export function createAudioService(boundary: Partial<AudioBoundary> = {}) {
       introductionLoad = undefined;
     };
     const current = {
-      path,
+      path: parts[0]!,
       controller,
       source: null as AudioBufferSourceNode | null,
       buffer: null as AudioBuffer | null,
@@ -199,7 +203,9 @@ export function createAudioService(boundary: Partial<AudioBoundary> = {}) {
           source.onended = null;
           source.disconnect();
           current.source = null;
-          if (introductory) void startRecording(path, false);
+          if (introductory) void startRecording(parts[0]!, false);
+          else if (++partIndex < parts.length)
+            void startRecording(parts[partIndex]!, false);
           else {
             current.detach();
             playback = null;
@@ -209,7 +215,7 @@ export function createAudioService(boundary: Partial<AudioBoundary> = {}) {
         source.start();
         if (context.state !== 'running') throw new ResourceError('blocked');
         // Ответ разрешается только после начала учебной фразы, а не вступительной реплики.
-        if (!introductory) callbacks.started();
+        if (!introductory && partIndex === 0) callbacks.started();
       } catch (error) {
         if (playback !== current || controller.signal.aborted) return;
         clearIntroduction();
@@ -219,16 +225,17 @@ export function createAudioService(boundary: Partial<AudioBoundary> = {}) {
           ((error instanceof ResourceError && error.reason !== 'blocked') ||
             (error instanceof DOMException && error.name === 'AbortError'))
         ) {
-          void startRecording(path, false);
+          void startRecording(parts[0]!, false);
           return;
         }
         stop();
-        callbacks.failed(
-          error instanceof ResourceError ? error.reason : 'blocked',
-        );
+        const reason =
+          error instanceof ResourceError ? error.reason : 'blocked';
+        if (typeof path === 'string') callbacks.failed(reason);
+        else callbacks.failed(reason, recording);
       }
     }
-    void startRecording(introduction ?? path, introduction !== undefined);
+    void startRecording(introduction ?? parts[0]!, introduction !== undefined);
   }
 
   return {
