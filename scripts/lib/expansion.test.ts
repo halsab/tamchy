@@ -56,30 +56,29 @@ describe('подготовленные данные v2', () => {
         master: z.enum(masters).nullable(),
       }),
     )
-      .length(187)
+      .length(189)
       .parse(audio);
     z.array(
       z.strictObject({
         id: z.string().regex(/^[a-z]+(?:-[a-z]+)*$/),
-        source: z
-          .string()
-          .regex(/^assets-source\/(?:[a-z-]+\/)*[a-z-]+\.(?:png|svg)$/),
+        source: z.string().regex(/^assets-source\/(?:[a-z-]+\/)*[a-z-]+\.png$/),
         outputs: z.array(z.string().refine(isAssetPath)).min(1),
         sha256: z.string().regex(/^[a-f0-9]{64}$/),
       }),
     )
-      .length(53)
+      .length(56)
       .parse(graphics);
     for (const entries of [colors, audio, graphics]) {
       expect(new Set(entries.map(({ id }) => id)).size).toBe(entries.length);
     }
-    expect(new Set(audio.map(({ path }) => path)).size).toBe(187);
-    expect(new Set(graphics.map(({ source }) => source)).size).toBe(53);
+    expect(new Set(audio.map(({ path }) => path)).size).toBe(189);
+    expect(new Set(graphics.map(({ source }) => source)).size).toBe(56);
     const outputs = graphics.flatMap(({ outputs }) => outputs);
-    expect(outputs).toHaveLength(56);
+    expect(outputs).toHaveLength(59);
     expect(new Set(outputs).size).toBe(outputs.length);
     expect(outputs.filter((path) => path.endsWith('.webp'))).toHaveLength(43);
-    expect(outputs.filter((path) => path.endsWith('.svg'))).toHaveLength(9);
+    expect(outputs.filter((path) => path.endsWith('.png'))).toHaveLength(16);
+    expect(outputs.filter((path) => path.endsWith('.svg'))).toEqual([]);
   });
 
   it('сверяет все названия и HEX с ТЗ, графическим и аудиореестрами', async () => {
@@ -114,7 +113,7 @@ describe('подготовленные данные v2', () => {
     }
   });
 
-  it('сверяет 175 новых клипов с каждым мастер-разделом сценария', async () => {
+  it('сверяет 177 новых клипов с каждым мастер-разделом сценария', async () => {
     const script = await readFile(
       resolve(root, 'docs/audio-recording-script.md'),
       'utf8',
@@ -132,7 +131,7 @@ describe('подготовленные данные v2', () => {
         ),
       );
     });
-    expect(expected).toHaveLength(175);
+    expect(expected).toHaveLength(177);
     expect(
       audio
         .filter(({ master }) => master !== null)
@@ -142,7 +141,7 @@ describe('подготовленные данные v2', () => {
       masters.map(
         (master) => audio.filter((clip) => clip.master === master).length,
       ),
-    ).toEqual([31, 40, 39, 39, 26]);
+    ).toEqual([33, 40, 39, 39, 26]);
     for (const clip of audio.filter(({ master }) => master !== null)) {
       const filename = clip.id
         .replace(/([a-z])([A-Z])/g, '$1-$2')
@@ -194,10 +193,27 @@ describe('подготовленные данные v2', () => {
       expect(ids.has(`number.${number}`)).toBe(true);
       expect(ids.has(`number.${number}.target`)).toBe(true);
     }
-    expect(audio.filter(({ id }) => id.startsWith('count.'))).toHaveLength(4);
-    expect(graphics.filter(({ id }) => /cube|pyramid|top/.test(id))).toEqual(
-      [],
+    expect(audio.filter(({ id }) => id.startsWith('count.'))).toHaveLength(6);
+    expect(
+      graphics
+        .filter(({ id }) => id.startsWith('color-object-'))
+        .map(({ id }) => id),
+    ).toEqual([
+      'color-object-ball',
+      'color-object-ring-toy',
+      'color-object-car-toy',
+      'color-object-cube',
+      'color-object-pyramid-toy',
+      'color-object-top',
+    ]);
+    expect(audio.find(({ id }) => id === 'shape.square')?.textTt).toBe(
+      'Шакмак',
     );
+    expect(audio.find(({ id }) => id === 'count.pyramid')?.textTt).toBe(
+      'Пирамида',
+    );
+    expect(audio.find(({ id }) => id === 'count.top')?.textTt).toBe('Бөтерчек');
+    expect(ids.has('count.cube')).toBe(false);
     expect(
       graphics.find(({ id }) => id === 'app-icon-master')?.outputs,
     ).toEqual(icons.map(({ path }) => path));
@@ -208,9 +224,9 @@ describe('подготовленные данные v2', () => {
       resolve(root, 'docs/illustrations-registry.md'),
       'utf8',
     );
-    const names = [
-      ...document.matchAll(/^\d{2}\s+([\w-]+\.(?:png|svg))$/gm),
-    ].map((match) => match[1]);
+    const names = [...document.matchAll(/^\d{2}\s+([\w-]+\.png)$/gm)].map(
+      (match) => match[1],
+    );
     expect(names).toEqual(
       graphics.map(({ source }) => source.split('/').at(-1)),
     );
@@ -220,74 +236,70 @@ describe('подготовленные данные v2', () => {
         expect(await readdir(directory)).toContain(segment);
         directory = resolve(directory, segment);
       }
-      expect(source.split('/').at(-1)).toBe(
-        `${id}.${source.endsWith('.svg') ? 'svg' : 'png'}`,
-      );
+      expect(source.split('/').at(-1)).toBe(`${id}.png`);
       if (id !== 'app-icon-master') {
+        const neutral =
+          id.startsWith('shape-') || id.startsWith('color-object-');
+        const output = source.replace('assets-source/', 'assets/images/');
         expect(outputs).toEqual([
-          source
-            .replace('assets-source/svg/', 'assets/images/')
-            .replace('assets-source/', 'assets/images/')
-            .replace(/\.png$/, '.webp'),
+          neutral ? output : output.replace(/\.png$/, '.webp'),
         ]);
       }
     }
   });
 
-  it('проверяет хеши и полностью декодирует все 53 мастер-ресурса', async () => {
-    for (const { source, sha256 } of graphics) {
+  it('проверяет хеши, размеры и альфу всех 56 PNG-мастеров', async () => {
+    for (const { id, source, sha256 } of graphics) {
       const buffer = await readFile(resolve(root, source));
       expect(createHash('sha256').update(buffer).digest('hex'), source).toBe(
         sha256,
       );
       const metadata = await sharp(buffer).metadata();
       await sharp(buffer).raw().toBuffer();
-      if (source.endsWith('.png')) {
-        expect(metadata.format).toBe('png');
-        expect([metadata.width, metadata.height]).toEqual([1254, 1254]);
-        expect(metadata.hasAlpha).toBe(!source.includes('/icons/'));
-        if (metadata.hasAlpha) {
-          const alpha = (await sharp(buffer).stats()).channels[3]!;
-          expect([alpha.min, alpha.max], source).toEqual([0, 255]);
-        }
-      } else {
-        expect(metadata.format).toBe('svg');
-        const svg = buffer.toString('utf8');
-        expect(svg).toContain('viewBox="0 0 512 512"');
-        expect(svg).toContain('currentColor');
-        expect(svg).not.toMatch(
-          /<!|\b(?:href|src|on\w+)\s*=|javascript:|data:|@import/i,
-        );
-        const tags = [...svg.matchAll(/<\/?([\w:]+)/g)].map(
-          (match) => match[1],
-        );
-        expect(
-          tags.every((tag) =>
-            [
-              'svg',
-              'defs',
-              'mask',
-              'radialGradient',
-              'stop',
-              'g',
-              'circle',
-              'path',
-              'rect',
-              'ellipse',
-            ].includes(tag!),
-          ),
-        ).toBe(true);
-        const localIds = [...svg.matchAll(/\bid="([^"]+)"/g)].map(
-          (match) => match[1],
-        );
-        expect(new Set(localIds).size).toBe(localIds.length);
-        for (const [, target] of svg.matchAll(/url\(([^)]+)\)/g)) {
-          expect(target).toMatch(/^#[\w-]+$/);
-          expect(localIds).toContain(target!.slice(1));
-        }
+      const neutral = id.startsWith('shape-') || id.startsWith('color-object-');
+      const size = neutral ? 1024 : 1254;
+      expect(metadata.format).toBe('png');
+      expect([metadata.width, metadata.height]).toEqual([size, size]);
+      expect(metadata.hasAlpha).toBe(!source.includes('/icons/'));
+      if (metadata.hasAlpha) {
+        const alpha = (await sharp(buffer).stats()).channels[3]!;
+        expect([alpha.min, alpha.max], source).toEqual([0, 255]);
       }
     }
   }, 30000);
+
+  it('проверяет нейтральную серую основу всех 12 мастеров для перекраски', async () => {
+    const neutral = graphics.filter(
+      ({ id }) => id.startsWith('shape-') || id.startsWith('color-object-'),
+    );
+    expect(neutral).toHaveLength(12);
+    for (const { id, source } of neutral) {
+      const { data, info } = await sharp(resolve(root, source))
+        .ensureAlpha()
+        .raw()
+        .toBuffer({ resolveWithObject: true });
+      expect(info.channels).toBe(4);
+      const histogram = new Array<number>(256).fill(0);
+      let nonGray = 0;
+      let visible = 0;
+      for (let index = 0; index < data.length; index += 4) {
+        if (data[index + 3] === 0) continue;
+        const tone = data[index]!;
+        if (tone !== data[index + 1] || tone !== data[index + 2]) nonGray++;
+        histogram[tone] = histogram[tone]! + 1;
+        visible++;
+      }
+      expect(nonGray, source).toBe(0);
+      expect(visible, source).toBeGreaterThan(0);
+      expect(histogram[128], source).toBeGreaterThan(0);
+      if (id.startsWith('shape-')) {
+        expect(histogram[128], source).toBe(visible);
+      } else {
+        const tones = histogram.flatMap((count, tone) => (count ? [tone] : []));
+        expect([tones[0], tones.at(-1)], source).toEqual([48, 224]);
+      }
+    }
+  });
 
   it('проверяет места записи и сообщает о фактической готовности новых MP3', async () => {
     for (const directory of [
@@ -308,7 +320,7 @@ describe('подготовленные данные v2', () => {
       }
     }
     console.log(
-      `Подготовка v2: ожидаются ${missing.length} из 175 новых MP3. Наличие реестра не подтверждает приёмку и готовность релиза v2.`,
+      `Подготовка v2: ожидаются ${missing.length} из 177 новых MP3. Наличие реестра не подтверждает приёмку и готовность релиза v2.`,
     );
   });
 });

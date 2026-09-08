@@ -186,6 +186,18 @@
     "master": "master-01-colors-shapes-objects.wav"
   },
   {
+    "id": "count.pyramid",
+    "textTt": "Пирамида",
+    "path": "assets/audio/tt/clips/count-pyramid.mp3",
+    "master": "master-01-colors-shapes-objects.wav"
+  },
+  {
+    "id": "count.top",
+    "textTt": "Бөтерчек",
+    "path": "assets/audio/tt/clips/count-top.mp3",
+    "master": "master-01-colors-shapes-objects.wav"
+  },
+  {
     "id": "number.1",
     "textTt": "Бер",
     "path": "assets/audio/tt/clips/number-1.mp3",

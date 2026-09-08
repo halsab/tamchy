@@ -270,56 +270,74 @@
   },
   {
     "id": "shape-circle",
-    "source": "assets-source/svg/shapes/shape-circle.svg",
-    "outputs": ["assets/images/shapes/shape-circle.svg"],
-    "sha256": "9fd4f4944c021ed8bcdb4914eec3292ba5ea51fc4af3d73d4e6980a29435b875"
+    "source": "assets-source/shapes/shape-circle.png",
+    "outputs": ["assets/images/shapes/shape-circle.png"],
+    "sha256": "40a49a3457cbf7fec0b2c544ce429c73663be507e2ba129fa222663b58694fb2"
   },
   {
     "id": "shape-square",
-    "source": "assets-source/svg/shapes/shape-square.svg",
-    "outputs": ["assets/images/shapes/shape-square.svg"],
-    "sha256": "35560e570a20b0b07920073e8b6faacb73725932ff340491d93cf94ced38c007"
+    "source": "assets-source/shapes/shape-square.png",
+    "outputs": ["assets/images/shapes/shape-square.png"],
+    "sha256": "a83d961b10b3582898664fb2820b68d6e388ac4794d37903a9dda5531de5a1b8"
   },
   {
     "id": "shape-triangle",
-    "source": "assets-source/svg/shapes/shape-triangle.svg",
-    "outputs": ["assets/images/shapes/shape-triangle.svg"],
-    "sha256": "ff39f9258647fe6fad761e2857560b009a11e2fe7ae2e18dd98fa7f8aadd158f"
+    "source": "assets-source/shapes/shape-triangle.png",
+    "outputs": ["assets/images/shapes/shape-triangle.png"],
+    "sha256": "46d0a0017c1cce630fb17bba77e370f1d27461c09e9fcb8f1a7ff7215316c95e"
   },
   {
     "id": "shape-rectangle",
-    "source": "assets-source/svg/shapes/shape-rectangle.svg",
-    "outputs": ["assets/images/shapes/shape-rectangle.svg"],
-    "sha256": "6d2f28ee7d28b03ddcee93621b90b973898accd5989cfb9a956c8e2c64944033"
+    "source": "assets-source/shapes/shape-rectangle.png",
+    "outputs": ["assets/images/shapes/shape-rectangle.png"],
+    "sha256": "c0084b399ff58b25dcd034678ceffdda760767a9e2cdca334806a58ac2463e1d"
   },
   {
     "id": "shape-oval",
-    "source": "assets-source/svg/shapes/shape-oval.svg",
-    "outputs": ["assets/images/shapes/shape-oval.svg"],
-    "sha256": "75bb102d0b922c0809e04e9947603c4adb1e0731d0c080886e555dfb7cc69594"
+    "source": "assets-source/shapes/shape-oval.png",
+    "outputs": ["assets/images/shapes/shape-oval.png"],
+    "sha256": "33ec1a383cb610797df6541f3ddf2213354f0c2311b00694750d2f86569edc61"
   },
   {
     "id": "shape-star",
-    "source": "assets-source/svg/shapes/shape-star.svg",
-    "outputs": ["assets/images/shapes/shape-star.svg"],
-    "sha256": "5c4ff6798525f94c89802d766470360ee4b2e0e030cac122d0fdf87e76c28243"
+    "source": "assets-source/shapes/shape-star.png",
+    "outputs": ["assets/images/shapes/shape-star.png"],
+    "sha256": "db9d1dac6daa11f7e195513a1a9329fd38e68498af6899a0a2a911956999b15b"
   },
   {
     "id": "color-object-ball",
-    "source": "assets-source/svg/color-objects/color-object-ball.svg",
-    "outputs": ["assets/images/color-objects/color-object-ball.svg"],
-    "sha256": "760ee03265066cbb976ef5565866931a8b20c79f5487f8aba60edc3e6d48c913"
+    "source": "assets-source/color-objects/color-object-ball.png",
+    "outputs": ["assets/images/color-objects/color-object-ball.png"],
+    "sha256": "32d4f43c0483265d4664bb4457f66067d2f7a2fe55b65cd646ebaba068294e8b"
   },
   {
     "id": "color-object-ring-toy",
-    "source": "assets-source/svg/color-objects/color-object-ring-toy.svg",
-    "outputs": ["assets/images/color-objects/color-object-ring-toy.svg"],
-    "sha256": "d273295a80d30d29878f84f14063fb8237b465ce4fc1381db777efd8b1920cac"
+    "source": "assets-source/color-objects/color-object-ring-toy.png",
+    "outputs": ["assets/images/color-objects/color-object-ring-toy.png"],
+    "sha256": "1541464659914307936afa0c5144553205659ebb89e842019d134195b9816474"
   },
   {
     "id": "color-object-car-toy",
-    "source": "assets-source/svg/color-objects/color-object-car-toy.svg",
-    "outputs": ["assets/images/color-objects/color-object-car-toy.svg"],
-    "sha256": "8a02629e9cde7b2562ad916474f7078bf12394b454bc4f22da4345fbc834fe33"
+    "source": "assets-source/color-objects/color-object-car-toy.png",
+    "outputs": ["assets/images/color-objects/color-object-car-toy.png"],
+    "sha256": "08ce21b4af05e2a713073018a2b2a1c07c2bb2103c865fded2e295a09fd88ee9"
+  },
+  {
+    "id": "color-object-cube",
+    "source": "assets-source/color-objects/color-object-cube.png",
+    "outputs": ["assets/images/color-objects/color-object-cube.png"],
+    "sha256": "a5fda7ed0cd97521502c5eda5c9c1634e27b6fd103cbc6550b927f46616daca8"
+  },
+  {
+    "id": "color-object-pyramid-toy",
+    "source": "assets-source/color-objects/color-object-pyramid-toy.png",
+    "outputs": ["assets/images/color-objects/color-object-pyramid-toy.png"],
+    "sha256": "204b336bde7b770a34310b7364ef54df6b70d0e548098d73cfd4ba0a50845649"
+  },
+  {
+    "id": "color-object-top",
+    "source": "assets-source/color-objects/color-object-top.png",
+    "outputs": ["assets/images/color-objects/color-object-top.png"],
+    "sha256": "370f338c33777ab5122b04a6690856c9254da1799305408e81b61b4e93610c70"
   }
 ]
