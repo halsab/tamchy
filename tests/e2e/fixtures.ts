@@ -69,8 +69,9 @@ export async function answersReady(page: Page) {
     .poll(() => answerButtons(page).count())
     .toBeGreaterThanOrEqual(2);
   expect(await answerButtons(page).count()).toBeLessThanOrEqual(4);
+  // Ресурс имеет срок 15 с, затем вступительная реплика может готовиться ещё до 2 с.
   for (const button of await answerButtons(page).all())
-    await expect(button).toBeEnabled();
+    await expect(button).toBeEnabled({ timeout: 18000 });
   await expect(page.getByRole('alert')).toHaveCount(0);
 }
 

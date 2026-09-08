@@ -4,17 +4,21 @@ import { defineConfig } from '@playwright/test';
 
 const base = process.env.VITE_BASE ?? '/';
 const port = Number(process.env.TAMCHY_E2E_PORT ?? 4173);
+const outputDir = join(
+  process.env.TAMCHY_E2E_REPORTS ?? join(tmpdir(), 'tamchy-e2e'),
+  base === '/' ? 'root' : 'subpath',
+);
 export default defineConfig({
   testDir: './tests/e2e',
-  outputDir: join(
-    process.env.TAMCHY_E2E_REPORTS ?? join(tmpdir(), 'tamchy-e2e'),
-    base === '/' ? 'root' : 'subpath',
-  ),
+  outputDir,
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: 0,
   workers: 3,
-  reporter: 'list',
+  reporter: [
+    ['list'],
+    ['json', { outputFile: join(outputDir, 'results.json') }],
+  ],
   use: {
     baseURL: `http://127.0.0.1:${port}${base}`,
     viewport: { width: 1024, height: 768 },

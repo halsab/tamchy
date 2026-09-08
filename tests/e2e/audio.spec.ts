@@ -65,18 +65,12 @@ test('все 189 MP3 из сборки совпадают с исходными 
 for (const category of catalog.categories) {
   test(`${category.labelTt}: полный цикл с настоящими заданиями и подтверждениями`, async ({
     checkedPage: page,
-  }) => {
+  }, testInfo) => {
     test.setTimeout(300_000);
     const trace = await traceAudio(page);
     const required = new Set<string>();
     const formulations = new Set<string>();
     const items = juniorItems(category.id);
-    const received = new Set<string>();
-    page.on('response', (response) => {
-      // WebKit/Firefox сообщают сетевой 304 при успешной ревалидации HTTP-кэша.
-      if (response.ok() || response.status() === 304)
-        received.add(new URL(response.url()).pathname);
-    });
     await page.goto('./');
     await page
       .getByRole('button', { name: category.labelTt, exact: true })
@@ -136,12 +130,37 @@ for (const category of catalog.categories) {
         ).toBeVisible();
       }
 
+      await expect
+        .poll(async () =>
+          (await trace()).starts.slice(-exercise.promptAudio.length),
+        )
+        .toEqual(exercise.promptAudio);
+      const beforeAnswer = (await trace()).starts.length;
       await page
         .getByRole('button', { name: target.labelTt, exact: true })
         .click();
       await expect(page.getByRole('status')).toHaveText(strings.game.correct);
       for (const button of await answerButtons(page).all())
         await expect(button).toBeDisabled();
+      const confirmation =
+        round % 2 === 0
+          ? [
+              interactionPath(
+                (['correct', 'well-done', 'very-good'] as const)[
+                  (round / 2) % 3
+                ]!,
+              ),
+              exercise.labelAudio,
+            ]
+          : [exercise.labelAudio];
+      await expect
+        .poll(async () =>
+          (await trace()).starts.slice(
+            beforeAnswer,
+            beforeAnswer + confirmation.length,
+          ),
+        )
+        .toEqual(confirmation);
       await expect(
         page.getByText(exercise.textTt, { exact: true }),
       ).not.toBeVisible();
@@ -150,12 +169,18 @@ for (const category of catalog.categories) {
       await expect(page).toHaveURL(new RegExp(`#/${category.id}$`));
     }
     expect([...visited].sort()).toEqual(items.map((item) => item.id).sort());
-    for (const path of required)
-      expect(
-        [...received].some((url) => url.endsWith(`/${path}`)),
-        path,
-      ).toBe(true);
-    expect((await trace()).overlaps).toEqual([]);
+    const playback = await trace();
+    for (const path of required) expect(playback.starts, path).toContain(path);
+    expect(playback.overlaps).toEqual([]);
+    await testInfo.attach('audio-evidence', {
+      body: JSON.stringify({
+        targets: [...visited],
+        formulations: [...formulations],
+        required: [...required],
+        playback,
+      }),
+      contentType: 'application/json',
+    });
     await page.getByRole('button', { name: strings.nav.home }).click();
     await expect(
       page.getByRole('heading', { name: strings.app.name }),
@@ -192,6 +217,16 @@ test('реальные реплики идут перед учебной зап�
   }
   await page.getByRole('button', { name: target.labelTt, exact: true }).click();
   expected.push(interactionPath('correct'), exercise.labelAudio);
+  await expect
+    .poll(async () => (await starts()).slice(0, expected.length))
+    .toEqual(expected);
+  // Короткое название может закончиться до следующего опроса теста; выход проверяем в новом задании.
+  await expect(
+    page.getByText(exercise.textTt, { exact: true }),
+  ).not.toBeVisible();
+  await answersReady(page);
+  const next = await currentExercise(page, category.id);
+  expected.push(...next.promptAudio);
   await expect.poll(starts).toEqual(expected);
   await page.getByRole('button', { name: strings.nav.home }).click();
   await expect(
