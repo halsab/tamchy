@@ -2,6 +2,7 @@ import { gameTiming } from './timing.ts';
 import type { InteractionId } from '../../content/types.ts';
 import type { GameState, OperationScope, Resource } from './models.ts';
 import { audioResource } from './resources.ts';
+import type { AnswerCount } from './exercise.ts';
 
 export type GameRequirements = Readonly<{
   scope: OperationScope;
@@ -25,7 +26,11 @@ export type GameRequirements = Readonly<{
           at: number;
         }> | null;
       }>
-    | Readonly<{ kind: 'next-round'; roundId: number }>
+    | Readonly<{
+        kind: 'next-round';
+        roundId: number;
+        optionCount: AnswerCount;
+      }>
     | Readonly<{ kind: 'stop' }>;
 }>;
 
@@ -135,7 +140,11 @@ export function getGameRequirements(state: GameState): GameRequirements {
     case 'transitioning':
       return {
         scope,
-        work: { kind: 'next-round', roundId: state.round.roundId + 1 },
+        work: {
+          kind: 'next-round',
+          roundId: state.round.roundId + 1,
+          optionCount: state.adaptation.answerCount,
+        },
       };
     case 'paused':
     case 'error':

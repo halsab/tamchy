@@ -86,7 +86,7 @@ export function createGameExecutor({
       work.kind === 'play'
         ? `play:${resourceKey(work.resource)}`
         : work.kind === 'next-round'
-          ? `next-round:${work.roundId}`
+          ? `next-round:${work.roundId}:${work.optionCount}`
           : work.kind;
     if (!sameScope(scope, requirement.scope) || workKey !== key) {
       cancel();
@@ -217,7 +217,7 @@ export function createGameExecutor({
       case 'next-round':
         if (!delivered) {
           delivered = true;
-          const round = rounds.get(work.roundId);
+          const round = rounds.get(work.roundId, work.optionCount);
           queueMicrotask(() =>
             emit({ type: 'ROUND_GENERATED', round, at: clock.now() }),
           );

@@ -851,6 +851,7 @@ describe('контракт будущих адаптеров', () => {
     expect(getGameRequirements(transition).work).toEqual({
       kind: 'next-round',
       roundId: 2,
+      optionCount: 2,
     });
   });
 
@@ -1145,4 +1146,87 @@ it('похвала звучит через раунд с тремя вариан
       at: index * 10000 + 2001,
     });
   }
+});
+
+describe('учёт адаптации в существующей сессии', () => {
+  it('учитывает принятый ответ один раз, включая ошибку подтверждения и паузу', () => {
+    const waiting = begin();
+    const accepted = answer(waiting);
+    expect(accepted.adaptation).toEqual({
+      answerCount: 2,
+      streak: { kind: 'clean', count: 1 },
+    });
+    expect(answer(accepted).adaptation).toBe(accepted.adaptation);
+    const failed = step(accepted, {
+      type: 'RESOURCE_FAILED',
+      resource: label(accepted),
+      reason: 'load',
+    });
+    expect(failed.status).toBe('error');
+    expect(failed.adaptation).toBe(accepted.adaptation);
+    const retry = step(failed, { type: 'RETRY', at: 200 });
+    expect(retry.adaptation).toBe(accepted.adaptation);
+    const paused = step(retry, { type: 'PAUSE' });
+    const continued = step(paused, { type: 'CONTINUE', at: 300 });
+    expect(continued.status).toBe('transitioning');
+    expect(continued.adaptation).toBe(accepted.adaptation);
+    expect(
+      gameReducer(
+        continued,
+        event(waiting, {
+          type: 'ANSWER',
+          itemId: waiting.round.targetId,
+          at: 301,
+        }),
+      ),
+    ).toBe(continued);
+  });
+  it('несколько ошибок внутри раунда становятся одним результатом, повторы и паузы не влияют', () => {
+    let state = begin();
+    const initial = state.adaptation;
+    for (let i = 0; i < 3; i++) {
+      const at = 100 + i * 1000;
+      state = answer(state, at, false);
+      expect(state.adaptation).toBe(initial);
+      state = step(state, { type: 'RETRY_DUE', at: at + 250 });
+      state = step(state, { type: 'AUDIO_STARTED', at: at + 260 });
+    }
+    state = step(state, { type: 'REPEAT', at: 3300 });
+    state = step(state, { type: 'PAUSE' });
+    state = step(state, { type: 'CONTINUE', at: 3400 });
+    state = begin(state, 3500);
+    expect(state.adaptation).toBe(initial);
+    state = answer(state, 3600);
+    expect(state.adaptation).toEqual({
+      answerCount: 2,
+      streak: { kind: 'mistake', count: 1 },
+    });
+    expect(setup().state.adaptation).toEqual({ answerCount: 2, streak: null });
+  });
+  it('передаёт новое количество только подготовке следующего раунда', () => {
+    const prepared = setup();
+    let state = prepared.state;
+    for (let i = 0; i < 5; i++) {
+      const at = i * 5000 + 100;
+      state = begin(state, at);
+      const round = state.round;
+      state = answer(state, at + 100);
+      expect(state.round).toBe(round);
+      state = ready(state, at + 110);
+      state = step(state, { type: 'AUDIO_STARTED', at: at + 120 });
+      state = step(state, { type: 'AUDIO_ENDED', at: at + 200 });
+      state = step(state, { type: 'ADVANCE_DUE', at: at + 1300 });
+      expect(getGameRequirements(state).work).toMatchObject({
+        kind: 'next-round',
+        optionCount: i === 4 ? 3 : 2,
+      });
+      if (i < 4)
+        state = step(state, {
+          type: 'ROUND_GENERATED',
+          round: prepared.generate(),
+          at: at + 1400,
+        });
+    }
+    expect(state.adaptation).toEqual({ answerCount: 3, streak: null });
+  });
 });

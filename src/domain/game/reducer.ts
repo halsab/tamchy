@@ -1,4 +1,5 @@
 import { gameTiming } from './timing.ts';
+import { initialAdaptation, recordRoundResult } from './adaptation.ts';
 import type { InteractionId } from '../../content/types.ts';
 import type {
   ActivePhase,
@@ -24,6 +25,7 @@ function context(state: RoundContext): RoundContext {
     mistakes: state.mistakes,
     reminderUsed: state.reminderUsed,
     introduction: state.introduction,
+    adaptation: state.adaptation,
   };
 }
 
@@ -109,6 +111,7 @@ export function createGame(
       mistakes: 0,
       reminderUsed: false,
       introduction,
+      adaptation: initialAdaptation(),
     },
     at,
     introduction,
@@ -151,6 +154,7 @@ export function gameReducer(state: GameState, event: GameEvent): GameState {
         mistakes,
         reminderUsed,
         introduction,
+        adaptation,
         ...resume
       } = state;
       return {
@@ -160,6 +164,7 @@ export function gameReducer(state: GameState, event: GameEvent): GameState {
         mistakes,
         reminderUsed,
         introduction,
+        adaptation,
         status: 'paused',
         resume,
       };
@@ -397,7 +402,10 @@ export function gameReducer(state: GameState, event: GameEvent): GameState {
         return state;
       if (event.itemId === state.round.targetId) {
         return changeOperation(
-          state,
+          {
+            ...context(state),
+            adaptation: recordRoundResult(state.adaptation, state.mistakes > 0),
+          },
           {
             status: 'correct',
             acceptedAt: event.at,
