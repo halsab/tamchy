@@ -45,7 +45,17 @@ export type SeniorRoundPlan =
   | (PlanBase &
       (
         | Readonly<{
-            kind: 'C1' | 'A1' | 'N1-A';
+            kind: 'C1';
+            targetId: string;
+            recipeId: string;
+          }>
+        | Readonly<{
+            kind: 'A1';
+            targetId: string;
+            recipeId: string;
+          }>
+        | Readonly<{
+            kind: 'N1-A';
             targetId: string;
             recipeId: string;
           }>
@@ -60,7 +70,8 @@ export type SeniorRoundPlan =
             countObjectId: string;
             recipeId: string;
           }>
-        | Readonly<{ kind: 'C2' | 'C3-A' | 'C3-B' | 'A3' }>
+        | Readonly<{ kind: 'C2' | 'C3-A' | 'C3-B' }>
+        | Readonly<{ kind: 'A3' }>
         | Readonly<{ kind: 'C4'; pattern: SequencePattern }>
         | Readonly<{ kind: 'A2'; traitId: TraitId }>
       ))
@@ -147,7 +158,12 @@ export function createSeniorPlanner(
       case 'A1':
       case 'N1-A': {
         const targetId = targets[kind]();
-        return { ...base, kind, targetId, recipeId: recipe(kind, targetId) };
+        const direct = { ...base, targetId, recipeId: recipe(kind, targetId) };
+        return kind === 'C1'
+          ? { ...direct, kind: 'C1' }
+          : kind === 'A1'
+            ? { ...direct, kind: 'A1' }
+            : { ...direct, kind: 'N1-A' };
       }
       case 'N1-B':
       case 'N1-C': {
@@ -192,6 +208,7 @@ export function createSeniorPlanner(
       case 'C2':
       case 'C3-A':
       case 'C3-B':
+        return { ...base, kind };
       case 'A3':
         return { ...base, kind };
     }
