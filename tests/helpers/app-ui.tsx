@@ -3,6 +3,7 @@ import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
 import { App } from '../../src/app/App.tsx';
+import { mockDialog } from './dialog.ts';
 import {
   browserAudio,
   browserImages,
@@ -12,6 +13,7 @@ import {
 } from './browser.ts';
 
 export function setupApp(hash = '#/', autoEndInteractions = true) {
+  mockDialog();
   window.history.replaceState(null, '', hash);
   const audio = browserAudio(autoEndInteractions);
   const images = browserImages();

@@ -13,6 +13,11 @@
 .root:focus {
   outline: none;
 }
+.screen {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
 @media (min-width: 640px) and (min-height: 600px) {
   .root {
     padding: max(var(--space-4), env(safe-area-inset-top))

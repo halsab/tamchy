@@ -11,6 +11,11 @@ import { GameScreen } from '../features/game/GameScreen.tsx';
 import { ParentsScreen } from '../features/parents/ParentsScreen.tsx';
 import { readRoute, writeRoute, type Route } from './routes.ts';
 import styles from './App.module.css';
+import {
+  readAgeMode,
+  writeAgeMode,
+  type AgeMode,
+} from '../services/preferences/age-mode.ts';
 
 const { categories } = data as Catalog;
 export function App({ options }: { options?: GameSessionOptions }) {
@@ -22,6 +27,15 @@ export function App({ options }: { options?: GameSessionOptions }) {
   const pwa = usePwa(route === 'parents');
   const activeRoute = useRef<Route | null>(null);
   const main = useRef<HTMLElement>(null);
+  const parentsButton = useRef<HTMLButtonElement>(null);
+  const [ageMode, setAgeMode] = useState(readAgeMode);
+  const afterSheetClose = useCallback(() => {
+    (parentsButton.current ?? main.current)?.focus({ preventScroll: true });
+  }, []);
+  function changeAgeMode(mode: AgeMode) {
+    setAgeMode(mode);
+    writeAgeMode(mode);
+  }
   const synchronize = useCallback(
     (next: Route, sayGoodbye = false) => {
       if (activeRoute.current !== next) {
@@ -56,7 +70,7 @@ export function App({ options }: { options?: GameSessionOptions }) {
   }, [synchronize]);
 
   useLayoutEffect(() => {
-    main.current?.focus({ preventScroll: true });
+    if (route !== 'parents') main.current?.focus({ preventScroll: true });
   }, [route]);
 
   function navigate(next: Route, sayGoodbye = false) {
@@ -87,23 +101,33 @@ export function App({ options }: { options?: GameSessionOptions }) {
         if (category) game.activity();
       }}
     >
-      {category ? (
-        <GameScreen category={category} game={game} onHome={home} />
-      ) : route === 'parents' ? (
-        <ParentsScreen
-          onHome={home}
-          version={`${import.meta.env.VITE_APP_VERSION} · ${import.meta.env.VITE_APP_RELEASE ?? ''}`}
-          pwa={pwa.state}
-          onRetry={pwa.retry}
-          onInstall={pwa.install}
-        />
-      ) : (
-        <HomeScreen
-          categories={categories}
-          onStart={enter}
-          onParents={() => navigate('parents')}
-        />
-      )}
+      <div
+        className={styles.screen}
+        inert={route === 'parents'}
+        aria-hidden={route === 'parents' ? true : undefined}
+      >
+        {category ? (
+          <GameScreen category={category} game={game} onHome={home} />
+        ) : (
+          <HomeScreen
+            categories={categories}
+            onStart={enter}
+            onParents={() => navigate('parents')}
+            parentsButton={parentsButton}
+          />
+        )}
+      </div>
+      <ParentsScreen
+        open={route === 'parents'}
+        onHome={home}
+        onClosed={afterSheetClose}
+        mode={ageMode}
+        onModeChange={changeAgeMode}
+        version={`${import.meta.env.VITE_APP_VERSION} · ${import.meta.env.VITE_APP_RELEASE ?? ''}`}
+        pwa={pwa.state}
+        onRetry={pwa.retry}
+        onInstall={pwa.install}
+      />
     </main>
   );
 }

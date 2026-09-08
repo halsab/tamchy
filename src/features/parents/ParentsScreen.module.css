@@ -1,22 +1,83 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: max(16px, env(safe-area-inset-top)) 0 0;
+  border: 0;
+  overflow: hidden;
+  background: transparent;
+  color: var(--color-text);
+}
+.overlay[open] {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.overlay::backdrop {
+  background: rgb(39 51 47 / 24%);
+}
 .parents {
+  display: flex;
+  flex-direction: column;
   width: 100%;
   max-width: 720px;
-  margin-inline: auto;
+  height: 92%;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: var(--radius-card-large) var(--radius-card-large) 0 0;
+  background: var(--color-surface);
+  box-shadow: 0 -8px 40px rgb(39 51 47 / 8%);
 }
 .header {
+  flex-shrink: 0;
+  padding: 12px max(var(--space-3), env(safe-area-inset-right)) var(--space-2)
+    max(var(--space-3), env(safe-area-inset-left));
+  touch-action: none;
+  user-select: none;
+  cursor: grab;
+}
+.header:active {
+  cursor: grabbing;
+}
+.handle {
+  display: block;
+  width: 40px;
+  height: 4px;
+  margin: 0 auto var(--space-2);
+  border-radius: 2px;
+  background: var(--color-text);
+  opacity: 0.35;
+}
+.heading {
   display: flex;
   align-items: center;
   gap: var(--space-2);
 }
-.header h1 {
+.heading h1 {
+  min-width: 0;
+  margin: 0;
   font-size: 1.5rem;
   line-height: 1.25;
-  margin: 0;
+  overflow-wrap: anywhere;
+}
+.heading button {
+  background: var(--color-background);
 }
 .content {
-  padding-block: var(--space-3);
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  padding: var(--space-1) max(var(--space-3), env(safe-area-inset-right))
+    max(var(--space-4), env(safe-area-inset-bottom))
+    max(var(--space-3), env(safe-area-inset-left));
   font-size: 1rem;
   line-height: 1.6;
+  overflow-wrap: anywhere;
 }
 .content p {
   margin: 0 0 var(--space-2);
@@ -25,25 +86,87 @@
   font-size: 1.25rem;
   line-height: 1.5;
 }
-.content section {
+.content section + section {
   margin-top: var(--space-4);
 }
 .content h2 {
-  margin: 0 0 var(--space-1);
+  margin: 0 0 var(--space-2);
   font-size: 1.25rem;
   line-height: 1.3;
 }
+.content ul {
+  padding-inline-start: var(--space-3);
+  margin: 0 0 var(--space-2);
+}
+.content li + li {
+  margin-top: var(--space-1);
+}
 .content .version {
-  margin-top: var(--space-4);
+  margin: var(--space-4) 0 0;
 }
-.header h1 {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-.content {
-  overflow-wrap: anywhere;
-}
-
 .content button {
   margin-bottom: var(--space-2);
+}
+.mode {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.mode legend {
+  padding: 0;
+  margin-bottom: var(--space-1);
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+.modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+.modeOption {
+  position: relative;
+  display: flex;
+  flex: 1 1 112px;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  min-height: 64px;
+  padding: var(--space-1);
+  border: 2px solid transparent;
+  border-radius: var(--radius-control);
+  background: var(--color-background);
+  font-size: 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.modeOption svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  visibility: hidden;
+}
+.modeOption:has(input:checked) {
+  background: var(--color-accent-green);
+  border-color: var(--color-state);
+}
+.modeOption:has(input:checked) svg {
+  visibility: visible;
+}
+.modeOption:has(input:focus-visible) {
+  outline: 3px solid var(--color-text);
+  outline-offset: 3px;
+}
+@media (max-width: 360px) {
+  .header,
+  .content {
+    padding-inline: max(var(--space-2), env(safe-area-inset-left))
+      max(var(--space-2), env(safe-area-inset-right));
+  }
+}
+@media (max-height: 500px) {
+  .parents {
+    height: 100%;
+  }
 }

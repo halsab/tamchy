@@ -17,11 +17,14 @@ import { setupApp } from '../../tests/helpers/app-ui.tsx';
 import { deferred } from '../../tests/helpers/browser.ts';
 
 beforeEach(() => {
+  localStorage.clear();
   vi.useFakeTimers();
   configure({ asyncWrapper: async (callback) => act(callback) });
 });
 afterEach(() => {
   cleanup();
+  vi.restoreAllMocks();
+  localStorage.clear();
   vi.useRealTimers();
   window.history.replaceState(null, '', '#/');
 });
@@ -30,12 +33,21 @@ it('главное меню: название, порядок трёх разд�
   const s = setupApp();
   expect(screen.getByRole('heading', { name: strings.app.name })).toBeVisible();
   expect(
-    screen.getAllByRole('button').map((button) => button.textContent),
-  ).toEqual(['Төсләр', 'Хайваннар', 'Саннар', strings.nav.parents]);
+    screen
+      .getAllByRole('button')
+      .slice(0, 3)
+      .map((button) => button.textContent),
+  ).toEqual(['Төсләр', 'Хайваннар', 'Саннар']);
+  expect(
+    screen.getByRole('button', { name: strings.nav.parents }).textContent,
+  ).toBe('');
   expect(screen.getByRole('main').querySelectorAll('img')).toHaveLength(3);
   expect(s.fetch).not.toHaveBeenCalled();
   await s.click(strings.nav.parents);
   expect(location.hash).toBe('#/parents');
+  expect(
+    screen.getByRole('dialog', { name: strings.nav.parents }),
+  ).toBeVisible();
   expect(
     screen.getByRole('heading', { name: strings.nav.parents }),
   ).toBeVisible();
@@ -43,9 +55,42 @@ it('главное меню: название, порядок трёх разд�
   expect(
     screen.queryByText(strings.status.offlineReady),
   ).not.toBeInTheDocument();
-  expect(screen.getAllByRole('button')).toHaveLength(1);
+  expect(screen.getByRole('radio', { name: '2–4 яшь' })).toBeChecked();
+  expect(screen.getByRole('radio', { name: '5–7 яшь' })).not.toBeChecked();
   await s.click(strings.nav.home);
   expect(location.hash).toBe('#/');
+});
+
+it('режим сохраняется, но не меняет текущий набор и два ответа MVP', async () => {
+  const s = setupApp();
+  await s.click(strings.nav.parents);
+  await s.user.click(screen.getByRole('radio', { name: '5–7 яшь' }));
+  expect(localStorage.getItem('tamchy.age-mode')).toBe('senior');
+  await s.click(strings.nav.home);
+  await s.click('Саннар');
+  expect(answers()).toHaveLength(2);
+  expect(catalog.categories[2]!.items).toHaveLength(5);
+  await s.click(strings.nav.home);
+  await s.click(strings.nav.parents);
+  expect(screen.getByRole('radio', { name: '5–7 яшь' })).toBeChecked();
+  s.view.unmount();
+  const next = setupApp('#/parents');
+  await next.settle();
+  expect(screen.getByRole('radio', { name: '5–7 яшь' })).toBeChecked();
+});
+
+it('при недоступном хранилище режим переживает переходы в памяти приложения', async () => {
+  vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+    throw new Error('Denied');
+  });
+  const s = setupApp('#/parents');
+  await s.settle();
+  await s.user.click(screen.getByRole('radio', { name: '5–7 яшь' }));
+  await s.click(strings.nav.home);
+  await s.click('Төсләр');
+  await s.click(strings.nav.home);
+  await s.click(strings.nav.parents);
+  expect(screen.getByRole('radio', { name: '5–7 яшь' })).toBeChecked();
 });
 
 it.each(catalog.categories)(

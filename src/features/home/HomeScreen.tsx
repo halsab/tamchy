@@ -3,15 +3,18 @@ import strings from '../../content/tt.json';
 import { assetUrl } from '../../services/assets/asset-url.ts';
 import { Icon } from '../../shared/ui/Icon.tsx';
 import styles from './HomeScreen.module.css';
+import type { Ref } from 'react';
 
 export function HomeScreen({
   categories,
   onStart,
   onParents,
+  parentsButton,
 }: {
   categories: Category[];
   onStart: (category: Category) => void;
   onParents: () => void;
+  parentsButton?: Ref<HTMLButtonElement>;
 }) {
   return (
     <div className={styles.home}>
@@ -34,9 +37,14 @@ export function HomeScreen({
           </button>
         ))}
       </div>
-      <button className={styles.parents} onClick={onParents}>
-        <Icon name="info" />
-        {strings.nav.parents}
+      <button
+        ref={parentsButton}
+        className={styles.parents}
+        onClick={onParents}
+        aria-label={strings.nav.parents}
+        aria-haspopup="dialog"
+      >
+        <Icon name="settings" />
       </button>
     </div>
   );

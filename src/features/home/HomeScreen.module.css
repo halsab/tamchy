@@ -49,12 +49,14 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-1);
+  align-self: flex-end;
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
   min-height: 56px;
-  padding: var(--space-1) var(--space-2);
-  background: transparent;
-  border-radius: var(--radius-control);
-  font-size: 1.25rem;
+  padding: 16px;
+  background: var(--color-surface);
+  border-radius: 50%;
 }
 @media (min-width: 640px) {
   .categories {
@@ -101,5 +103,7 @@
   max-width: 100%;
 }
 .parents svg {
+  width: 24px;
+  height: 24px;
   flex-shrink: 0;
 }

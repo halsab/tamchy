@@ -69,8 +69,11 @@ test('меню → три раздела → ошибка загрузки → �
       'Төсләр',
       'Хайваннар',
       'Саннар',
-      strings.nav.parents,
+      '',
     ]);
+    await expect(page.getByRole('button').last()).toHaveAccessibleName(
+      strings.nav.parents,
+    );
     for (const category of catalog.categories) {
       await page
         .getByRole('button', { name: category.labelTt, exact: true })
@@ -214,6 +217,8 @@ for (const viewport of viewports) {
           }),
         ).toBeVisible();
       await imagesReady(page);
+      if (route === 'parents')
+        await page.getByRole('dialog').locator('header').click({ trial: true });
       if (route !== 'parents') await noOverflow(page);
       const controls = await page.getByRole('button').evaluateAll((buttons) =>
         buttons.map((button) => ({

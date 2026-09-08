@@ -2,10 +2,12 @@
 import '@testing-library/jest-dom/vitest';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import strings from '../../content/tt.json';
 import { ParentsScreen } from './ParentsScreen.tsx';
 import type { PwaState } from '../../services/pwa/service.ts';
+import { mockDialog } from '../../../tests/helpers/dialog.ts';
+beforeEach(mockDialog);
 afterEach(cleanup);
 it.each(['preparing', 'ready', 'error', 'unsupported'] as const)(
   'показывает настоящее состояние %s и только доступные действия',
@@ -14,6 +16,10 @@ it.each(['preparing', 'ready', 'error', 'unsupported'] as const)(
     const install = vi.fn();
     render(
       <ParentsScreen
+        open
+        onClosed={vi.fn()}
+        mode="junior"
+        onModeChange={vi.fn()}
         onHome={vi.fn()}
         version="0.1.0 · a"
         pwa={{ offline, update: 'none', install: 'unavailable' }}
@@ -51,6 +57,10 @@ it('обновление независимо от готовности; уст�
   };
   render(
     <ParentsScreen
+      open
+      onClosed={vi.fn()}
+      mode="junior"
+      onModeChange={vi.fn()}
       onHome={vi.fn()}
       version="a"
       pwa={pwa}
