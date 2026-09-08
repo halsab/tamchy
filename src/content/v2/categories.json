@@ -1,0 +1,17 @@
+[
+  {
+    "id": "colors",
+    "labelTt": "Төсләр",
+    "image": "assets/images/categories/category-colors.webp"
+  },
+  {
+    "id": "animals",
+    "labelTt": "Хайваннар",
+    "image": "assets/images/categories/category-animals.webp"
+  },
+  {
+    "id": "numbers",
+    "labelTt": "Саннар",
+    "image": "assets/images/categories/category-numbers.webp"
+  }
+]

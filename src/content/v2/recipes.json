@@ -1,0 +1,73 @@
+{
+  "C1": [
+    {
+      "id": "find",
+      "parts": ["$label", "colors.findTail"],
+      "ending": "."
+    },
+    {
+      "id": "choose",
+      "parts": ["$label", "colors.chooseTail"],
+      "ending": "."
+    },
+    {
+      "id": "show",
+      "parts": ["$label", "colors.showTail"],
+      "ending": "."
+    }
+  ],
+  "A1": [
+    {
+      "id": "where",
+      "parts": ["$label", "common.where"],
+      "ending": "?"
+    },
+    {
+      "id": "find",
+      "parts": ["$target", "common.find"],
+      "ending": "."
+    },
+    {
+      "id": "choose",
+      "parts": ["$target", "common.choose"],
+      "ending": "."
+    },
+    {
+      "id": "show",
+      "parts": ["$target", "common.show"],
+      "ending": "."
+    },
+    {
+      "id": "which",
+      "parts": ["common.which", "$label"],
+      "ending": "?"
+    }
+  ],
+  "N1-A": [
+    {
+      "id": "where",
+      "parts": ["$label", "common.where"],
+      "ending": "?"
+    },
+    {
+      "id": "find",
+      "parts": ["$target", "common.find"],
+      "ending": "."
+    },
+    {
+      "id": "choose",
+      "parts": ["$target", "common.choose"],
+      "ending": "."
+    },
+    {
+      "id": "show",
+      "parts": ["$target", "common.show"],
+      "ending": "."
+    },
+    {
+      "id": "which",
+      "parts": ["common.which", "$label"],
+      "ending": "?"
+    }
+  ]
+}

@@ -6,6 +6,8 @@ import { writeGenerated } from './lib/generated-files.ts';
 import { readContent } from './lib/read-content.ts';
 import { icons, resourcePaths } from './lib/resources.ts';
 import { prepareNeutralAssets } from './lib/neutral-png.ts';
+import { readV2Content, v2ResourcePaths } from './lib/v2-content.ts';
+import graphics from '../src/content/v2/graphics.json' with { type: 'json' };
 
 const root = resolve(import.meta.dirname, '..');
 const background = '#FFF9F2';
@@ -23,16 +25,27 @@ async function hashes(paths: string[]) {
 }
 
 try {
-  const { catalog } = await readContent(root);
-  const images = resourcePaths(catalog).images.map((output) => ({
-    source: output
-      .replace('assets/images/', 'assets-source/')
-      .replace(/\.webp$/, '.png'),
-    output,
-  }));
+  const resources = process.argv.includes('--v2')
+    ? v2ResourcePaths(await readV2Content(root))
+    : resourcePaths((await readContent(root)).catalog);
+  const images = resources.images
+    .filter((path) => path.endsWith('.webp'))
+    .map((output) => ({
+      source: output
+        .replace('assets/images/', 'assets-source/')
+        .replace(/\.webp$/, '.png'),
+      output,
+    }));
   const iconMaster = 'assets-source/icons/app-icon-master.png';
   const masters = [...images.map(({ source }) => source), iconMaster];
   const before = await hashes(masters);
+  masters.forEach((source, index) => {
+    if (
+      graphics.find((entry) => entry.source === source)?.sha256 !==
+      before[index]
+    )
+      throw new Error(`SHA-256 мастера не совпадает с реестром: ${source}`);
+  });
   let preparationError: Error | undefined;
   try {
     for (const { source, output } of images) {
@@ -136,7 +149,9 @@ try {
     throw new Error('Изменились хеши мастер-файлов', {
       cause: preparationError,
     });
-  console.log('SHA-256: все 11 мастер-PNG остались неизменными.');
+  console.log(
+    `SHA-256: все ${masters.length} мастер-PNG остались неизменными.`,
+  );
   if (preparationError) throw preparationError;
   const neutral = await prepareNeutralAssets(root);
   console.log(

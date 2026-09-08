@@ -1,0 +1,93 @@
+[
+  {
+    "id": "count-apple",
+    "kind": "raster",
+    "labelTt": "Алма",
+    "labelClipId": "count.apple",
+    "image": "assets/images/numbers/count-apple.webp"
+  },
+  {
+    "id": "shape-circle",
+    "kind": "tinted",
+    "labelTt": "Түгәрәк",
+    "labelClipId": "shape.circle",
+    "image": "assets/images/shapes/shape-circle.png"
+  },
+  {
+    "id": "shape-square",
+    "kind": "tinted",
+    "labelTt": "Шакмак",
+    "labelClipId": "shape.square",
+    "image": "assets/images/shapes/shape-square.png"
+  },
+  {
+    "id": "shape-triangle",
+    "kind": "tinted",
+    "labelTt": "Өчпочмак",
+    "labelClipId": "shape.triangle",
+    "image": "assets/images/shapes/shape-triangle.png"
+  },
+  {
+    "id": "shape-rectangle",
+    "kind": "tinted",
+    "labelTt": "Турыпочмаклык",
+    "labelClipId": "shape.rectangle",
+    "image": "assets/images/shapes/shape-rectangle.png"
+  },
+  {
+    "id": "shape-oval",
+    "kind": "tinted",
+    "labelTt": "Овал",
+    "labelClipId": "shape.oval",
+    "image": "assets/images/shapes/shape-oval.png"
+  },
+  {
+    "id": "shape-star",
+    "kind": "tinted",
+    "labelTt": "Йолдыз",
+    "labelClipId": "shape.star",
+    "image": "assets/images/shapes/shape-star.png"
+  },
+  {
+    "id": "color-object-ball",
+    "kind": "tinted",
+    "labelTt": "Туп",
+    "labelClipId": "count.ball",
+    "image": "assets/images/color-objects/color-object-ball.png"
+  },
+  {
+    "id": "color-object-ring-toy",
+    "kind": "tinted",
+    "labelTt": "Боҗра",
+    "labelClipId": "count.ring",
+    "image": "assets/images/color-objects/color-object-ring-toy.png"
+  },
+  {
+    "id": "color-object-car-toy",
+    "kind": "tinted",
+    "labelTt": "Машина",
+    "labelClipId": "count.car",
+    "image": "assets/images/color-objects/color-object-car-toy.png"
+  },
+  {
+    "id": "color-object-cube",
+    "kind": "tinted",
+    "labelTt": "Шакмак",
+    "labelClipId": "shape.square",
+    "image": "assets/images/color-objects/color-object-cube.png"
+  },
+  {
+    "id": "color-object-pyramid-toy",
+    "kind": "tinted",
+    "labelTt": "Пирамида",
+    "labelClipId": "count.pyramid",
+    "image": "assets/images/color-objects/color-object-pyramid-toy.png"
+  },
+  {
+    "id": "color-object-top",
+    "kind": "tinted",
+    "labelTt": "Бөтерчек",
+    "labelClipId": "count.top",
+    "image": "assets/images/color-objects/color-object-top.png"
+  }
+]

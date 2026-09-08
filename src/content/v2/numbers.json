@@ -1,0 +1,142 @@
+[
+  {
+    "id": "number-1",
+    "value": 1,
+    "labelTt": "Бер",
+    "labelClipId": "number.1",
+    "targetClipId": "number.1.target"
+  },
+  {
+    "id": "number-2",
+    "value": 2,
+    "labelTt": "Ике",
+    "labelClipId": "number.2",
+    "targetClipId": "number.2.target"
+  },
+  {
+    "id": "number-3",
+    "value": 3,
+    "labelTt": "Өч",
+    "labelClipId": "number.3",
+    "targetClipId": "number.3.target"
+  },
+  {
+    "id": "number-4",
+    "value": 4,
+    "labelTt": "Дүрт",
+    "labelClipId": "number.4",
+    "targetClipId": "number.4.target"
+  },
+  {
+    "id": "number-5",
+    "value": 5,
+    "labelTt": "Биш",
+    "labelClipId": "number.5",
+    "targetClipId": "number.5.target"
+  },
+  {
+    "id": "number-6",
+    "value": 6,
+    "labelTt": "Алты",
+    "labelClipId": "number.6",
+    "targetClipId": "number.6.target"
+  },
+  {
+    "id": "number-7",
+    "value": 7,
+    "labelTt": "Җиде",
+    "labelClipId": "number.7",
+    "targetClipId": "number.7.target"
+  },
+  {
+    "id": "number-8",
+    "value": 8,
+    "labelTt": "Сигез",
+    "labelClipId": "number.8",
+    "targetClipId": "number.8.target"
+  },
+  {
+    "id": "number-9",
+    "value": 9,
+    "labelTt": "Тугыз",
+    "labelClipId": "number.9",
+    "targetClipId": "number.9.target"
+  },
+  {
+    "id": "number-10",
+    "value": 10,
+    "labelTt": "Ун",
+    "labelClipId": "number.10",
+    "targetClipId": "number.10.target"
+  },
+  {
+    "id": "number-11",
+    "value": 11,
+    "labelTt": "Унбер",
+    "labelClipId": "number.11",
+    "targetClipId": "number.11.target"
+  },
+  {
+    "id": "number-12",
+    "value": 12,
+    "labelTt": "Унике",
+    "labelClipId": "number.12",
+    "targetClipId": "number.12.target"
+  },
+  {
+    "id": "number-13",
+    "value": 13,
+    "labelTt": "Унөч",
+    "labelClipId": "number.13",
+    "targetClipId": "number.13.target"
+  },
+  {
+    "id": "number-14",
+    "value": 14,
+    "labelTt": "Ундүрт",
+    "labelClipId": "number.14",
+    "targetClipId": "number.14.target"
+  },
+  {
+    "id": "number-15",
+    "value": 15,
+    "labelTt": "Унбиш",
+    "labelClipId": "number.15",
+    "targetClipId": "number.15.target"
+  },
+  {
+    "id": "number-16",
+    "value": 16,
+    "labelTt": "Уналты",
+    "labelClipId": "number.16",
+    "targetClipId": "number.16.target"
+  },
+  {
+    "id": "number-17",
+    "value": 17,
+    "labelTt": "Унҗиде",
+    "labelClipId": "number.17",
+    "targetClipId": "number.17.target"
+  },
+  {
+    "id": "number-18",
+    "value": 18,
+    "labelTt": "Унсигез",
+    "labelClipId": "number.18",
+    "targetClipId": "number.18.target"
+  },
+  {
+    "id": "number-19",
+    "value": 19,
+    "labelTt": "Унтугыз",
+    "labelClipId": "number.19",
+    "targetClipId": "number.19.target"
+  },
+  {
+    "id": "number-20",
+    "value": 20,
+    "labelTt": "Егерме",
+    "labelClipId": "number.20",
+    "targetClipId": "number.20.target"
+  }
+]

@@ -1,0 +1,275 @@
+[
+  {
+    "id": "animal-cat",
+    "labelTt": "Мәче",
+    "labelClipId": "animal.cat",
+    "targetClipId": "animal.cat.target",
+    "image": "assets/images/animals/animal-cat.webp"
+  },
+  {
+    "id": "animal-dog",
+    "labelTt": "Эт",
+    "labelClipId": "animal.dog",
+    "targetClipId": "animal.dog.target",
+    "image": "assets/images/animals/animal-dog.webp"
+  },
+  {
+    "id": "animal-cow",
+    "labelTt": "Сыер",
+    "labelClipId": "animal.cow",
+    "targetClipId": "animal.cow.target",
+    "image": "assets/images/animals/animal-cow.webp"
+  },
+  {
+    "id": "animal-horse",
+    "labelTt": "Ат",
+    "labelClipId": "animal.horse",
+    "targetClipId": "animal.horse.target",
+    "image": "assets/images/animals/animal-horse.webp"
+  },
+  {
+    "id": "animal-sheep",
+    "labelTt": "Сарык",
+    "labelClipId": "animal.sheep",
+    "targetClipId": "animal.sheep.target",
+    "image": "assets/images/animals/animal-sheep.webp"
+  },
+  {
+    "id": "animal-duck",
+    "labelTt": "Үрдәк",
+    "labelClipId": "animal.duck",
+    "targetClipId": "animal.duck.target",
+    "image": "assets/images/animals/animal-duck.webp"
+  },
+  {
+    "id": "animal-goat",
+    "labelTt": "Кәҗә",
+    "labelClipId": "animal.goat",
+    "targetClipId": "animal.goat.target",
+    "image": "assets/images/animals/animal-goat.webp"
+  },
+  {
+    "id": "animal-chicken",
+    "labelTt": "Тавык",
+    "labelClipId": "animal.chicken",
+    "targetClipId": "animal.chicken.target",
+    "image": "assets/images/animals/animal-chicken.webp"
+  },
+  {
+    "id": "animal-goose",
+    "labelTt": "Каз",
+    "labelClipId": "animal.goose",
+    "targetClipId": "animal.goose.target",
+    "image": "assets/images/animals/animal-goose.webp"
+  },
+  {
+    "id": "animal-mouse",
+    "labelTt": "Тычкан",
+    "labelClipId": "animal.mouse",
+    "targetClipId": "animal.mouse.target",
+    "image": "assets/images/animals/animal-mouse.webp"
+  },
+  {
+    "id": "animal-bear",
+    "labelTt": "Аю",
+    "labelClipId": "animal.bear",
+    "targetClipId": "animal.bear.target",
+    "image": "assets/images/animals/animal-bear.webp"
+  },
+  {
+    "id": "animal-wolf",
+    "labelTt": "Бүре",
+    "labelClipId": "animal.wolf",
+    "targetClipId": "animal.wolf.target",
+    "image": "assets/images/animals/animal-wolf.webp"
+  },
+  {
+    "id": "animal-fox",
+    "labelTt": "Төлке",
+    "labelClipId": "animal.fox",
+    "targetClipId": "animal.fox.target",
+    "image": "assets/images/animals/animal-fox.webp"
+  },
+  {
+    "id": "animal-hare",
+    "labelTt": "Куян",
+    "labelClipId": "animal.hare",
+    "targetClipId": "animal.hare.target",
+    "image": "assets/images/animals/animal-hare.webp"
+  },
+  {
+    "id": "animal-squirrel",
+    "labelTt": "Тиен",
+    "labelClipId": "animal.squirrel",
+    "targetClipId": "animal.squirrel.target",
+    "image": "assets/images/animals/animal-squirrel.webp"
+  },
+  {
+    "id": "animal-hedgehog",
+    "labelTt": "Керпе",
+    "labelClipId": "animal.hedgehog",
+    "targetClipId": "animal.hedgehog.target",
+    "image": "assets/images/animals/animal-hedgehog.webp"
+  },
+  {
+    "id": "animal-moose",
+    "labelTt": "Поши",
+    "labelClipId": "animal.moose",
+    "targetClipId": "animal.moose.target",
+    "image": "assets/images/animals/animal-moose.webp"
+  },
+  {
+    "id": "animal-deer",
+    "labelTt": "Болан",
+    "labelClipId": "animal.deer",
+    "targetClipId": "animal.deer.target",
+    "image": "assets/images/animals/animal-deer.webp"
+  },
+  {
+    "id": "animal-wild-boar",
+    "labelTt": "Кабан",
+    "labelClipId": "animal.wild-boar",
+    "targetClipId": "animal.wild-boar.target",
+    "image": "assets/images/animals/animal-wild-boar.webp"
+  },
+  {
+    "id": "animal-beaver",
+    "labelTt": "Кондыз",
+    "labelClipId": "animal.beaver",
+    "targetClipId": "animal.beaver.target",
+    "image": "assets/images/animals/animal-beaver.webp"
+  },
+  {
+    "id": "animal-lynx",
+    "labelTt": "Селәүсен",
+    "labelClipId": "animal.lynx",
+    "targetClipId": "animal.lynx.target",
+    "image": "assets/images/animals/animal-lynx.webp"
+  },
+  {
+    "id": "animal-badger",
+    "labelTt": "Бурсык",
+    "labelClipId": "animal.badger",
+    "targetClipId": "animal.badger.target",
+    "image": "assets/images/animals/animal-badger.webp"
+  },
+  {
+    "id": "animal-frog",
+    "labelTt": "Бака",
+    "labelClipId": "animal.frog",
+    "targetClipId": "animal.frog.target",
+    "image": "assets/images/animals/animal-frog.webp"
+  },
+  {
+    "id": "animal-lizard",
+    "labelTt": "Кәлтә",
+    "labelClipId": "animal.lizard",
+    "targetClipId": "animal.lizard.target",
+    "image": "assets/images/animals/animal-lizard.webp"
+  },
+  {
+    "id": "animal-grasshopper",
+    "labelTt": "Чикерткә",
+    "labelClipId": "animal.grasshopper",
+    "targetClipId": "animal.grasshopper.target",
+    "image": "assets/images/animals/animal-grasshopper.webp"
+  },
+  {
+    "id": "animal-ladybug",
+    "labelTt": "Камка",
+    "labelClipId": "animal.ladybug",
+    "targetClipId": "animal.ladybug.target",
+    "image": "assets/images/animals/animal-ladybug.webp"
+  },
+  {
+    "id": "animal-snail",
+    "labelTt": "Әкәм-төкәм",
+    "labelClipId": "animal.snail",
+    "targetClipId": "animal.snail.target",
+    "image": "assets/images/animals/animal-snail.webp"
+  },
+  {
+    "id": "animal-butterfly",
+    "labelTt": "Күбәләк",
+    "labelClipId": "animal.butterfly",
+    "targetClipId": "animal.butterfly.target",
+    "image": "assets/images/animals/animal-butterfly.webp"
+  },
+  {
+    "id": "animal-bee",
+    "labelTt": "Бал корты",
+    "labelClipId": "animal.bee",
+    "targetClipId": "animal.bee.target",
+    "image": "assets/images/animals/animal-bee.webp"
+  },
+  {
+    "id": "animal-ant",
+    "labelTt": "Кырмыска",
+    "labelClipId": "animal.ant",
+    "targetClipId": "animal.ant.target",
+    "image": "assets/images/animals/animal-ant.webp"
+  },
+  {
+    "id": "animal-turtle",
+    "labelTt": "Ташбака",
+    "labelClipId": "animal.turtle",
+    "targetClipId": "animal.turtle.target",
+    "image": "assets/images/animals/animal-turtle.webp"
+  },
+  {
+    "id": "animal-snake",
+    "labelTt": "Елан",
+    "labelClipId": "animal.snake",
+    "targetClipId": "animal.snake.target",
+    "image": "assets/images/animals/animal-snake.webp"
+  },
+  {
+    "id": "animal-dragonfly",
+    "labelTt": "Энә карагы",
+    "labelClipId": "animal.dragonfly",
+    "targetClipId": "animal.dragonfly.target",
+    "image": "assets/images/animals/animal-dragonfly.webp"
+  },
+  {
+    "id": "animal-sparrow",
+    "labelTt": "Чыпчык",
+    "labelClipId": "animal.sparrow",
+    "targetClipId": "animal.sparrow.target",
+    "image": "assets/images/animals/animal-sparrow.webp"
+  },
+  {
+    "id": "animal-crow",
+    "labelTt": "Карга",
+    "labelClipId": "animal.crow",
+    "targetClipId": "animal.crow.target",
+    "image": "assets/images/animals/animal-crow.webp"
+  },
+  {
+    "id": "animal-owl",
+    "labelTt": "Ябалак",
+    "labelClipId": "animal.owl",
+    "targetClipId": "animal.owl.target",
+    "image": "assets/images/animals/animal-owl.webp"
+  },
+  {
+    "id": "animal-woodpecker",
+    "labelTt": "Тукран",
+    "labelClipId": "animal.woodpecker",
+    "targetClipId": "animal.woodpecker.target",
+    "image": "assets/images/animals/animal-woodpecker.webp"
+  },
+  {
+    "id": "animal-stork",
+    "labelTt": "Ләкләк",
+    "labelClipId": "animal.stork",
+    "targetClipId": "animal.stork.target",
+    "image": "assets/images/animals/animal-stork.webp"
+  },
+  {
+    "id": "animal-fish",
+    "labelTt": "Балык",
+    "labelClipId": "animal.fish",
+    "targetClipId": "animal.fish.target",
+    "image": "assets/images/animals/animal-fish.webp"
+  }
+]

@@ -71,7 +71,13 @@ export async function inspectResources(
   root: string,
   catalog: Catalog,
 ): Promise<ResourceReport> {
-  const paths = resourcePaths(catalog);
+  return inspectResourcePaths(root, resourcePaths(catalog));
+}
+
+export async function inspectResourcePaths(
+  root: string,
+  paths: ReturnType<typeof resourcePaths>,
+): Promise<ResourceReport> {
   const available: string[] = [];
   const errors: string[] = [];
   const missingAudio: string[] = [];
