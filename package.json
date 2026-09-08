@@ -30,9 +30,11 @@
     "check:published": "node scripts/check-published.ts",
     "check:published:local": "node scripts/check-published-local.ts",
     "release:verify": "node scripts/verify-release.ts",
-    "validate:expansion": "vitest run scripts/lib/expansion.test.ts --reporter=default --silent=false"
+    "validate:expansion": "vitest run scripts/lib/expansion.test.ts --reporter=default --silent=false",
+    "check:tint": "node scripts/check-tint.ts"
   },
   "dependencies": {
+    "fast-png": "8.0.0",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },

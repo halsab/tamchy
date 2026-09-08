@@ -5,6 +5,7 @@ import sharp from 'sharp';
 import { writeGenerated } from './lib/generated-files.ts';
 import { readContent } from './lib/read-content.ts';
 import { icons, resourcePaths } from './lib/resources.ts';
+import { prepareNeutralAssets } from './lib/neutral-png.ts';
 
 const root = resolve(import.meta.dirname, '..');
 const background = '#FFF9F2';
@@ -137,6 +138,10 @@ try {
     });
   console.log('SHA-256: все 11 мастер-PNG остались неизменными.');
   if (preparationError) throw preparationError;
+  const neutral = await prepareNeutralAssets(root);
+  console.log(
+    `Подготовлены ${neutral.length} нейтральных PNG без изменения RGBA; всего ${neutral.reduce((total, { bytes }) => total + bytes, 0)} байт, максимум ${Math.max(...neutral.map(({ bytes }) => bytes))} байт (лимит 300 КиБ).`,
+  );
 } catch (error) {
   console.error(error instanceof Error ? error.message : String(error));
   process.exitCode = 1;
