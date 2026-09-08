@@ -4,6 +4,7 @@ dist
 coverage
 .release
 reports
+.cache
 assets-source
 public
 AGENTS.md

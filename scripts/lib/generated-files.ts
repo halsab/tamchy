@@ -1,6 +1,28 @@
 import { randomUUID } from 'node:crypto';
-import { lstat, mkdir, rename, rm, writeFile } from 'node:fs/promises';
+import {
+  lstat,
+  mkdir,
+  readFile,
+  rename,
+  rm,
+  writeFile,
+} from 'node:fs/promises';
 import { dirname, join } from 'node:path';
+
+export async function readGenerated(root: string, relativePath: string) {
+  let directory = root;
+  for (const segment of dirname(relativePath).split('/')) {
+    directory = join(directory, segment);
+    const info = await lstat(directory);
+    if (!info.isDirectory() || info.isSymbolicLink())
+      throw new Error(`Небезопасный каталог: ${directory}`);
+  }
+  const output = join(root, relativePath);
+  const info = await lstat(output);
+  if (!info.isFile() || info.isSymbolicLink())
+    throw new Error(`Нельзя прочитать производную: ${output}`);
+  return readFile(output);
+}
 
 export async function writeGenerated(
   root: string,

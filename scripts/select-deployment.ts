@@ -43,5 +43,5 @@ if (process.env.GITHUB_OUTPUT) {
 console.log(
   selected
     ? `Готовый выпуск: запуск ${selected.runId}, коммит ${selected.commit}`
-    : 'Устаревший push: публикация пропущена, main уже изменился.',
+    : 'Публикация пропущена: main уже изменился или проверка не создавала нового выпуска.',
 );

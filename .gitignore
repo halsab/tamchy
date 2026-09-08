@@ -7,6 +7,7 @@ node_modules/
 /public/icons/
 /dev-dist/
 .vite/
+/.cache/
 *.tsbuildinfo
 
 /coverage/

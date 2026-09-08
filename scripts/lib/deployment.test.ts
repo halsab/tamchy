@@ -129,3 +129,47 @@ it('автодеплой публикует успешно проверенны�
     commit,
   });
 });
+
+it('автодеплой пропускает явно отмеченную проверку без нового выпуска', async () => {
+  const s = fixture();
+  s.artifacts.splice(0, s.artifacts.length, {
+    ...s.artifacts[0]!,
+    name: 'checks-only',
+  });
+  expect(await resolveDeployment(s.get, repository, '42', true)).toBeNull();
+  await expect(
+    resolveDeployment(s.get, repository, '42', false),
+  ).rejects.toThrow('выпуска');
+});
+it('ручной выбор последнего выпуска проходит мимо более новой проверки документации', async () => {
+  const s = fixture();
+  const docs = { ...s.run, id: 43 };
+  s.responses[
+    '/actions/workflows/checks.yml/runs?branch=main&status=success&per_page=100'
+  ] = { workflow_runs: [docs, s.run] };
+  s.responses['/actions/runs/43'] = docs;
+  s.responses['/actions/runs/43/artifacts?per_page=100'] = {
+    artifacts: [
+      {
+        ...s.artifacts[0]!,
+        name: 'checks-only',
+        workflow_run: { id: 43, head_sha: commit },
+      },
+    ],
+  };
+  expect(await resolveDeployment(s.get, repository, '', false)).toMatchObject({
+    runId: '42',
+  });
+});
+it('маркер документации не скрывает неполный выпуск или чужой артефакт', async () => {
+  const s = fixture();
+  s.artifacts.push({ ...s.artifacts[0]!, name: 'checks-only' });
+  await expect(
+    resolveDeployment(s.get, repository, '42', true),
+  ).rejects.toThrow();
+  s.artifacts.splice(0, 2);
+  s.artifacts[0]!.workflow_run.head_sha = 'b'.repeat(40);
+  await expect(
+    resolveDeployment(s.get, repository, '42', true),
+  ).rejects.toThrow();
+});

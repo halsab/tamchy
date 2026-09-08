@@ -5,6 +5,7 @@ import sharp from 'sharp';
 import graphics from '../../src/content/v2/graphics.json' with { type: 'json' };
 import { decodeNeutralPng } from '../../src/services/assets/neutral-png.ts';
 import { writeGenerated } from './generated-files.ts';
+import type { AssetCache } from './asset-cache.ts';
 
 export const neutralPngBudget = 300 * 1024;
 export const neutralImages = graphics.filter(
@@ -23,6 +24,13 @@ export async function optimizeNeutralPng(input: Buffer, expectedHash: string) {
       palette: false,
     })
     .toBuffer();
+  await validateNeutralPng(input, output);
+  return output;
+}
+
+async function validateNeutralPng(input: Buffer, output: Buffer) {
+  decodeNeutralPng(input);
+  decodeNeutralPng(output);
   const original = await sharp(input).ensureAlpha().raw().toBuffer();
   const restored = await sharp(output)
     .toColourspace('srgb')
@@ -33,16 +41,24 @@ export async function optimizeNeutralPng(input: Buffer, expectedHash: string) {
     throw new Error('Производная изменила RGBA мастера');
   if (output.length > neutralPngBudget)
     throw new Error('Нейтральный PNG превышает 300 КиБ');
-  return output;
 }
 
-export async function prepareNeutralAssets(root: string) {
+export async function prepareNeutralAssets(root: string, cache?: AssetCache) {
   const results: { path: string; bytes: number }[] = [];
   for (const { source, outputs, sha256 } of neutralImages) {
     const input = await readFile(resolve(root, source));
-    const output = await optimizeNeutralPng(input, sha256);
     const path = outputs[0]!;
-    await writeGenerated(root, `public/${path}`, output);
+    if (createHash('sha256').update(input).digest('hex') !== sha256)
+      throw new Error('SHA-256 нейтрального мастера не совпадает с реестром');
+    const output = cache
+      ? await cache.prepare(
+          `public/${path}`,
+          input,
+          () => optimizeNeutralPng(input, sha256),
+          (data) => validateNeutralPng(input, data),
+        )
+      : await optimizeNeutralPng(input, sha256);
+    if (!cache) await writeGenerated(root, `public/${path}`, output);
     results.push({ path, bytes: output.length });
   }
   return results;
