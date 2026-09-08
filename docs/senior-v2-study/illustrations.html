@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ru">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Проверка контуров — Тамчы</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 16px;
+      background: #fff9f2;
+      color: #27332f;
+      font: 16px system-ui;
+    }
+    h1 {
+      font-size: 24px;
+      margin: 0 0 8px;
+    }
+    p {
+      margin: 8px 0 16px;
+    }
+    main {
+      display: grid;
+      grid-template-columns: repeat(3, 264px);
+      gap: 16px;
+    }
+    article {
+      padding: 8px;
+      background: white;
+      border: 1px solid #d5dbd7;
+    }
+    .pair {
+      display: flex;
+      gap: 8px;
+    }
+    img,
+    .mask {
+      width: var(--size, 112px);
+      height: var(--size, 112px);
+      object-fit: contain;
+    }
+    .mask {
+      background: #27332f;
+      mask: var(--image) center / contain no-repeat;
+      -webkit-mask: var(--image) center / contain no-repeat;
+    }
+    .label {
+      font-size: 16px;
+      margin-top: 8px;
+    }
+    small {
+      font-size: 12px;
+    }
+    a {
+      color: #27332f;
+    }
+  </style>
+  <h1>Полноцветная иллюстрация и её альфа-контур</h1>
+  <p>
+    112×112 px — содержимое карточки 128×128 с отступами 8 px. Это материалы
+    проверки, вне приложения.
+  </p>
+  <nav>
+    <a href="?page=0">1–13</a> · <a href="?page=1">14–26</a> ·
+    <a href="?page=2">27–39</a> · <a href="?all=1">Все</a>
+  </nav>
+  <main></main>
+  <script type="module">
+    const animals = await fetch('../../src/content/v2/animals.json').then((r) =>
+      r.json(),
+    );
+    const params = new URLSearchParams(location.search);
+    if (params.get('size') === '64') {
+      document.documentElement.style.setProperty('--size', '64px');
+      document.querySelector('p').textContent =
+        '64×64 px — содержимое компактной старшей карточки 80×80 с отступами 8 px. Это материалы проверки, вне приложения.';
+    }
+    const start = Number(params.get('page') || 0) * 13;
+    const selected = params.has('ids')
+      ? animals.filter((x) => params.get('ids').split(',').includes(x.id))
+      : params.has('all')
+        ? animals
+        : animals.slice(start, start + 13);
+    const main = document.querySelector('main');
+    for (const item of selected) {
+      const url = '../../public/' + item.image;
+      const card = document.createElement('article');
+      const pair = document.createElement('div');
+      pair.className = 'pair';
+      const img = document.createElement('img');
+      img.src = url;
+      img.alt = item.labelTt;
+      const mask = document.createElement('span');
+      mask.className = 'mask';
+      mask.style.setProperty('--image', `url("${url}")`);
+      mask.setAttribute('aria-hidden', 'true');
+      pair.append(img, mask);
+      const label = document.createElement('div');
+      label.className = 'label';
+      label.textContent = `${animals.indexOf(item) + 1}. ${item.labelTt}`;
+      const id = document.createElement('small');
+      id.textContent = item.id;
+      card.append(pair, label, id);
+      main.append(card);
+    }
+    await Promise.all([...document.images].map((img) => img.decode()));
+    document.documentElement.dataset.ready = 'true';
+  </script>
+</html>

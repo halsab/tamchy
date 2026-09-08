@@ -1,0 +1,600 @@
+<!doctype html>
+<html lang="tt">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Тамчы — өлкән режим макеты</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    html {
+      font-family: system-ui, sans-serif;
+      font-size: 16px;
+      color: #27332f;
+      background: #fff9f2;
+    }
+    body {
+      margin: 0;
+    }
+    button {
+      font: inherit;
+      color: inherit;
+      border: 0;
+      cursor: pointer;
+    }
+    button:focus-visible {
+      outline: 3px solid #27332f;
+      outline-offset: 3px;
+    }
+    .screen {
+      padding: max(16px, var(--top, 0px)) max(16px, var(--right, 0px))
+        max(16px, var(--bottom, 0px)) max(16px, var(--left, 0px));
+      height: 100vh;
+      height: 100dvh;
+      display: grid;
+      grid-template-areas: 'header' 'lead' 'answers';
+      grid-template-rows: max-content max-content max-content;
+      align-content: safe center;
+      gap: 16px;
+      max-width: 1120px;
+      margin: auto;
+    }
+    .header {
+      grid-area: header;
+      display: grid;
+      grid-template-columns: 56px minmax(0, 1fr) 56px;
+      align-items: center;
+      gap: 8px;
+    }
+    h1 {
+      font-size: 1.5rem;
+      margin: 0;
+      text-align: center;
+      line-height: 1.2;
+    }
+    .control {
+      width: 56px;
+      height: 56px;
+      background: white;
+      border-radius: 20px;
+      display: grid;
+      place-items: center;
+    }
+    svg {
+      width: 28px;
+      height: 28px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+    }
+    .lead {
+      grid-area: lead;
+      display: grid;
+      gap: 8px;
+      justify-items: center;
+      align-content: center;
+      min-width: 0;
+    }
+    .prompt {
+      font-size: 1.25rem;
+      line-height: 1.4;
+      text-align: center;
+      margin: 0;
+      overflow-wrap: anywhere;
+    }
+    .stimulus {
+      min-height: 128px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+    .stimulus > img,
+    .stimulus > canvas,
+    .mask {
+      width: 128px;
+      height: 128px;
+      object-fit: contain;
+    }
+    .mask {
+      background: #27332f;
+      mask: var(--image) center / contain no-repeat;
+      -webkit-mask: var(--image) center / contain no-repeat;
+    }
+    .sequence {
+      min-height: 56px;
+      gap: 8px;
+    }
+    .sequence span {
+      width: 28px;
+      height: 28px;
+      flex: 0 0 28px;
+      border: 2px solid #65736b;
+      border-radius: 50%;
+    }
+    .answers {
+      grid-area: answers;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(128px, 1fr));
+      grid-auto-rows: 128px;
+      gap: 16px;
+      min-width: 0;
+      align-content: center;
+    }
+    .answer {
+      min-width: 128px;
+      min-height: 128px;
+      padding: 8px;
+      border: 2px solid transparent;
+      border-radius: 24px;
+      background: white;
+      display: grid;
+      place-items: center;
+    }
+    .answer img,
+    .answer canvas {
+      width: 108px;
+      height: 108px;
+      object-fit: contain;
+    }
+    .chip {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      border: 2px solid #65736b;
+    }
+    .digit {
+      font-size: 3rem;
+      font-weight: 750;
+    }
+    .stimulus .digit {
+      font-size: 4rem;
+    }
+    .group {
+      width: 104px;
+      min-width: 104px;
+      height: 80px;
+      display: grid;
+      grid-template-columns: repeat(4, 24px);
+      grid-template-rows: repeat(3, 24px);
+      gap: 2px;
+      align-content: center;
+    }
+    .group img {
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
+    }
+    .removed {
+      opacity: 0.25;
+      outline: 2px solid #27332f;
+      outline-offset: -7px;
+    }
+    .union {
+      border: 2px dashed #65736b;
+      border-radius: 24px;
+      padding: 8px;
+      display: flex;
+      gap: 8px;
+    }
+    .feedback {
+      display: grid;
+      gap: 8px;
+      justify-items: center;
+    }
+    .feedback:empty {
+      display: none;
+    }
+    .feedback p {
+      font-size: 1.25rem;
+      line-height: 1.4;
+      margin: 0;
+      text-align: center;
+    }
+    .action {
+      min-height: 56px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      background: #e3f0e6;
+      font-size: 1.25rem;
+    }
+    .blocking .answers {
+      display: none;
+    }
+    .blocking .stimulus {
+      display: none;
+    }
+    .blocking {
+      grid-template-areas: 'header' 'lead';
+      grid-template-rows: 56px minmax(0, 1fr);
+      align-content: stretch;
+    }
+    .blocking .lead {
+      overflow: auto;
+    }
+    .overflow {
+      align-content: start;
+    }
+    @media (min-width: 640px) and (min-height: 600px) {
+      .screen {
+        padding: max(32px, var(--top, 0px)) max(32px, var(--right, 0px))
+          max(32px, var(--bottom, 0px)) max(32px, var(--left, 0px));
+      }
+      .answers {
+        grid-template-columns: repeat(3, minmax(128px, 1fr));
+        grid-auto-rows: 160px;
+      }
+      .answers[data-count='2'] {
+        grid-template-columns: repeat(2, minmax(128px, 1fr));
+      }
+    }
+    @media (orientation: landscape) {
+      .screen {
+        grid-template-areas: 'header answers' 'lead answers';
+        grid-template-columns: minmax(0, 1fr) var(--grid-width, 416px);
+        grid-template-rows: 56px max-content;
+        gap: 16px;
+      }
+      .header {
+        grid-template-columns: 56px 56px;
+        justify-content: space-between;
+      }
+      .header h1 {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+      }
+      .answers {
+        grid-template-columns: repeat(var(--columns, 3), 128px);
+        grid-auto-rows: 128px;
+      }
+      .blocking {
+        grid-template-areas: 'header' 'lead';
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: 56px minmax(0, 1fr);
+      }
+    }
+    .compact {
+      gap: 8px;
+    }
+    .compact .answers {
+      grid-template-columns: repeat(var(--columns, 3), minmax(80px, 1fr));
+      grid-auto-rows: 96px;
+    }
+    .compact .answer {
+      min-width: 80px;
+      min-height: 80px;
+      padding: 6px;
+    }
+    .compact .answer img,
+    .compact .answer canvas {
+      width: 64px;
+      height: 64px;
+    }
+    .compact .chip {
+      width: 64px;
+      height: 64px;
+    }
+    .compact .group {
+      width: 60px;
+      min-width: 60px;
+      height: 80px;
+      grid-template-columns: repeat(3, 20px);
+      grid-template-rows: repeat(4, 20px);
+      gap: 0;
+    }
+    .compact .group img {
+      width: 20px;
+      height: 20px;
+    }
+    .compact .answer .digit {
+      font-size: 2.5rem;
+    }
+    @media (orientation: landscape) {
+      .compact {
+        grid-template-columns: minmax(0, 1fr) var(--compact-grid-width, 272px);
+      }
+      .compact .stimulus {
+        min-height: 112px;
+      }
+      .compact .stimulus > img,
+      .compact .stimulus > canvas,
+      .compact .mask {
+        width: 112px;
+        height: 112px;
+      }
+      .compact .sequence {
+        min-height: 56px;
+        gap: 8px;
+      }
+      .compact .sequence span {
+        width: 16px;
+        height: 16px;
+        flex-basis: 16px;
+      }
+    }
+    .large-text .screen {
+      height: auto;
+      min-height: 100dvh;
+      grid-template-areas: 'header' 'lead' 'answers';
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: max-content max-content max-content;
+      align-content: start;
+    }
+    .large-text .answers {
+      grid-template-columns: minmax(128px, 1fr);
+      grid-auto-rows: minmax(128px, max-content);
+    }
+    .large-text .answer {
+      min-width: 128px;
+      min-height: 128px;
+    }
+    .large-text .answer .digit {
+      font-size: 3rem;
+    }
+    .large-text .header h1 {
+      overflow-wrap: anywhere;
+    }
+    .large-text .blocking {
+      grid-template-areas: 'header' 'lead';
+      grid-template-rows: max-content max-content;
+    }
+  </style>
+  <main class="screen">
+    <header class="header">
+      <button class="control" aria-label="Баш бит">
+        <svg viewBox="0 0 24 24">
+          <path d="m3 10 9-7 9 7v11H3z M9 21v-8h6v8" />
+        </svg>
+      </button>
+      <h1></h1>
+      <button class="control" aria-label="Тагын тыңларга">
+        <svg viewBox="0 0 24 24">
+          <path d="M3 9h4l5-5v16l-5-5H3z M16 8q6 4 0 8 M19 4q10 8 0 16" />
+        </svg>
+      </button>
+    </header>
+    <div class="lead">
+      <p class="prompt"></p>
+      <div class="stimulus"></div>
+      <div class="feedback"></div>
+    </div>
+    <div class="answers" role="group" aria-label="Җаваплар"></div>
+  </main>
+  <script type="module">
+    const query = new URLSearchParams(location.search);
+    const kind = query.get('kind') || 'C2';
+    const requestedCount = Number(query.get('count') || 6);
+    const count = kind === 'N2' ? 2 : requestedCount;
+    const compact =
+      query.get('policy') !== 'strict' &&
+      Math.min(innerWidth, innerHeight) <= 360 &&
+      Math.max(innerWidth, innerHeight) <= 640;
+    const screen = document.querySelector('.screen');
+    const prompt = document.querySelector('.prompt');
+    const stimulus = document.querySelector('.stimulus');
+    const answers = document.querySelector('.answers');
+    const colors = [
+      '#D94343',
+      '#32965B',
+      '#347FD4',
+      '#F3C63A',
+      '#7959C8',
+      '#FFFFFF',
+    ];
+    const prefix = '../../public/assets/images/';
+    const animals = [
+      'cat',
+      'frog',
+      'stork',
+      'fish',
+      kind === 'A3' ? 'horse' : 'wolf',
+      'butterfly',
+    ];
+    const shapes = [
+      'rectangle',
+      'circle',
+      'rectangle',
+      'rectangle',
+      'oval',
+      'star',
+    ];
+    const promises = [];
+    const img = (path) => {
+      const el = document.createElement('img');
+      el.src = prefix + path;
+      el.alt = '';
+      promises.push(el.decode());
+      return el;
+    };
+    const chip = (color) => {
+      const el = document.createElement('span');
+      el.className = 'chip';
+      el.style.backgroundColor = color;
+      return el;
+    };
+    const digit = (value) => {
+      const el = document.createElement('span');
+      el.className = 'digit';
+      el.textContent = value;
+      return el;
+    };
+    const group = (value, removed = 0) => {
+      const el = document.createElement('span');
+      el.className = 'group';
+      for (let i = 0; i < value; i++) {
+        const apple = img('numbers/count-apple.webp');
+        if (i >= value - removed) apple.className = 'removed';
+        el.append(apple);
+      }
+      return el;
+    };
+    async function tinted(path, hex, small = false) {
+      const source = new Image();
+      source.src = prefix + path;
+      await source.decode();
+      const canvas = document.createElement('canvas');
+      canvas.width = canvas.height = 1024;
+      const context = canvas.getContext('2d');
+      context.drawImage(source, 0, 0);
+      const pixels = context.getImageData(0, 0, 1024, 1024);
+      const channels = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
+      for (let p = 0; p < pixels.data.length; p += 4) {
+        const tone = pixels.data[p];
+        for (let c = 0; c < 3; c++)
+          pixels.data[p + c] = Math.round(
+            tone <= 128
+              ? (channels[c] * tone) / 128
+              : channels[c] + ((255 - channels[c]) * (tone - 128)) / 127,
+          );
+      }
+      context.putImageData(pixels, 0, 0);
+      if (small)
+        canvas.style.width = canvas.style.height = compact ? '40px' : '64px';
+      return canvas;
+    }
+    document.querySelector('h1').textContent = kind.startsWith('C')
+      ? 'Төсләр'
+      : kind.startsWith('A')
+        ? 'Хайваннар'
+        : 'Саннар';
+    const prompts = {
+      C1: 'Кызыл төсне күрсәт.',
+      C2: 'Бу нинди төс?',
+      'C3-A': 'Күк зәңгәр турыпочмаклыкны күрсәт.',
+      'C3-B': 'Кечкенә күк зәңгәр турыпочмаклыкны күрсәт.',
+      C4: 'Киләсе төсне тап.',
+      A1: 'Мәчене күрсәт.',
+      A2: 'Йорт хайванын тап.',
+      A3: 'Бу кайсы хайванның шәүләсе?',
+      'N1-A': 'Унҗидене күрсәт.',
+      'N1-B': 'Санап кара. Ничә алма бар?',
+      'N1-C': 'Кайсысында тугыз алма бар?',
+      N2: 'Кайсысында күбрәк?',
+      'N3-A': 'Санап кара. Барысы ничә алма?',
+      'N3-B': 'Санап кара. Ничә алма калды?',
+    };
+    prompt.textContent = prompts[kind];
+    if (kind === 'C2')
+      stimulus.append(
+        await tinted('color-objects/color-object-car-toy.png', colors[0]),
+      );
+    else if (kind === 'A3') {
+      const mask = document.createElement('span');
+      mask.className = 'mask';
+      mask.style.setProperty(
+        '--image',
+        `url('${prefix}animals/animal-stork.webp')`,
+      );
+      stimulus.append(mask);
+      promises.push(img('animals/animal-stork.webp').decode());
+    } else if (kind === 'C4') {
+      stimulus.classList.add('sequence');
+      for (const i of [0, 1, 2, 0, 1, 2, -1]) {
+        const el = document.createElement('span');
+        if (i >= 0) el.style.backgroundColor = colors[i];
+        else {
+          el.style.borderStyle = 'dashed';
+        }
+        stimulus.append(el);
+      }
+    } else if (kind === 'N1-B') {
+      prompt.textContent = 'Санап кара. Ничә алма бар?';
+      stimulus.append(group(10));
+    } else if (kind === 'N1-C') stimulus.append(digit(9));
+    else if (kind === 'N3-A') {
+      const union = document.createElement('span');
+      union.className = 'union';
+      union.append(group(5), group(5));
+      stimulus.append(union);
+    } else if (kind === 'N3-B') stimulus.append(group(10, 3));
+    else stimulus.remove();
+    for (let i = 0; i < count; i++) {
+      const button = document.createElement('button');
+      button.className = 'answer';
+      button.setAttribute('aria-label', `Җавап ${i + 1}`);
+      if (kind === 'C3-A' || kind === 'C3-B')
+        button.append(
+          await tinted(
+            `shapes/shape-${shapes[i]}.png`,
+            [
+              '#4AA8E8',
+              '#4AA8E8',
+              colors[1],
+              kind === 'C3-B' ? '#4AA8E8' : colors[0],
+              colors[4],
+              colors[0],
+            ][i],
+            kind === 'C3-B' && i % 2 === 0,
+          ),
+        );
+      else if (kind.startsWith('C')) button.append(chip(colors[i]));
+      else if (kind.startsWith('A'))
+        button.append(img(`animals/animal-${animals[i]}.webp`));
+      else if (kind === 'N1-C') button.append(group([9, 6, 8, 10, 5, 7][i]));
+      else if (kind === 'N2') button.append(group(i === 0 ? 6 : 9));
+      else
+        button.append(
+          digit(
+            kind === 'N1-A'
+              ? [17, 16, 18, 15, 19, 20][i]
+              : [10, 7, 8, 9, 6, 5][i],
+          ),
+        );
+      answers.append(button);
+    }
+    answers.dataset.count = count;
+    screen.style.setProperty('--columns', count <= 4 ? '2' : '3');
+    screen.style.setProperty('--grid-width', count <= 4 ? '272px' : '416px');
+    screen.style.setProperty(
+      '--compact-grid-width',
+      count <= 4 ? '208px' : '272px',
+    );
+    if (compact) screen.classList.add('compact');
+    if (query.get('text') === '200') {
+      document.documentElement.style.fontSize = '32px';
+      document.documentElement.classList.add('large-text');
+    }
+    if (query.get('safe') === '1') {
+      const landscape = innerWidth > innerHeight;
+      for (const [key, value] of Object.entries(
+        landscape
+          ? { top: 0, bottom: 21, left: 47, right: 47 }
+          : { top: 47, bottom: 34, left: 0, right: 0 },
+      ))
+        screen.style.setProperty('--' + key, value + 'px');
+    }
+    if (query.has('state')) {
+      screen.classList.add('blocking');
+      const feedback = document.querySelector('.feedback');
+      const p = document.createElement('p');
+      p.textContent =
+        query.get('state') === 'paused'
+          ? 'Дәвам итәр өчен төймәгә бас.'
+          : 'Рәсемне йөкләп булмады. Кабатлап кара.';
+      const button = document.createElement('button');
+      button.className = 'action';
+      button.textContent =
+        query.get('state') === 'paused' ? 'Дәвам итәргә' : 'Кабатларга';
+      feedback.append(p, button);
+    }
+    await Promise.all(promises);
+    await document.fonts.ready;
+    if (
+      document.documentElement.scrollHeight > innerHeight ||
+      document.documentElement.scrollWidth > innerWidth
+    )
+      screen.classList.add('overflow');
+    document.documentElement.dataset.ready = 'true';
+    window.study = {
+      kind,
+      requestedCount,
+      count,
+      policy: query.get('policy') || 'compact',
+      exampleOnly: true,
+    };
+  </script>
+</html>

@@ -1,0 +1,1188 @@
+{
+  "animalCount": 39,
+  "reviewedTraitCells": 195,
+  "traits": [
+    {
+      "trait": "bird",
+      "generation": "enabled",
+      "yes": 8,
+      "no": 31,
+      "exclude": 0,
+      "possible": {
+        "4": true,
+        "5": true,
+        "6": true
+      }
+    },
+    {
+      "trait": "domestic",
+      "generation": "enabled",
+      "yes": 7,
+      "no": 26,
+      "exclude": 6,
+      "possible": {
+        "4": true,
+        "5": true,
+        "6": true
+      }
+    },
+    {
+      "trait": "wild",
+      "generation": "enabled",
+      "yes": 26,
+      "no": 7,
+      "exclude": 6,
+      "possible": {
+        "4": true,
+        "5": true,
+        "6": true
+      }
+    },
+    {
+      "trait": "canFly",
+      "generation": "enabled",
+      "yes": 9,
+      "no": 25,
+      "exclude": 5,
+      "possible": {
+        "4": true,
+        "5": true,
+        "6": true
+      }
+    },
+    {
+      "trait": "canSwim",
+      "generation": "disabled",
+      "yes": 5,
+      "no": 0,
+      "exclude": 34,
+      "possible": {
+        "4": false,
+        "5": false,
+        "6": false
+      }
+    }
+  ],
+  "silhouettePairs": 50,
+  "checkedSilhouetteSets": 117,
+  "impossibleFixtures": 2,
+  "silhouetteSets": [
+    {
+      "target": "animal-cat",
+      "count": 4,
+      "options": ["animal-cat", "animal-cow", "animal-sheep", "animal-duck"]
+    },
+    {
+      "target": "animal-cat",
+      "count": 5,
+      "options": [
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse"
+      ]
+    },
+    {
+      "target": "animal-cat",
+      "count": 6,
+      "options": [
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse",
+        "animal-bear"
+      ]
+    },
+    {
+      "target": "animal-dog",
+      "count": 4,
+      "options": ["animal-dog", "animal-cow", "animal-duck", "animal-mouse"]
+    },
+    {
+      "target": "animal-dog",
+      "count": 5,
+      "options": [
+        "animal-dog",
+        "animal-cow",
+        "animal-duck",
+        "animal-mouse",
+        "animal-hare"
+      ]
+    },
+    {
+      "target": "animal-dog",
+      "count": 6,
+      "options": [
+        "animal-dog",
+        "animal-cow",
+        "animal-duck",
+        "animal-mouse",
+        "animal-hare",
+        "animal-squirrel"
+      ]
+    },
+    {
+      "target": "animal-cow",
+      "count": 4,
+      "options": ["animal-cow", "animal-cat", "animal-sheep", "animal-duck"]
+    },
+    {
+      "target": "animal-cow",
+      "count": 5,
+      "options": [
+        "animal-cow",
+        "animal-cat",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse"
+      ]
+    },
+    {
+      "target": "animal-cow",
+      "count": 6,
+      "options": [
+        "animal-cow",
+        "animal-cat",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse",
+        "animal-bear"
+      ]
+    },
+    {
+      "target": "animal-horse",
+      "count": 4,
+      "options": ["animal-horse", "animal-cat", "animal-sheep", "animal-duck"]
+    },
+    {
+      "target": "animal-horse",
+      "count": 5,
+      "options": [
+        "animal-horse",
+        "animal-cat",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse"
+      ]
+    },
+    {
+      "target": "animal-horse",
+      "count": 6,
+      "options": [
+        "animal-horse",
+        "animal-cat",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse",
+        "animal-bear"
+      ]
+    },
+    {
+      "target": "animal-sheep",
+      "count": 4,
+      "options": ["animal-sheep", "animal-cat", "animal-cow", "animal-duck"]
+    },
+    {
+      "target": "animal-sheep",
+      "count": 5,
+      "options": [
+        "animal-sheep",
+        "animal-cat",
+        "animal-cow",
+        "animal-duck",
+        "animal-mouse"
+      ]
+    },
+    {
+      "target": "animal-sheep",
+      "count": 6,
+      "options": [
+        "animal-sheep",
+        "animal-cat",
+        "animal-cow",
+        "animal-duck",
+        "animal-mouse",
+        "animal-bear"
+      ]
+    },
+    {
+      "target": "animal-duck",
+      "count": 4,
+      "options": ["animal-duck", "animal-cat", "animal-cow", "animal-sheep"]
+    },
+    {
+      "target": "animal-duck",
+      "count": 5,
+      "options": [
+        "animal-duck",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-mouse"
+      ]
+    },
+    {
+      "target": "animal-duck",
+      "count": 6,
+      "options": [
+        "animal-duck",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-mouse",
+        "animal-bear"
+      ]
+    },
+    {
+      "target": "animal-goat",
+      "count": 4,
+      "options": ["animal-goat", "animal-cat", "animal-duck", "animal-mouse"]
+    },
+    {
+      "target": "animal-goat",
+      "count": 5,
+      "options": [
+        "animal-goat",
+        "animal-cat",
+        "animal-duck",
+        "animal-mouse",
+        "animal-bear"
+      ]
+    },
+    {
+      "target": "animal-goat",
+      "count": 6,
+      "options": [
+        "animal-goat",
+        "animal-cat",
+        "animal-duck",
+        "animal-mouse",
+        "animal-bear",
+        "animal-hare"
+      ]
+    },
+    {
+      "target": "animal-chicken",
+      "count": 4,
+      "options": ["animal-chicken", "animal-cat", "animal-cow", "animal-sheep"]
+    },
+    {
+      "target": "animal-chicken",
+      "count": 5,
+      "options": [
+        "animal-chicken",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-mouse"
+      ]
+    },
+    {
+      "target": "animal-chicken",
+      "count": 6,
+      "options": [
+        "animal-chicken",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-mouse",
+        "animal-bear"
+      ]
+    },
+    {
+      "target": "animal-goose",
+      "count": 4,
+      "options": ["animal-goose", "animal-cat", "animal-cow", "animal-sheep"]
+    },
+    {
+      "target": "animal-goose",
+      "count": 5,
+      "options": [
+        "animal-goose",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-mouse"
+      ]
+    },
+    {
+      "target": "animal-goose",
+      "count": 6,
+      "options": [
+        "animal-goose",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-mouse",
+        "animal-bear"
+      ]
+    },
+    {
+      "target": "animal-mouse",
+      "count": 4,
+      "options": ["animal-mouse", "animal-cat", "animal-cow", "animal-sheep"]
+    },
+    {
+      "target": "animal-mouse",
+      "count": 5,
+      "options": [
+        "animal-mouse",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck"
+      ]
+    },
+    {
+      "target": "animal-mouse",
+      "count": 6,
+      "options": [
+        "animal-mouse",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck",
+        "animal-bear"
+      ]
+    },
+    {
+      "target": "animal-bear",
+      "count": 4,
+      "options": ["animal-bear", "animal-cat", "animal-cow", "animal-sheep"]
+    },
+    {
+      "target": "animal-bear",
+      "count": 5,
+      "options": [
+        "animal-bear",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck"
+      ]
+    },
+    {
+      "target": "animal-bear",
+      "count": 6,
+      "options": [
+        "animal-bear",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse"
+      ]
+    },
+    {
+      "target": "animal-wolf",
+      "count": 4,
+      "options": ["animal-wolf", "animal-cow", "animal-sheep", "animal-duck"]
+    },
+    {
+      "target": "animal-wolf",
+      "count": 5,
+      "options": [
+        "animal-wolf",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse"
+      ]
+    },
+    {
+      "target": "animal-wolf",
+      "count": 6,
+      "options": [
+        "animal-wolf",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse",
+        "animal-bear"
+      ]
+    },
+    {
+      "target": "animal-fox",
+      "count": 4,
+      "options": ["animal-fox", "animal-cow", "animal-sheep", "animal-duck"]
+    },
+    {
+      "target": "animal-fox",
+      "count": 5,
+      "options": [
+        "animal-fox",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse"
+      ]
+    },
+    {
+      "target": "animal-fox",
+      "count": 6,
+      "options": [
+        "animal-fox",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse",
+        "animal-bear"
+      ]
+    },
+    {
+      "target": "animal-hare",
+      "count": 4,
+      "options": ["animal-hare", "animal-cat", "animal-cow", "animal-sheep"]
+    },
+    {
+      "target": "animal-hare",
+      "count": 5,
+      "options": [
+        "animal-hare",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck"
+      ]
+    },
+    {
+      "target": "animal-hare",
+      "count": 6,
+      "options": [
+        "animal-hare",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse"
+      ]
+    },
+    {
+      "target": "animal-squirrel",
+      "count": 4,
+      "options": ["animal-squirrel", "animal-cat", "animal-cow", "animal-sheep"]
+    },
+    {
+      "target": "animal-squirrel",
+      "count": 5,
+      "options": [
+        "animal-squirrel",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck"
+      ]
+    },
+    {
+      "target": "animal-squirrel",
+      "count": 6,
+      "options": [
+        "animal-squirrel",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse"
+      ]
+    },
+    {
+      "target": "animal-hedgehog",
+      "count": 4,
+      "options": ["animal-hedgehog", "animal-cat", "animal-cow", "animal-sheep"]
+    },
+    {
+      "target": "animal-hedgehog",
+      "count": 5,
+      "options": [
+        "animal-hedgehog",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck"
+      ]
+    },
+    {
+      "target": "animal-hedgehog",
+      "count": 6,
+      "options": [
+        "animal-hedgehog",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse"
+      ]
+    },
+    {
+      "target": "animal-moose",
+      "count": 4,
+      "options": ["animal-moose", "animal-cat", "animal-sheep", "animal-duck"]
+    },
+    {
+      "target": "animal-moose",
+      "count": 5,
+      "options": [
+        "animal-moose",
+        "animal-cat",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse"
+      ]
+    },
+    {
+      "target": "animal-moose",
+      "count": 6,
+      "options": [
+        "animal-moose",
+        "animal-cat",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse",
+        "animal-bear"
+      ]
+    },
+    {
+      "target": "animal-deer",
+      "count": 4,
+      "options": ["animal-deer", "animal-cat", "animal-sheep", "animal-duck"]
+    },
+    {
+      "target": "animal-deer",
+      "count": 5,
+      "options": [
+        "animal-deer",
+        "animal-cat",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse"
+      ]
+    },
+    {
+      "target": "animal-deer",
+      "count": 6,
+      "options": [
+        "animal-deer",
+        "animal-cat",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse",
+        "animal-bear"
+      ]
+    },
+    {
+      "target": "animal-wild-boar",
+      "count": 4,
+      "options": [
+        "animal-wild-boar",
+        "animal-cat",
+        "animal-horse",
+        "animal-sheep"
+      ]
+    },
+    {
+      "target": "animal-wild-boar",
+      "count": 5,
+      "options": [
+        "animal-wild-boar",
+        "animal-cat",
+        "animal-horse",
+        "animal-sheep",
+        "animal-duck"
+      ]
+    },
+    {
+      "target": "animal-wild-boar",
+      "count": 6,
+      "options": [
+        "animal-wild-boar",
+        "animal-cat",
+        "animal-horse",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse"
+      ]
+    },
+    {
+      "target": "animal-beaver",
+      "count": 4,
+      "options": ["animal-beaver", "animal-cat", "animal-cow", "animal-sheep"]
+    },
+    {
+      "target": "animal-beaver",
+      "count": 5,
+      "options": [
+        "animal-beaver",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck"
+      ]
+    },
+    {
+      "target": "animal-beaver",
+      "count": 6,
+      "options": [
+        "animal-beaver",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse"
+      ]
+    },
+    {
+      "target": "animal-lynx",
+      "count": 4,
+      "options": ["animal-lynx", "animal-cow", "animal-sheep", "animal-duck"]
+    },
+    {
+      "target": "animal-lynx",
+      "count": 5,
+      "options": [
+        "animal-lynx",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse"
+      ]
+    },
+    {
+      "target": "animal-lynx",
+      "count": 6,
+      "options": [
+        "animal-lynx",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse",
+        "animal-hare"
+      ]
+    },
+    {
+      "target": "animal-badger",
+      "count": 4,
+      "options": ["animal-badger", "animal-cat", "animal-cow", "animal-sheep"]
+    },
+    {
+      "target": "animal-badger",
+      "count": 5,
+      "options": [
+        "animal-badger",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck"
+      ]
+    },
+    {
+      "target": "animal-badger",
+      "count": 6,
+      "options": [
+        "animal-badger",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse"
+      ]
+    },
+    {
+      "target": "animal-frog",
+      "count": 4,
+      "options": ["animal-frog", "animal-cat", "animal-cow", "animal-sheep"]
+    },
+    {
+      "target": "animal-frog",
+      "count": 5,
+      "options": [
+        "animal-frog",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck"
+      ]
+    },
+    {
+      "target": "animal-frog",
+      "count": 6,
+      "options": [
+        "animal-frog",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse"
+      ]
+    },
+    {
+      "target": "animal-lizard",
+      "count": 4,
+      "options": ["animal-lizard", "animal-cat", "animal-cow", "animal-sheep"]
+    },
+    {
+      "target": "animal-lizard",
+      "count": 5,
+      "options": [
+        "animal-lizard",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck"
+      ]
+    },
+    {
+      "target": "animal-lizard",
+      "count": 6,
+      "options": [
+        "animal-lizard",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse"
+      ]
+    },
+    {
+      "target": "animal-grasshopper",
+      "count": 4,
+      "options": [
+        "animal-grasshopper",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep"
+      ]
+    },
+    {
+      "target": "animal-grasshopper",
+      "count": 5,
+      "options": [
+        "animal-grasshopper",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck"
+      ]
+    },
+    {
+      "target": "animal-grasshopper",
+      "count": 6,
+      "options": [
+        "animal-grasshopper",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse"
+      ]
+    },
+    {
+      "target": "animal-ladybug",
+      "count": 4,
+      "options": ["animal-ladybug", "animal-cat", "animal-cow", "animal-sheep"]
+    },
+    {
+      "target": "animal-ladybug",
+      "count": 5,
+      "options": [
+        "animal-ladybug",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck"
+      ]
+    },
+    {
+      "target": "animal-ladybug",
+      "count": 6,
+      "options": [
+        "animal-ladybug",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse"
+      ]
+    },
+    {
+      "target": "animal-snail",
+      "count": 4,
+      "options": ["animal-snail", "animal-cat", "animal-cow", "animal-sheep"]
+    },
+    {
+      "target": "animal-snail",
+      "count": 5,
+      "options": [
+        "animal-snail",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck"
+      ]
+    },
+    {
+      "target": "animal-snail",
+      "count": 6,
+      "options": [
+        "animal-snail",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse"
+      ]
+    },
+    {
+      "target": "animal-butterfly",
+      "count": 4,
+      "options": [
+        "animal-butterfly",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep"
+      ]
+    },
+    {
+      "target": "animal-butterfly",
+      "count": 5,
+      "options": [
+        "animal-butterfly",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck"
+      ]
+    },
+    {
+      "target": "animal-butterfly",
+      "count": 6,
+      "options": [
+        "animal-butterfly",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse"
+      ]
+    },
+    {
+      "target": "animal-bee",
+      "count": 4,
+      "options": ["animal-bee", "animal-cat", "animal-cow", "animal-sheep"]
+    },
+    {
+      "target": "animal-bee",
+      "count": 5,
+      "options": [
+        "animal-bee",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck"
+      ]
+    },
+    {
+      "target": "animal-bee",
+      "count": 6,
+      "options": [
+        "animal-bee",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse"
+      ]
+    },
+    {
+      "target": "animal-ant",
+      "count": 4,
+      "options": ["animal-ant", "animal-cat", "animal-cow", "animal-sheep"]
+    },
+    {
+      "target": "animal-ant",
+      "count": 5,
+      "options": [
+        "animal-ant",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck"
+      ]
+    },
+    {
+      "target": "animal-ant",
+      "count": 6,
+      "options": [
+        "animal-ant",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse"
+      ]
+    },
+    {
+      "target": "animal-turtle",
+      "count": 4,
+      "options": ["animal-turtle", "animal-cat", "animal-cow", "animal-sheep"]
+    },
+    {
+      "target": "animal-turtle",
+      "count": 5,
+      "options": [
+        "animal-turtle",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck"
+      ]
+    },
+    {
+      "target": "animal-turtle",
+      "count": 6,
+      "options": [
+        "animal-turtle",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse"
+      ]
+    },
+    {
+      "target": "animal-snake",
+      "count": 4,
+      "options": ["animal-snake", "animal-cat", "animal-cow", "animal-sheep"]
+    },
+    {
+      "target": "animal-snake",
+      "count": 5,
+      "options": [
+        "animal-snake",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck"
+      ]
+    },
+    {
+      "target": "animal-snake",
+      "count": 6,
+      "options": [
+        "animal-snake",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse"
+      ]
+    },
+    {
+      "target": "animal-dragonfly",
+      "count": 4,
+      "options": [
+        "animal-dragonfly",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep"
+      ]
+    },
+    {
+      "target": "animal-dragonfly",
+      "count": 5,
+      "options": [
+        "animal-dragonfly",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck"
+      ]
+    },
+    {
+      "target": "animal-dragonfly",
+      "count": 6,
+      "options": [
+        "animal-dragonfly",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse"
+      ]
+    },
+    {
+      "target": "animal-sparrow",
+      "count": 4,
+      "options": ["animal-sparrow", "animal-cat", "animal-cow", "animal-sheep"]
+    },
+    {
+      "target": "animal-sparrow",
+      "count": 5,
+      "options": [
+        "animal-sparrow",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-mouse"
+      ]
+    },
+    {
+      "target": "animal-sparrow",
+      "count": 6,
+      "options": [
+        "animal-sparrow",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-mouse",
+        "animal-bear"
+      ]
+    },
+    {
+      "target": "animal-crow",
+      "count": 4,
+      "options": ["animal-crow", "animal-cat", "animal-cow", "animal-sheep"]
+    },
+    {
+      "target": "animal-crow",
+      "count": 5,
+      "options": [
+        "animal-crow",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck"
+      ]
+    },
+    {
+      "target": "animal-crow",
+      "count": 6,
+      "options": [
+        "animal-crow",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse"
+      ]
+    },
+    {
+      "target": "animal-owl",
+      "count": 4,
+      "options": ["animal-owl", "animal-cat", "animal-cow", "animal-sheep"]
+    },
+    {
+      "target": "animal-owl",
+      "count": 5,
+      "options": [
+        "animal-owl",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-goose"
+      ]
+    },
+    {
+      "target": "animal-owl",
+      "count": 6,
+      "options": [
+        "animal-owl",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-goose",
+        "animal-mouse"
+      ]
+    },
+    {
+      "target": "animal-woodpecker",
+      "count": 4,
+      "options": [
+        "animal-woodpecker",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep"
+      ]
+    },
+    {
+      "target": "animal-woodpecker",
+      "count": 5,
+      "options": [
+        "animal-woodpecker",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck"
+      ]
+    },
+    {
+      "target": "animal-woodpecker",
+      "count": 6,
+      "options": [
+        "animal-woodpecker",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse"
+      ]
+    },
+    {
+      "target": "animal-stork",
+      "count": 4,
+      "options": ["animal-stork", "animal-cat", "animal-cow", "animal-sheep"]
+    },
+    {
+      "target": "animal-stork",
+      "count": 5,
+      "options": [
+        "animal-stork",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck"
+      ]
+    },
+    {
+      "target": "animal-stork",
+      "count": 6,
+      "options": [
+        "animal-stork",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse"
+      ]
+    },
+    {
+      "target": "animal-fish",
+      "count": 4,
+      "options": ["animal-fish", "animal-cat", "animal-cow", "animal-sheep"]
+    },
+    {
+      "target": "animal-fish",
+      "count": 5,
+      "options": [
+        "animal-fish",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck"
+      ]
+    },
+    {
+      "target": "animal-fish",
+      "count": 6,
+      "options": [
+        "animal-fish",
+        "animal-cat",
+        "animal-cow",
+        "animal-sheep",
+        "animal-duck",
+        "animal-mouse"
+      ]
+    }
+  ]
+}

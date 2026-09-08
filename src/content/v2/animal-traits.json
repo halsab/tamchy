@@ -1,0 +1,676 @@
+{
+  "version": 1,
+  "evaluatedOn": "2026-09-08",
+  "scopeRu": "Редакторская проверка для подготовки A2; не подключено к приложению. Ручная приёмка владельцем и детьми имеет отдельный статус.",
+  "valueMeaning": {
+    "yes": "Допустимая цель данного вопроса.",
+    "no": "Бесспорная отрицательная помеха.",
+    "exclude": "Не использовать ни как цель, ни как помеху для этого вопроса; не равно no."
+  },
+  "traits": [
+    {
+      "id": "bird",
+      "clipId": "animals.trait.bird",
+      "generation": "enabled"
+    },
+    {
+      "id": "domestic",
+      "clipId": "animals.trait.domestic",
+      "generation": "enabled"
+    },
+    {
+      "id": "wild",
+      "clipId": "animals.trait.wild",
+      "generation": "enabled"
+    },
+    {
+      "id": "canFly",
+      "clipId": "animals.trait.canFly",
+      "generation": "enabled"
+    },
+    {
+      "id": "canSwim",
+      "clipId": "animals.trait.canSwim",
+      "generation": "disabled",
+      "decisionRu": "По решению владельца от 8 сентября 2026 года вопрос временно исключён из генерации; клип остаётся в полном наборе 189."
+    }
+  ],
+  "sources": [
+    {
+      "id": "catalog",
+      "title": "Каталог и утверждённые названия животных",
+      "url": "animals.json",
+      "useRu": "Идентичность учебного объекта; базовая классификация птиц/не птиц, обычных нелетающих позвоночных и наземной улитки."
+    },
+    {
+      "id": "domestication",
+      "title": "Driscoll et al., From wild animals to domestic pets, PNAS (2009)",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2702791/",
+      "useRu": "Различие одомашнивания линии и содержания отдельного дикого животного человеком."
+    },
+    {
+      "id": "cow",
+      "title": "Smithsonian National Zoo — Cow",
+      "url": "https://nationalzoo.si.edu/animals/cow",
+      "useRu": "Домашний крупный рогатый скот."
+    },
+    {
+      "id": "goat",
+      "title": "Smithsonian National Zoo — Goat",
+      "url": "https://www.nationalzoo.si.edu/animals/goat",
+      "useRu": "Домашние козы, овцы и коровы."
+    },
+    {
+      "id": "chicken",
+      "title": "RSPCA — Chickens",
+      "url": "https://www.rspca.org.uk/en/adviceandwelfare/farm/farmanimals/chickens",
+      "useRu": "Домашняя птица; куры способны к короткому полёту, поэтому не годятся как однозначная нелетающая помеха."
+    },
+    {
+      "id": "waterfowl",
+      "title": "RSPCA — Keeping ducks and geese",
+      "url": "https://www.rspca.org.uk/adviceandwelfare/farm/farmanimals/ducksandgeese",
+      "useRu": "Водоплавающая птица; бытовое общее название не фиксирует домашнюю породу."
+    },
+    {
+      "id": "ants",
+      "title": "Natural History Museum — Flying ant day",
+      "url": "https://www.nhm.ac.uk/discover/when-why-winged-ants-swarm-nuptial-flight.html",
+      "useRu": "Крылатые репродуктивные особи и бескрылые рабочие: общий вопрос о способности муравья летать неоднозначен."
+    },
+    {
+      "id": "grasshoppers",
+      "title": "Natural History Museum — Small orders",
+      "url": "https://www.nhm.ac.uk/our-science/services/collections/entomology/small-orders.html",
+      "useRu": "У части прямокрылых крылья видны в полёте; вид/стадия данного общего персонажа не закреплены."
+    },
+    {
+      "id": "insects",
+      "title": "Natural History Museum — Dragonflies: the ultimate hunters",
+      "url": "https://www.nhm.ac.uk/discover/dragonflies-the-ultimate-hunters.html",
+      "useRu": "Полёт взрослых стрекоз и других крылатых насекомых; водная стадия стрекозы отличается от взрослой."
+    },
+    {
+      "id": "ladybirds",
+      "title": "University of Tokyo — Unfolding the folding mechanism of ladybug wings",
+      "url": "https://www.u-tokyo.ac.jp/focus/en/press/p_20170908.html",
+      "useRu": "Божья коровка — жук; сомкнутые надкрылья на иллюстрации не означают отсутствия способности летать."
+    },
+    {
+      "id": "beaver",
+      "title": "Smithsonian National Zoo — Beaver",
+      "url": "https://nationalzoo.si.edu/animals/beaver",
+      "useRu": "Плавание бобра."
+    },
+    {
+      "id": "moose",
+      "title": "National Park Service — Moose",
+      "url": "https://www.nps.gov/romo/learn/nature/moose.htm",
+      "useRu": "Плавание лося: наземное млекопитающее нельзя автоматически считать неправильным ответом на вопрос о плавании."
+    },
+    {
+      "id": "bee-water",
+      "title": "Caltech — Bees surf atop water",
+      "url": "https://www.caltech.edu/about/news/bees-surf-atop-water",
+      "useRu": "Пчёлы передвигаются по поверхности воды; даже насекомое не является автоматически безопасной отрицательной помехой."
+    }
+  ],
+  "animals": [
+    {
+      "animalId": "animal-cat",
+      "values": {
+        "bird": "no",
+        "domestic": "yes",
+        "wild": "no",
+        "canFly": "no",
+        "canSwim": "exclude"
+      },
+      "exclusions": {
+        "canSwim": "Для общего названия не подтверждена бесспорная отрицательная классификация. Не использовать как помеху; отсутствие водного образа жизни не означает неспособности плавать."
+      },
+      "sourceIds": ["catalog", "domestication"]
+    },
+    {
+      "animalId": "animal-dog",
+      "values": {
+        "bird": "no",
+        "domestic": "yes",
+        "wild": "no",
+        "canFly": "no",
+        "canSwim": "exclude"
+      },
+      "exclusions": {
+        "canSwim": "Для общего названия не подтверждена бесспорная отрицательная классификация. Не использовать как помеху; отсутствие водного образа жизни не означает неспособности плавать."
+      },
+      "sourceIds": ["catalog", "domestication"]
+    },
+    {
+      "animalId": "animal-cow",
+      "values": {
+        "bird": "no",
+        "domestic": "yes",
+        "wild": "no",
+        "canFly": "no",
+        "canSwim": "exclude"
+      },
+      "exclusions": {
+        "canSwim": "Для общего названия не подтверждена бесспорная отрицательная классификация. Не использовать как помеху; отсутствие водного образа жизни не означает неспособности плавать."
+      },
+      "sourceIds": ["catalog", "domestication", "cow"]
+    },
+    {
+      "animalId": "animal-horse",
+      "values": {
+        "bird": "no",
+        "domestic": "yes",
+        "wild": "no",
+        "canFly": "no",
+        "canSwim": "exclude"
+      },
+      "exclusions": {
+        "canSwim": "Для общего названия не подтверждена бесспорная отрицательная классификация. Не использовать как помеху; отсутствие водного образа жизни не означает неспособности плавать."
+      },
+      "sourceIds": ["catalog", "domestication"]
+    },
+    {
+      "animalId": "animal-sheep",
+      "values": {
+        "bird": "no",
+        "domestic": "yes",
+        "wild": "no",
+        "canFly": "no",
+        "canSwim": "exclude"
+      },
+      "exclusions": {
+        "canSwim": "Для общего названия не подтверждена бесспорная отрицательная классификация. Не использовать как помеху; отсутствие водного образа жизни не означает неспособности плавать."
+      },
+      "sourceIds": ["catalog", "domestication", "goat"]
+    },
+    {
+      "animalId": "animal-duck",
+      "values": {
+        "bird": "yes",
+        "domestic": "exclude",
+        "wild": "exclude",
+        "canFly": "exclude",
+        "canSwim": "yes"
+      },
+      "exclusions": {
+        "domestic": "Общее название не различает домашнюю и дикую утку; вид утёнка и порода не закреплены.",
+        "wild": "Общее название не различает домашнюю и дикую утку; вид утёнка и порода не закреплены.",
+        "canFly": "Зависит от возраста и породы; утёнок не задаёт общее свойство всех уток."
+      },
+      "sourceIds": ["catalog", "domestication", "waterfowl"]
+    },
+    {
+      "animalId": "animal-goat",
+      "values": {
+        "bird": "no",
+        "domestic": "yes",
+        "wild": "no",
+        "canFly": "no",
+        "canSwim": "exclude"
+      },
+      "exclusions": {
+        "canSwim": "Для общего названия не подтверждена бесспорная отрицательная классификация. Не использовать как помеху; отсутствие водного образа жизни не означает неспособности плавать."
+      },
+      "sourceIds": ["catalog", "domestication", "goat"]
+    },
+    {
+      "animalId": "animal-chicken",
+      "values": {
+        "bird": "yes",
+        "domestic": "yes",
+        "wild": "no",
+        "canFly": "exclude",
+        "canSwim": "exclude"
+      },
+      "exclusions": {
+        "canFly": "Короткие полёты возможны; ни упрощённое «не летает», ни типичная летающая цель здесь не подходят.",
+        "canSwim": "Для общего названия не подтверждена бесспорная отрицательная классификация. Не использовать как помеху; отсутствие водного образа жизни не означает неспособности плавать."
+      },
+      "sourceIds": ["catalog", "domestication", "chicken"]
+    },
+    {
+      "animalId": "animal-goose",
+      "values": {
+        "bird": "yes",
+        "domestic": "exclude",
+        "wild": "exclude",
+        "canFly": "exclude",
+        "canSwim": "yes"
+      },
+      "exclusions": {
+        "domestic": "Общее название и белое оперение не фиксируют домашнюю породу или дикий вид гуся.",
+        "wild": "Общее название и белое оперение не фиксируют домашнюю породу или дикий вид гуся.",
+        "canFly": "Способность летать зависит от домашней породы/дикого вида."
+      },
+      "sourceIds": ["catalog", "domestication", "waterfowl"]
+    },
+    {
+      "animalId": "animal-mouse",
+      "values": {
+        "bird": "no",
+        "domestic": "exclude",
+        "wild": "exclude",
+        "canFly": "no",
+        "canSwim": "exclude"
+      },
+      "exclusions": {
+        "domestic": "Общее название допускает дикую и домашнюю декоративную мышь.",
+        "wild": "Общее название допускает дикую и домашнюю декоративную мышь.",
+        "canSwim": "Для общего названия не подтверждена бесспорная отрицательная классификация. Не использовать как помеху; отсутствие водного образа жизни не означает неспособности плавать."
+      },
+      "sourceIds": ["catalog", "domestication"]
+    },
+    {
+      "animalId": "animal-bear",
+      "values": {
+        "bird": "no",
+        "domestic": "no",
+        "wild": "yes",
+        "canFly": "no",
+        "canSwim": "exclude"
+      },
+      "exclusions": {
+        "canSwim": "Для общего названия не подтверждена бесспорная отрицательная классификация. Не использовать как помеху; отсутствие водного образа жизни не означает неспособности плавать."
+      },
+      "sourceIds": ["catalog", "domestication"]
+    },
+    {
+      "animalId": "animal-wolf",
+      "values": {
+        "bird": "no",
+        "domestic": "no",
+        "wild": "yes",
+        "canFly": "no",
+        "canSwim": "exclude"
+      },
+      "exclusions": {
+        "canSwim": "Для общего названия не подтверждена бесспорная отрицательная классификация. Не использовать как помеху; отсутствие водного образа жизни не означает неспособности плавать."
+      },
+      "sourceIds": ["catalog", "domestication"]
+    },
+    {
+      "animalId": "animal-fox",
+      "values": {
+        "bird": "no",
+        "domestic": "no",
+        "wild": "yes",
+        "canFly": "no",
+        "canSwim": "exclude"
+      },
+      "exclusions": {
+        "canSwim": "Для общего названия не подтверждена бесспорная отрицательная классификация. Не использовать как помеху; отсутствие водного образа жизни не означает неспособности плавать."
+      },
+      "sourceIds": ["catalog", "domestication"]
+    },
+    {
+      "animalId": "animal-hare",
+      "values": {
+        "bird": "no",
+        "domestic": "exclude",
+        "wild": "exclude",
+        "canFly": "no",
+        "canSwim": "exclude"
+      },
+      "exclusions": {
+        "domestic": "ID задаёт зайца, но слово «Куян» и стилизованная картинка допускают прочтение как домашнего кролика.",
+        "wild": "ID задаёт зайца, но слово «Куян» и стилизованная картинка допускают прочтение как домашнего кролика.",
+        "canSwim": "Для общего названия не подтверждена бесспорная отрицательная классификация. Не использовать как помеху; отсутствие водного образа жизни не означает неспособности плавать."
+      },
+      "sourceIds": ["catalog", "domestication"]
+    },
+    {
+      "animalId": "animal-squirrel",
+      "values": {
+        "bird": "no",
+        "domestic": "no",
+        "wild": "yes",
+        "canFly": "no",
+        "canSwim": "exclude"
+      },
+      "exclusions": {
+        "canSwim": "Для общего названия не подтверждена бесспорная отрицательная классификация. Не использовать как помеху; отсутствие водного образа жизни не означает неспособности плавать."
+      },
+      "sourceIds": ["catalog", "domestication"]
+    },
+    {
+      "animalId": "animal-hedgehog",
+      "values": {
+        "bird": "no",
+        "domestic": "no",
+        "wild": "yes",
+        "canFly": "no",
+        "canSwim": "exclude"
+      },
+      "exclusions": {
+        "canSwim": "Для общего названия не подтверждена бесспорная отрицательная классификация. Не использовать как помеху; отсутствие водного образа жизни не означает неспособности плавать."
+      },
+      "sourceIds": ["catalog", "domestication"]
+    },
+    {
+      "animalId": "animal-moose",
+      "values": {
+        "bird": "no",
+        "domestic": "no",
+        "wild": "yes",
+        "canFly": "no",
+        "canSwim": "yes"
+      },
+      "exclusions": {},
+      "sourceIds": ["catalog", "domestication", "moose"]
+    },
+    {
+      "animalId": "animal-deer",
+      "values": {
+        "bird": "no",
+        "domestic": "no",
+        "wild": "yes",
+        "canFly": "no",
+        "canSwim": "exclude"
+      },
+      "exclusions": {
+        "canSwim": "Для общего названия не подтверждена бесспорная отрицательная классификация. Не использовать как помеху; отсутствие водного образа жизни не означает неспособности плавать."
+      },
+      "sourceIds": ["catalog", "domestication"]
+    },
+    {
+      "animalId": "animal-wild-boar",
+      "values": {
+        "bird": "no",
+        "domestic": "no",
+        "wild": "yes",
+        "canFly": "no",
+        "canSwim": "exclude"
+      },
+      "exclusions": {
+        "canSwim": "Для общего названия не подтверждена бесспорная отрицательная классификация. Не использовать как помеху; отсутствие водного образа жизни не означает неспособности плавать."
+      },
+      "sourceIds": ["catalog", "domestication"]
+    },
+    {
+      "animalId": "animal-beaver",
+      "values": {
+        "bird": "no",
+        "domestic": "no",
+        "wild": "yes",
+        "canFly": "no",
+        "canSwim": "yes"
+      },
+      "exclusions": {},
+      "sourceIds": ["catalog", "domestication", "beaver"]
+    },
+    {
+      "animalId": "animal-lynx",
+      "values": {
+        "bird": "no",
+        "domestic": "no",
+        "wild": "yes",
+        "canFly": "no",
+        "canSwim": "exclude"
+      },
+      "exclusions": {
+        "canSwim": "Для общего названия не подтверждена бесспорная отрицательная классификация. Не использовать как помеху; отсутствие водного образа жизни не означает неспособности плавать."
+      },
+      "sourceIds": ["catalog", "domestication"]
+    },
+    {
+      "animalId": "animal-badger",
+      "values": {
+        "bird": "no",
+        "domestic": "no",
+        "wild": "yes",
+        "canFly": "no",
+        "canSwim": "exclude"
+      },
+      "exclusions": {
+        "canSwim": "Для общего названия не подтверждена бесспорная отрицательная классификация. Не использовать как помеху; отсутствие водного образа жизни не означает неспособности плавать."
+      },
+      "sourceIds": ["catalog", "domestication"]
+    },
+    {
+      "animalId": "animal-frog",
+      "values": {
+        "bird": "no",
+        "domestic": "no",
+        "wild": "yes",
+        "canFly": "no",
+        "canSwim": "exclude"
+      },
+      "exclusions": {
+        "canSwim": "Общее название не фиксирует вид, водную/наземную форму или стадию жизни. Бесспорная отрицательная метка не установлена; из вопроса исключён."
+      },
+      "sourceIds": ["catalog", "domestication"]
+    },
+    {
+      "animalId": "animal-lizard",
+      "values": {
+        "bird": "no",
+        "domestic": "no",
+        "wild": "yes",
+        "canFly": "no",
+        "canSwim": "exclude"
+      },
+      "exclusions": {
+        "canSwim": "Общее название не фиксирует вид, водную/наземную форму или стадию жизни. Бесспорная отрицательная метка не установлена; из вопроса исключён."
+      },
+      "sourceIds": ["catalog", "domestication"]
+    },
+    {
+      "animalId": "animal-grasshopper",
+      "values": {
+        "bird": "no",
+        "domestic": "no",
+        "wild": "yes",
+        "canFly": "exclude",
+        "canSwim": "exclude"
+      },
+      "exclusions": {
+        "canFly": "Вид и стадия не закреплены; нельзя считать всех кузнечиков нелетающими.",
+        "canSwim": "Общее название не фиксирует вид, водную/наземную форму или стадию жизни. Бесспорная отрицательная метка не установлена; из вопроса исключён."
+      },
+      "sourceIds": ["catalog", "domestication", "grasshoppers"]
+    },
+    {
+      "animalId": "animal-ladybug",
+      "values": {
+        "bird": "no",
+        "domestic": "no",
+        "wild": "yes",
+        "canFly": "yes",
+        "canSwim": "exclude"
+      },
+      "exclusions": {
+        "canSwim": "Общее название не фиксирует вид, водную/наземную форму или стадию жизни. Бесспорная отрицательная метка не установлена; из вопроса исключён."
+      },
+      "sourceIds": ["catalog", "domestication", "ladybirds"]
+    },
+    {
+      "animalId": "animal-snail",
+      "values": {
+        "bird": "no",
+        "domestic": "no",
+        "wild": "yes",
+        "canFly": "no",
+        "canSwim": "exclude"
+      },
+      "exclusions": {
+        "canSwim": "Общее название не фиксирует вид, водную/наземную форму или стадию жизни. Бесспорная отрицательная метка не установлена; из вопроса исключён."
+      },
+      "sourceIds": ["catalog", "domestication"]
+    },
+    {
+      "animalId": "animal-butterfly",
+      "values": {
+        "bird": "no",
+        "domestic": "no",
+        "wild": "yes",
+        "canFly": "yes",
+        "canSwim": "exclude"
+      },
+      "exclusions": {
+        "canSwim": "Общее название не фиксирует вид, водную/наземную форму или стадию жизни. Бесспорная отрицательная метка не установлена; из вопроса исключён."
+      },
+      "sourceIds": ["catalog", "domestication", "insects"]
+    },
+    {
+      "animalId": "animal-bee",
+      "values": {
+        "bird": "no",
+        "domestic": "exclude",
+        "wild": "exclude",
+        "canFly": "yes",
+        "canSwim": "exclude"
+      },
+      "exclusions": {
+        "domestic": "Содержание медоносной пчелы на пасеке нельзя превращать в однозначное противопоставление домашнего/дикого животного.",
+        "wild": "Содержание медоносной пчелы на пасеке нельзя превращать в однозначное противопоставление домашнего/дикого животного.",
+        "canSwim": "Описано движение пчелы по поверхности воды. «Не плавает» не является безопасной помехой; трактовка плавания неоднозначна."
+      },
+      "sourceIds": ["catalog", "domestication", "bee-water"]
+    },
+    {
+      "animalId": "animal-ant",
+      "values": {
+        "bird": "no",
+        "domestic": "no",
+        "wild": "yes",
+        "canFly": "exclude",
+        "canSwim": "exclude"
+      },
+      "exclusions": {
+        "canFly": "Рабочие и репродуктивные особи различаются; общий вопрос не фиксирует касту.",
+        "canSwim": "Общее название не фиксирует вид, водную/наземную форму или стадию жизни. Бесспорная отрицательная метка не установлена; из вопроса исключён."
+      },
+      "sourceIds": ["catalog", "domestication", "ants"]
+    },
+    {
+      "animalId": "animal-turtle",
+      "values": {
+        "bird": "no",
+        "domestic": "no",
+        "wild": "yes",
+        "canFly": "no",
+        "canSwim": "exclude"
+      },
+      "exclusions": {
+        "canSwim": "Общее название не фиксирует вид, водную/наземную форму или стадию жизни. Бесспорная отрицательная метка не установлена; из вопроса исключён."
+      },
+      "sourceIds": ["catalog", "domestication"]
+    },
+    {
+      "animalId": "animal-snake",
+      "values": {
+        "bird": "no",
+        "domestic": "no",
+        "wild": "yes",
+        "canFly": "no",
+        "canSwim": "exclude"
+      },
+      "exclusions": {
+        "canSwim": "Общее название не фиксирует вид, водную/наземную форму или стадию жизни. Бесспорная отрицательная метка не установлена; из вопроса исключён."
+      },
+      "sourceIds": ["catalog", "domestication"]
+    },
+    {
+      "animalId": "animal-dragonfly",
+      "values": {
+        "bird": "no",
+        "domestic": "no",
+        "wild": "yes",
+        "canFly": "yes",
+        "canSwim": "exclude"
+      },
+      "exclusions": {
+        "canSwim": "Общее название не фиксирует вид, водную/наземную форму или стадию жизни. Бесспорная отрицательная метка не установлена; из вопроса исключён."
+      },
+      "sourceIds": ["catalog", "domestication", "insects"]
+    },
+    {
+      "animalId": "animal-sparrow",
+      "values": {
+        "bird": "yes",
+        "domestic": "no",
+        "wild": "yes",
+        "canFly": "yes",
+        "canSwim": "exclude"
+      },
+      "exclusions": {
+        "canSwim": "Для общего названия не подтверждена бесспорная отрицательная классификация. Не использовать как помеху; отсутствие водного образа жизни не означает неспособности плавать."
+      },
+      "sourceIds": ["catalog", "domestication"]
+    },
+    {
+      "animalId": "animal-crow",
+      "values": {
+        "bird": "yes",
+        "domestic": "no",
+        "wild": "yes",
+        "canFly": "yes",
+        "canSwim": "exclude"
+      },
+      "exclusions": {
+        "canSwim": "Для общего названия не подтверждена бесспорная отрицательная классификация. Не использовать как помеху; отсутствие водного образа жизни не означает неспособности плавать."
+      },
+      "sourceIds": ["catalog", "domestication"]
+    },
+    {
+      "animalId": "animal-owl",
+      "values": {
+        "bird": "yes",
+        "domestic": "no",
+        "wild": "yes",
+        "canFly": "yes",
+        "canSwim": "exclude"
+      },
+      "exclusions": {
+        "canSwim": "Для общего названия не подтверждена бесспорная отрицательная классификация. Не использовать как помеху; отсутствие водного образа жизни не означает неспособности плавать."
+      },
+      "sourceIds": ["catalog", "domestication"]
+    },
+    {
+      "animalId": "animal-woodpecker",
+      "values": {
+        "bird": "yes",
+        "domestic": "no",
+        "wild": "yes",
+        "canFly": "yes",
+        "canSwim": "exclude"
+      },
+      "exclusions": {
+        "canSwim": "Для общего названия не подтверждена бесспорная отрицательная классификация. Не использовать как помеху; отсутствие водного образа жизни не означает неспособности плавать."
+      },
+      "sourceIds": ["catalog", "domestication"]
+    },
+    {
+      "animalId": "animal-stork",
+      "values": {
+        "bird": "yes",
+        "domestic": "no",
+        "wild": "yes",
+        "canFly": "yes",
+        "canSwim": "exclude"
+      },
+      "exclusions": {
+        "canSwim": "Для общего названия не подтверждена бесспорная отрицательная классификация. Не использовать как помеху; отсутствие водного образа жизни не означает неспособности плавать."
+      },
+      "sourceIds": ["catalog", "domestication"]
+    },
+    {
+      "animalId": "animal-fish",
+      "values": {
+        "bird": "no",
+        "domestic": "exclude",
+        "wild": "exclude",
+        "canFly": "no",
+        "canSwim": "yes"
+      },
+      "exclusions": {
+        "domestic": "Общее название не фиксирует вид; возможны дикая, аквариумная и одомашненная рыба.",
+        "wild": "Общее название не фиксирует вид; возможны дикая, аквариумная и одомашненная рыба."
+      },
+      "sourceIds": ["catalog", "domestication"]
+    }
+  ]
+}

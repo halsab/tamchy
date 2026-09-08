@@ -1,0 +1,1716 @@
+{
+  "browser": "146.0.7680.153",
+  "checked": 120,
+  "results": [
+    {
+      "width": 320,
+      "height": 568,
+      "kind": "C3-B",
+      "scenario": {
+        "safe": "1"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "kind": "C3-B",
+      "scenario": {
+        "safe": "1",
+        "text": "200"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "kind": "C3-B",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "paused"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "kind": "C3-B",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "error"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "kind": "A3",
+      "scenario": {
+        "safe": "1"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "kind": "A3",
+      "scenario": {
+        "safe": "1",
+        "text": "200"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "kind": "A3",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "paused"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "kind": "A3",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "error"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "kind": "N1-C",
+      "scenario": {
+        "safe": "1"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "kind": "N1-C",
+      "scenario": {
+        "safe": "1",
+        "text": "200"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "kind": "N1-C",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "paused"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "kind": "N1-C",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "error"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "kind": "N2",
+      "scenario": {
+        "safe": "1"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "kind": "N2",
+      "scenario": {
+        "safe": "1",
+        "text": "200"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "kind": "N2",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "paused"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "kind": "N2",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "error"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "kind": "N3-A",
+      "scenario": {
+        "safe": "1"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "kind": "N3-A",
+      "scenario": {
+        "safe": "1",
+        "text": "200"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "kind": "N3-A",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "paused"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "kind": "N3-A",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "error"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "kind": "C3-B",
+      "scenario": {
+        "safe": "1"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "kind": "C3-B",
+      "scenario": {
+        "safe": "1",
+        "text": "200"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "kind": "C3-B",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "paused"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "kind": "C3-B",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "error"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "kind": "A3",
+      "scenario": {
+        "safe": "1"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "kind": "A3",
+      "scenario": {
+        "safe": "1",
+        "text": "200"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "kind": "A3",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "paused"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "kind": "A3",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "error"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "kind": "N1-C",
+      "scenario": {
+        "safe": "1"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "kind": "N1-C",
+      "scenario": {
+        "safe": "1",
+        "text": "200"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "kind": "N1-C",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "paused"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "kind": "N1-C",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "error"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "kind": "N2",
+      "scenario": {
+        "safe": "1"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "kind": "N2",
+      "scenario": {
+        "safe": "1",
+        "text": "200"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "kind": "N2",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "paused"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "kind": "N2",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "error"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "kind": "N3-A",
+      "scenario": {
+        "safe": "1"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "kind": "N3-A",
+      "scenario": {
+        "safe": "1",
+        "text": "200"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "kind": "N3-A",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "paused"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "kind": "N3-A",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "error"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "kind": "C3-B",
+      "scenario": {
+        "safe": "1"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "kind": "C3-B",
+      "scenario": {
+        "safe": "1",
+        "text": "200"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "kind": "C3-B",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "paused"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "kind": "C3-B",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "error"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "kind": "A3",
+      "scenario": {
+        "safe": "1"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "kind": "A3",
+      "scenario": {
+        "safe": "1",
+        "text": "200"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "kind": "A3",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "paused"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "kind": "A3",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "error"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "kind": "N1-C",
+      "scenario": {
+        "safe": "1"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "kind": "N1-C",
+      "scenario": {
+        "safe": "1",
+        "text": "200"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "kind": "N1-C",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "paused"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "kind": "N1-C",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "error"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "kind": "N2",
+      "scenario": {
+        "safe": "1"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "kind": "N2",
+      "scenario": {
+        "safe": "1",
+        "text": "200"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "kind": "N2",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "paused"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "kind": "N2",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "error"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "kind": "N3-A",
+      "scenario": {
+        "safe": "1"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "kind": "N3-A",
+      "scenario": {
+        "safe": "1",
+        "text": "200"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "kind": "N3-A",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "paused"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "kind": "N3-A",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "error"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "kind": "C3-B",
+      "scenario": {
+        "safe": "1"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "kind": "C3-B",
+      "scenario": {
+        "safe": "1",
+        "text": "200"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "kind": "C3-B",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "paused"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "kind": "C3-B",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "error"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "kind": "A3",
+      "scenario": {
+        "safe": "1"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "kind": "A3",
+      "scenario": {
+        "safe": "1",
+        "text": "200"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "kind": "A3",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "paused"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "kind": "A3",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "error"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "kind": "N1-C",
+      "scenario": {
+        "safe": "1"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "kind": "N1-C",
+      "scenario": {
+        "safe": "1",
+        "text": "200"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "kind": "N1-C",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "paused"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "kind": "N1-C",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "error"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "kind": "N2",
+      "scenario": {
+        "safe": "1"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "kind": "N2",
+      "scenario": {
+        "safe": "1",
+        "text": "200"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "kind": "N2",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "paused"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "kind": "N2",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "error"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "kind": "N3-A",
+      "scenario": {
+        "safe": "1"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "kind": "N3-A",
+      "scenario": {
+        "safe": "1",
+        "text": "200"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "kind": "N3-A",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "paused"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "kind": "N3-A",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "error"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "kind": "C3-B",
+      "scenario": {
+        "safe": "1"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "kind": "C3-B",
+      "scenario": {
+        "safe": "1",
+        "text": "200"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "kind": "C3-B",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "paused"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "kind": "C3-B",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "error"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "kind": "A3",
+      "scenario": {
+        "safe": "1"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "kind": "A3",
+      "scenario": {
+        "safe": "1",
+        "text": "200"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "kind": "A3",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "paused"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "kind": "A3",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "error"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "kind": "N1-C",
+      "scenario": {
+        "safe": "1"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "kind": "N1-C",
+      "scenario": {
+        "safe": "1",
+        "text": "200"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "kind": "N1-C",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "paused"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "kind": "N1-C",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "error"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "kind": "N2",
+      "scenario": {
+        "safe": "1"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "kind": "N2",
+      "scenario": {
+        "safe": "1",
+        "text": "200"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "kind": "N2",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "paused"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "kind": "N2",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "error"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "kind": "N3-A",
+      "scenario": {
+        "safe": "1"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "kind": "N3-A",
+      "scenario": {
+        "safe": "1",
+        "text": "200"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "kind": "N3-A",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "paused"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "kind": "N3-A",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "error"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 568,
+      "height": 320,
+      "kind": "C3-B",
+      "scenario": {
+        "safe": "1"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 568,
+      "height": 320,
+      "kind": "C3-B",
+      "scenario": {
+        "safe": "1",
+        "text": "200"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 568,
+      "height": 320,
+      "kind": "C3-B",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "paused"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 568,
+      "height": 320,
+      "kind": "C3-B",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "error"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 568,
+      "height": 320,
+      "kind": "A3",
+      "scenario": {
+        "safe": "1"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 568,
+      "height": 320,
+      "kind": "A3",
+      "scenario": {
+        "safe": "1",
+        "text": "200"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 568,
+      "height": 320,
+      "kind": "A3",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "paused"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 568,
+      "height": 320,
+      "kind": "A3",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "error"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 568,
+      "height": 320,
+      "kind": "N1-C",
+      "scenario": {
+        "safe": "1"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 568,
+      "height": 320,
+      "kind": "N1-C",
+      "scenario": {
+        "safe": "1",
+        "text": "200"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 568,
+      "height": 320,
+      "kind": "N1-C",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "paused"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 568,
+      "height": 320,
+      "kind": "N1-C",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "error"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 568,
+      "height": 320,
+      "kind": "N2",
+      "scenario": {
+        "safe": "1"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 568,
+      "height": 320,
+      "kind": "N2",
+      "scenario": {
+        "safe": "1",
+        "text": "200"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 568,
+      "height": 320,
+      "kind": "N2",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "paused"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 568,
+      "height": 320,
+      "kind": "N2",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "error"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 568,
+      "height": 320,
+      "kind": "N3-A",
+      "scenario": {
+        "safe": "1"
+      },
+      "overflowX": false,
+      "overflowY": false,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 568,
+      "height": 320,
+      "kind": "N3-A",
+      "scenario": {
+        "safe": "1",
+        "text": "200"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 568,
+      "height": 320,
+      "kind": "N3-A",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "paused"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    },
+    {
+      "width": 568,
+      "height": 320,
+      "kind": "N3-A",
+      "scenario": {
+        "safe": "1",
+        "text": "200",
+        "state": "error"
+      },
+      "overflowX": false,
+      "overflowY": true,
+      "controlsValid": true,
+      "minControlSize": 56,
+      "imageFailures": 0
+    }
+  ]
+}
