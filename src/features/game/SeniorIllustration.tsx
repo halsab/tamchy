@@ -7,7 +7,7 @@ import styles from './SeniorContent.module.css';
 export type SeniorVisualAssets = {
   imageUrl: (path: string) => string;
   tintedPixels: (path: string, hex: string) => TintedPixels | undefined;
-  onImageError: (path: string) => void;
+  onImageError: (path: string, hex?: string) => void;
 };
 
 function TintedCanvas({
@@ -73,7 +73,7 @@ export function SeniorIllustration({
   return object.kind === 'tinted' ? (
     <TintedCanvas
       pixels={assets.tintedPixels(object.image, object.hex)}
-      onError={() => assets.onImageError(object.image)}
+      onError={() => assets.onImageError(object.image, object.hex)}
     />
   ) : (
     <img
@@ -109,7 +109,7 @@ export function SeniorCountGroup({
         <TintedCanvas
           pixels={assets.tintedPixels(object.image, object.hex)}
           count={value}
-          onError={() => assets.onImageError(object.image)}
+          onError={() => assets.onImageError(object.image, object.hex)}
         />
       ) : null}
       {Array.from({ length: value }, (_, index) => (

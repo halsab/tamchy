@@ -202,6 +202,7 @@ it('поздняя перекраска перерисовывает canvas, о�
   render(<SeniorPrompt exercise={e} content={content} assets={assets} />);
   expect(assets.onImageError).toHaveBeenCalledWith(
     'assets/images/shapes/shape-circle.png',
+    '#D94343',
   );
 });
 it('каждый вид имеет представление задания и ответа без утечки правильного ID в подпись', () => {

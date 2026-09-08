@@ -12,6 +12,7 @@ import type {
 } from '../../domain/game/models.ts';
 import { createGame, gameReducer } from '../../domain/game/reducer.ts';
 import { contentV2 } from '../../content/v2/catalog.ts';
+import type { AgeMode } from '../../domain/game/exercise.ts';
 import type { CategoryDefinition, ContentV2 } from '../../content/v2/types.ts';
 import {
   createTintedImageService,
@@ -178,7 +179,11 @@ export function useGameSession(
   }, [state, clock, options]);
 
   const start = useCallback(
-    (category: CategoryDefinition, activateAudio = true) => {
+    (
+      category: CategoryDefinition,
+      activateAudio = true,
+      mode: AgeMode = 'junior',
+    ) => {
       const owner = ownerRef.current;
       if (!owner) return;
       stopFarewell(owner, clock);
@@ -188,6 +193,7 @@ export function useGameSession(
       if (activateAudio) void owner.audio.activate();
       const sessionId = options.createSessionId?.() ?? crypto.randomUUID();
       const definition = {
+        mode,
         id: category.id,
         content: options.content ?? contentV2,
       };
@@ -274,12 +280,13 @@ export function useGameSession(
     retry: () => action({ type: 'RETRY', at: clock.now() }, true),
     continueGame: () => action({ type: 'CONTINUE', at: clock.now() }, true),
     exit,
-    imageFailed: (path: string) => {
+    imageFailed: (path: string, hex?: string) => {
       if (!state) return;
       dispatch({
         ...getGameRequirements(state).scope,
         type: 'IMAGE_FAILED',
         path,
+        ...(hex ? { hex } : {}),
       });
     },
     tintedPixels: (path: string, hex: string) =>

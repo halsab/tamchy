@@ -22,6 +22,40 @@ function setup(maxCacheBytes = 8) {
 afterEach(() => vi.useRealTimers());
 
 describe('подготовка перекрашенных PNG', () => {
+  it('шесть цветов C3 по 1024×1024 помещаются в штатные 24 МиБ, седьмой вытесняет старейший', async () => {
+    const colors = [
+      '#D94343',
+      '#FFFFFF',
+      '#222625',
+      '#347FD4',
+      '#32965B',
+      '#F3C63A',
+    ];
+    const service = createTintedImageService({
+      fetch: async () => new Response(new Uint8Array([1])),
+      processor: {
+        run: async () => ({
+          width: 1024,
+          height: 1024,
+          data: new Uint8ClampedArray(1024 * 1024 * 4),
+        }),
+        dispose: () => {},
+      },
+    });
+    try {
+      for (const hex of colors)
+        await service.prepare(path, hex, new AbortController().signal);
+      expect(service.cacheBytes()).toBe(24 * 1024 * 1024);
+      for (const hex of colors) expect(service.get(path, hex)).toBeDefined();
+      await service.prepare(path, '#7959C8', new AbortController().signal);
+      expect(service.cacheBytes()).toBe(24 * 1024 * 1024);
+      expect(service.get(path, colors[0]!)).toBeUndefined();
+      for (const hex of colors.slice(1))
+        expect(service.get(path, hex)).toBeDefined();
+    } finally {
+      service.dispose();
+    }
+  });
   it('экран получает готовые пиксели; ошибка изображения сбрасывает только этот цвет', async () => {
     const s = setup();
     expect(s.service.get(path, '#D94343')).toBeUndefined();

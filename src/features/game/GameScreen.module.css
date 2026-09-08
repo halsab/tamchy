@@ -36,6 +36,9 @@
   line-height: 1.4;
   align-self: center;
 }
+.prompt > p {
+  margin: 0;
+}
 .answers {
   grid-area: answers;
   display: grid;

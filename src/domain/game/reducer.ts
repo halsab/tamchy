@@ -242,7 +242,11 @@ export function gameReducer(state: GameState, event: GameEvent): GameState {
       );
     case 'IMAGE_FAILED': {
       const resource = roundResources(state.session, state.round).find(
-        (resource) => isImageResource(resource) && resource.path === event.path,
+        (resource) =>
+          isImageResource(resource) &&
+          resource.path === event.path &&
+          (event.hex === undefined ||
+            (resource.kind === 'tinted-image' && resource.hex === event.hex)),
       );
       if (!resource) return state;
       if (state.status === 'paused') {

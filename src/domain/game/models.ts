@@ -94,7 +94,7 @@ export type GameState = RoundContext &
   );
 
 export type GameEventData =
-  | Readonly<{ type: 'IMAGE_FAILED'; path: string }>
+  | Readonly<{ type: 'IMAGE_FAILED'; path: string; hex?: string }>
   | Readonly<{ type: 'RESOURCE_READY'; resource: Resource; at: number }>
   | Readonly<{
       type: 'RESOURCE_FAILED';

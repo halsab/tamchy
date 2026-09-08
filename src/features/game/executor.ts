@@ -244,7 +244,11 @@ export function createGameExecutor({
       case 'next-round':
         if (!delivered) {
           delivered = true;
-          const round = rounds.get(work.roundId, work.optionCount);
+          const round = rounds.get(
+            work.roundId,
+            work.optionCount,
+            work.planning,
+          );
           queueMicrotask(() =>
             emit({ type: 'ROUND_GENERATED', round, at: clock.now() }),
           );

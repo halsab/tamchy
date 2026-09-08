@@ -5,6 +5,8 @@ import strings from '../../content/tt.json';
 import { hasHint } from '../../domain/game/reducer.ts';
 import type { GameSessionController } from './use-game-session.ts';
 import { AnswerContent } from './AnswerContent.tsx';
+import { SeniorAnswerContent, SeniorPrompt } from './SeniorContent.tsx';
+import seniorStyles from './SeniorGameScreen.module.css';
 import { HomeButton } from '../../shared/ui/HomeButton.tsx';
 import { Icon } from '../../shared/ui/Icon.tsx';
 import controls from '../../shared/ui/controls.module.css';
@@ -24,8 +26,17 @@ export function GameScreen({
     game.state.status !== 'ended'
       ? game.state
       : null;
-  const round = state?.round.mode === 'junior' ? state.round : null;
-  const countObject = round?.kind === 'N1-A' ? round.countObject : undefined;
+  const round = state?.round;
+  const senior = round?.mode === 'senior';
+  const countObject =
+    round?.mode === 'junior' && round.kind === 'N1-A'
+      ? round.countObject
+      : undefined;
+  const assets = {
+    imageUrl: game.imageUrl,
+    tintedPixels: game.tintedPixels,
+    onImageError: game.imageFailed,
+  };
   const pixels =
     countObject?.kind === 'tinted'
       ? game.tintedPixels(countObject.image, countObject.hex)
@@ -41,7 +52,7 @@ export function GameScreen({
   const blocking = state?.status === 'error' || state?.status === 'paused';
   return (
     <div
-      className={styles.game}
+      className={`${styles.game} ${senior ? seniorStyles.senior : ''}`}
       data-count={state?.round.options.length ?? 2}
       data-blocking={blocking}
       style={
@@ -63,11 +74,19 @@ export function GameScreen({
           <Icon name="sound" />
         </button>
       </header>
-      <p className={styles.prompt}>
-        {state?.round.prompt.textTt ?? strings.status.loading}
-      </p>
+      <div className={styles.prompt}>
+        {state && round?.mode === 'senior' ? (
+          <SeniorPrompt
+            exercise={round}
+            content={state.session.content}
+            assets={assets}
+          />
+        ) : (
+          <p>{round?.prompt.textTt ?? strings.status.loading}</p>
+        )}
+      </div>
       <div
-        className={styles.answers}
+        className={`${styles.answers} ${senior ? seniorStyles.answers : ''}`}
         role="group"
         aria-label={strings.game.answers}
       >
@@ -81,19 +100,30 @@ export function GameScreen({
             return (
               <button
                 key={`${state.session.sessionId}:${state.round.id}:${id}`}
-                className={`${styles.answer} ${correct ? styles.correct : ''} ${hinted ? styles.hint : ''} ${wrong ? styles.wrong : ''}`}
+                className={`${styles.answer} ${senior ? seniorStyles.answer : ''} ${correct ? styles.correct : ''} ${hinted ? styles.hint : ''} ${wrong ? styles.wrong : ''}`}
                 disabled={state.status !== 'awaiting'}
                 aria-label={item.labelTt}
                 aria-describedby={hinted ? 'game-hint' : undefined}
                 onClick={() => game.answer(id)}
               >
-                <AnswerContent
-                  item={item}
-                  countObject={countObject}
-                  pixels={pixels}
-                  imageUrl={game.imageUrl}
-                  onImageError={game.imageFailed}
-                />
+                {round.mode === 'senior' ? (
+                  <SeniorAnswerContent
+                    exercise={round}
+                    option={item}
+                    content={state.session.content}
+                    assets={assets}
+                  />
+                ) : item.kind === 'color' ||
+                  item.kind === 'animal' ||
+                  item.kind === 'number' ? (
+                  <AnswerContent
+                    item={item}
+                    countObject={countObject}
+                    pixels={pixels}
+                    imageUrl={game.imageUrl}
+                    onImageError={game.imageFailed}
+                  />
+                ) : null}
                 {correct && !blocking && (
                   <span
                     className={styles.check}
