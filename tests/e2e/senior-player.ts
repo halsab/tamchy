@@ -15,18 +15,28 @@ import {
 import { answerButtons } from './fixtures.ts';
 
 type RandomWindow = Window & {
-  seniorRandom?: { enabled: boolean; seed: number; queued: number[] };
+  seniorRandom?: {
+    enabled: boolean;
+    seed: number;
+    queued: number[];
+    constant?: number | undefined;
+  };
 };
 
 export async function installSeniorRandom(page: Page) {
   await page.addInitScript(() => {
     const original = Math.random;
     // Синхронизация с ожидаемым генератором включается только перед входом в раздел.
-    const state = { enabled: false, seed: 17, queued: [] as number[] };
+    const state: NonNullable<RandomWindow['seniorRandom']> = {
+      enabled: false,
+      seed: 17,
+      queued: [],
+    };
     (window as RandomWindow).seniorRandom = state;
     Math.random = () =>
       state.enabled
         ? (state.queued.shift() ??
+          state.constant ??
           (state.seed = (Math.imul(state.seed, 1664525) + 1013904223) >>> 0) /
             2 ** 32)
         : original();
@@ -43,11 +53,16 @@ export async function visibility(page: Page, hidden: boolean) {
   }, hidden);
 }
 
-export async function startSeniorPlayer(page: Page, categoryId: CategoryId) {
+export async function startSeniorPlayer(
+  page: Page,
+  categoryId: CategoryId,
+  constant?: number,
+) {
   let seed = 17;
   const queued: number[] = [];
   const random = () =>
     queued.shift() ??
+    constant ??
     (seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0) / 2 ** 32;
   const generator = createSeniorExerciseGenerator(content, categoryId, random);
   let adaptation = initialSeniorAdaptation();
@@ -59,13 +74,14 @@ export async function startSeniorPlayer(page: Page, categoryId: CategoryId) {
     recentKinds,
   });
   generator.accept(1);
-  await page.evaluate(() => {
+  await page.evaluate((constant) => {
     Object.assign((window as RandomWindow).seniorRandom!, {
       enabled: true,
       seed: 17,
       queued: [],
+      constant,
     });
-  });
+  }, constant);
   await page
     .getByRole('button', {
       name: content.categories.find((x) => x.id === categoryId)!.labelTt,

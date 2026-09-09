@@ -92,7 +92,6 @@
 }
 .chip {
   width: min(86cqw, 86cqh);
-  border: 2px solid #65736b;
   aspect-ratio: 1;
   border-radius: 50%;
 }

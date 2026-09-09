@@ -5,6 +5,7 @@ import type {
 import { CountGroup } from './CountGroup.tsx';
 import type { TintedPixels } from '../../services/assets/tint.ts';
 import styles from './GameScreen.module.css';
+import contrast from './ColorContrast.module.css';
 
 export function AnswerContent({
   item,
@@ -24,7 +25,7 @@ export function AnswerContent({
   if (item.kind === 'color')
     return (
       <span
-        className={styles.chip}
+        className={`${styles.chip} ${item.hex === '#FFFFFF' ? contrast.whiteChip : ''}`}
         style={{ backgroundColor: item.hex }}
         aria-hidden="true"
       />
@@ -49,6 +50,7 @@ export function AnswerContent({
       <CountGroup
         value={item.value}
         maxValue={maxCount}
+        isWhite={countObject.kind === 'tinted' && countObject.hex === '#FFFFFF'}
         pixels={pixels}
         src={
           countObject.kind === 'raster'

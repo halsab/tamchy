@@ -8,6 +8,7 @@ import type { TintedPixels } from '../../services/assets/tint.ts';
 import { drawTintedImage } from '../../services/assets/tinted-images.ts';
 import { countLayout, visibleBounds } from './count-layout.ts';
 import styles from './CountGroup.module.css';
+import contrast from './ColorContrast.module.css';
 
 const boundsCache = new WeakMap<
   TintedPixels,
@@ -22,6 +23,7 @@ export function CountGroup({
   src,
   onError,
   removed = 0,
+  isWhite = false,
 }: {
   value: number;
   maxValue: number;
@@ -29,6 +31,7 @@ export function CountGroup({
   src?: string | undefined;
   onError: () => void;
   removed?: number;
+  isWhite?: boolean;
 }) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const reportError = useEffectEvent(onError);
@@ -130,7 +133,11 @@ export function CountGroup({
           } as CSSProperties
         }
       >
-        <canvas ref={canvas} className={styles.canvas} data-image={src} />
+        <canvas
+          ref={canvas}
+          className={`${styles.canvas} ${isWhite ? contrast.whiteImage : ''}`}
+          data-image={src}
+        />
         {layout.cells.map(({ x, y }, index) =>
           index >= value - removed ? (
             <span

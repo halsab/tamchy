@@ -3,6 +3,7 @@ import type { CountIllustration } from '../../domain/game/exercise.ts';
 import type { TintedPixels } from '../../services/assets/tint.ts';
 import { drawTintedImage } from '../../services/assets/tinted-images.ts';
 import styles from './SeniorContent.module.css';
+import contrast from './ColorContrast.module.css';
 import { CountGroup } from './CountGroup.tsx';
 
 export type SeniorVisualAssets = {
@@ -13,9 +14,11 @@ export type SeniorVisualAssets = {
 
 function TintedCanvas({
   pixels,
+  isWhite,
   onError,
 }: {
   pixels: TintedPixels | undefined;
+  isWhite: boolean;
   onError: () => void;
 }) {
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -32,7 +35,13 @@ function TintedCanvas({
       reportError();
     }
   }, [pixels]);
-  return <canvas ref={canvas} className={styles.image} aria-hidden="true" />;
+  return (
+    <canvas
+      ref={canvas}
+      className={`${styles.image} ${isWhite ? contrast.whiteImage : ''}`}
+      aria-hidden="true"
+    />
+  );
 }
 
 export function SeniorIllustration({
@@ -44,6 +53,7 @@ export function SeniorIllustration({
 }) {
   return object.kind === 'tinted' ? (
     <TintedCanvas
+      isWhite={object.hex === '#FFFFFF'}
       pixels={assets.tintedPixels(object.image, object.hex)}
       onError={() => assets.onImageError(object.image, object.hex)}
     />
@@ -78,6 +88,7 @@ export function SeniorCountGroup({
       value={value}
       maxValue={maxValue}
       removed={removed}
+      isWhite={object.kind === 'tinted' && object.hex === '#FFFFFF'}
       pixels={
         object.kind === 'tinted'
           ? assets.tintedPixels(object.image, object.hex)

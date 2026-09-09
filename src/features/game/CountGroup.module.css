@@ -14,6 +14,8 @@
     calc(100cqh / var(--max-rows)),
     80px
   );
+  /* Контуры соседей помещаются в промежуток 12% ячейки. */
+  --white-outline-size: min(1.5px, calc(var(--cell) * 0.045));
   display: block;
   position: relative;
   width: calc(var(--columns) * var(--cell));

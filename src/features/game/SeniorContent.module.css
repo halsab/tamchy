@@ -83,11 +83,10 @@
   place-items: center;
   width: var(--chip-size);
   height: var(--chip-size);
-  border: 2px solid #65736b;
   border-radius: 50%;
 }
 .next {
-  border-style: dashed;
+  border: 2px dashed #65736b;
   font-size: calc(var(--chip-size) * 0.65);
   font-weight: 700;
   line-height: 1;

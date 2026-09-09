@@ -5,6 +5,7 @@ import { AnswerContent } from './AnswerContent.tsx';
 import { SeniorCountGroup, SeniorIllustration } from './SeniorIllustration.tsx';
 import type { SeniorVisualAssets } from './SeniorIllustration.tsx';
 import styles from './SeniorContent.module.css';
+import contrast from './ColorContrast.module.css';
 
 type Props = {
   exercise: SeniorExercise;
@@ -53,7 +54,7 @@ export function SeniorPrompt({ exercise, content, assets }: Props) {
           {prompt.colorIds.map((id, index) => (
             <span
               key={index}
-              className={styles.sequenceChip}
+              className={`${styles.sequenceChip} ${id === 'white' ? contrast.whiteChip : ''}`}
               data-color={id}
               style={{
                 backgroundColor: content.colors.find((x) => x.id === id)!.hex,

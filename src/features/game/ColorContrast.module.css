@@ -1,0 +1,11 @@
+.whiteChip {
+  border: 2px solid #737373;
+}
+
+.whiteImage {
+  /* Четыре смещения без размытия обводят альфу, не меняя пиксели изображения. */
+  filter: drop-shadow(var(--white-outline-size, 1.5px) 0 0 #737373)
+    drop-shadow(calc(-1 * var(--white-outline-size, 1.5px)) 0 0 #737373)
+    drop-shadow(0 var(--white-outline-size, 1.5px) 0 #737373)
+    drop-shadow(0 calc(-1 * var(--white-outline-size, 1.5px)) 0 #737373);
+}
