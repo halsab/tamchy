@@ -44,13 +44,16 @@ context.on('request', (request) => {
 try {
   await page.goto(address);
   await expect(page).toHaveTitle(strings.app.name);
-  await expect(page.getByRole('button')).toHaveText([
-    ...catalog.categories.map((category) => category.labelTt),
-    '',
-  ]);
-  await expect(page.getByRole('button').last()).toHaveAccessibleName(
-    strings.nav.parents,
+  const buttons = page.getByRole('button');
+  const parentsButton = page.getByRole('button', {
+    name: strings.nav.parents,
+    exact: true,
+  });
+  await expect(buttons).toHaveCount(catalog.categories.length + 1);
+  await expect(buttons.filter({ hasText: /\S/ })).toHaveText(
+    catalog.categories.map((category) => category.labelTt),
   );
+  await expect(parentsButton).toBeVisible();
   for (const category of catalog.categories) {
     const responsePromise = page.waitForResponse(
       (response) =>
@@ -95,10 +98,10 @@ try {
       page.getByRole('button', { name: category.labelTt, exact: true }),
     ).toBeVisible();
   }
-  await page
-    .getByRole('button', { name: strings.nav.parents, exact: true })
-    .click();
-  await expect(page.getByText(release, { exact: false })).toBeVisible();
+  await parentsButton.click();
+  const parents = page.getByRole('dialog');
+  await expect(parents).toBeVisible();
+  await expect(parents.getByText(release, { exact: false })).toBeVisible();
   await expect
     .poll(
       () =>
@@ -109,6 +112,12 @@ try {
       { timeout: 120000 },
     )
     .toBe(new URL('sw.js', address).href);
+  await parents
+    .getByRole('button', { name: strings.action.close, exact: true })
+    .click();
+  await expect(parents).toBeHidden();
+  await expect(page).toHaveURL(`${address}#/`);
+  await expect(parentsButton).toBeFocused();
   assert.deepEqual(errors, []);
   await writeFile(
     join(output, 'smoke.json'),
