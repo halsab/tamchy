@@ -7,6 +7,7 @@
     "parents": "Өлкәннәр өчен"
   },
   "action": {
+    "close": "Ябу",
     "listen": "Тыңла",
     "listenAgain": "Кабат тыңла",
     "continue": "Дәвам ит",

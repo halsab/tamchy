@@ -76,3 +76,32 @@ it('обновление независимо от готовности; уст�
   );
   expect(install).toHaveBeenCalledOnce();
 });
+
+it('закрывает крестиком и начинает повторное открытие с начала текста', async () => {
+  const close = vi.fn();
+  const props = {
+    onHome: close,
+    onClosed: vi.fn(),
+    mode: 'junior' as const,
+    onModeChange: vi.fn(),
+    version: 'test',
+    pwa: {
+      offline: 'ready',
+      update: 'none',
+      install: 'unavailable',
+    } as PwaState,
+    onRetry: vi.fn(),
+    onInstall: vi.fn(),
+  };
+  const view = render(<ParentsScreen {...props} open />);
+  expect(screen.queryByRole('button', { name: strings.nav.home })).toBeNull();
+  const body = screen
+    .getByText(strings.parents.settingsTitle)
+    .closest('section')!.parentElement!;
+  body.scrollTop = 700;
+  await userEvent.click(screen.getByRole('button', { name: 'Ябу' }));
+  expect(close).toHaveBeenCalledOnce();
+  view.rerender(<ParentsScreen {...props} open={false} />);
+  view.rerender(<ParentsScreen {...props} open />);
+  expect(body.scrollTop).toBe(0);
+});

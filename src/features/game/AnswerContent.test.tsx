@@ -1,17 +1,26 @@
 // @vitest-environment jsdom
 import { cleanup, render, screen, fireEvent } from '@testing-library/react';
-import { afterEach, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { AnswerContent } from './AnswerContent.tsx';
 import { contentV2 } from '../../content/v2/catalog.ts';
 import { createExerciseGenerator } from '../../domain/game/exercises.ts';
 
-afterEach(cleanup);
+import { mockCanvas } from '../../../tests/helpers/browser.ts';
+let contexts: ReturnType<typeof mockCanvas>;
+beforeEach(() => {
+  contexts = mockCanvas();
+});
+afterEach(() => {
+  cleanup();
+  vi.restoreAllMocks();
+  vi.unstubAllGlobals();
+});
 const boundary = {
   imageUrl: (path: string) => `/${path}`,
   onImageError: vi.fn(),
 };
 
-it('цифры 1–10 содержат точное число одинаковых предметов из одного упражнения', () => {
+it('цифры 1–10 содержат точное число одинаковых предметов из одного упражнения', async () => {
   const generate = createExerciseGenerator(
     contentV2,
     'numbers',
@@ -30,13 +39,15 @@ it('цифры 1–10 содержат точное число одинаков�
         <AnswerContent item={item} countObject={countObject} {...boundary} />,
       );
       expect(screen.getByText(String(item.value))).toBeTruthy();
-      const images = view.container.querySelectorAll('img');
-      expect(images).toHaveLength(item.value);
-      expect(
-        [...images].every(
-          (image) => image.getAttribute('src') === `/${countObject.image}`,
-        ),
-      ).toBe(true);
+      await Promise.resolve();
+      const canvas = view.container.querySelector('canvas')!;
+      expect(contexts.get(canvas)!.drawImage).toHaveBeenCalledTimes(item.value);
+      const sources = contexts
+        .get(canvas)!
+        .drawImage.mock.calls.map((call) => call[0].src);
+      expect(sources.every((src) => src === `/${countObject.image}`)).toBe(
+        true,
+      );
       view.unmount();
     }
   }

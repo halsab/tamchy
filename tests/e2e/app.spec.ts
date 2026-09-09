@@ -66,12 +66,12 @@ test('меню → три раздела → ошибка загрузки → �
     await expect(page.locator('html')).toHaveAttribute('lang', 'tt');
     await expect(page.getByRole('main')).toBeVisible();
     await expect(page.getByRole('button')).toHaveText([
+      '',
       'Төсләр',
       'Хайваннар',
       'Саннар',
-      '',
     ]);
-    await expect(page.getByRole('button').last()).toHaveAccessibleName(
+    await expect(page.getByRole('button').first()).toHaveAccessibleName(
       strings.nav.parents,
     );
     for (const category of catalog.categories) {
@@ -160,6 +160,10 @@ test('клавиатура, фокус и быстрые касания', async 
   await page.goto('./');
   await expect(page.getByRole('main')).toBeFocused();
   await page.keyboard.press('Tab');
+  await expect(
+    page.getByRole('button', { name: strings.nav.parents }),
+  ).toBeFocused();
+  await page.keyboard.press('Tab');
   const colors = page.getByRole('button', { name: 'Төсләр', exact: true });
   await expect(colors).toBeFocused();
   expect(
@@ -215,7 +219,11 @@ for (const viewport of viewports) {
       await imagesReady(page);
       if (route === 'parents')
         await page.getByRole('dialog').locator('header').click({ trial: true });
-      if (route !== 'parents') await noOverflow(page);
+      if (!['parents', 'home'].includes(route)) await noOverflow(page);
+      if (route === 'home')
+        expect(
+          await page.evaluate(() => document.documentElement.scrollWidth),
+        ).toBe(viewport.width);
       const controls = await page.getByRole('button').evaluateAll((buttons) =>
         buttons.map((button) => ({
           text: button.textContent,

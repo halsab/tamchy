@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import type { ContentV2 } from '../../content/types.ts';
 import type { SeniorExercise } from '../../domain/game/exercise.ts';
 import { AnswerContent } from './AnswerContent.tsx';
@@ -43,7 +44,12 @@ export function SeniorPrompt({ exercise, content, assets }: Props) {
     }
     case 'color-sequence':
       visual = (
-        <span className={styles.sequence}>
+        <span
+          className={styles.sequence}
+          style={
+            { '--sequence-count': prompt.colorIds.length + 1 } as CSSProperties
+          }
+        >
           {prompt.colorIds.map((id, index) => (
             <span
               key={index}
@@ -64,6 +70,7 @@ export function SeniorPrompt({ exercise, content, assets }: Props) {
       visual = (
         <SeniorCountGroup
           value={prompt.value}
+          maxValue={prompt.value}
           object={prompt.countObject}
           assets={assets}
         />
@@ -77,11 +84,13 @@ export function SeniorPrompt({ exercise, content, assets }: Props) {
         <span className={styles.addition}>
           <SeniorCountGroup
             value={prompt.left}
+            maxValue={Math.max(prompt.left, prompt.right)}
             object={prompt.countObject}
             assets={assets}
           />
           <SeniorCountGroup
             value={prompt.right}
+            maxValue={Math.max(prompt.left, prompt.right)}
             object={prompt.countObject}
             assets={assets}
           />
@@ -92,6 +101,7 @@ export function SeniorPrompt({ exercise, content, assets }: Props) {
       visual = (
         <SeniorCountGroup
           value={prompt.total}
+          maxValue={prompt.total}
           removed={prompt.removed}
           object={prompt.countObject}
           assets={assets}
@@ -141,6 +151,7 @@ export function SeniorAnswerContent({
       return (
         <SeniorCountGroup
           value={option.value}
+          maxValue={Math.max(...exercise.options.map((item) => item.value))}
           object={exercise.countObject}
           assets={assets}
         />

@@ -1,0 +1,38 @@
+.slot {
+  display: grid;
+  place-items: center;
+  position: relative;
+  container-type: size;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+.group {
+  --cell: min(
+    calc(100cqw / var(--max-columns)),
+    calc(100cqh / var(--max-rows)),
+    80px
+  );
+  display: block;
+  position: relative;
+  width: calc(var(--columns) * var(--cell));
+  height: calc(var(--rows) * var(--cell));
+}
+.canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.removed {
+  position: absolute;
+  width: calc(100% / var(--columns));
+  height: calc(100% / var(--rows));
+  background: linear-gradient(
+    135deg,
+    transparent 45%,
+    #27332f 46% 52%,
+    transparent 53%
+  );
+  border: 1px dashed #65736b;
+}

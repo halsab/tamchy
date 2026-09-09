@@ -42,37 +42,41 @@ test('все 13 счётных объектов рисуются настоящ�
     const cards = await answerButtons(page).evaluateAll((buttons) =>
       buttons.map((button) => {
         const canvas = button.querySelector('canvas');
-        const pictures = [...button.querySelectorAll('img')];
-        let count = pictures.length;
+        let count = 0;
         if (canvas) {
           const context = canvas.getContext('2d')!;
-          const occupied = new Set<number>();
           const pixels = context.getImageData(
             0,
             0,
             canvas.width,
             canvas.height,
           ).data;
-          for (let index = 3; index < pixels.length; index += 4)
-            if (pixels[index]) {
-              const pixel = (index - 3) / 4;
-              occupied.add(
-                Math.floor((pixel % canvas.width) / 112) +
-                  4 * Math.floor(pixel / canvas.width / 112),
-              );
+          // Считаем отдельные видимые рисунки по проекции каждого ряда,
+          // включая центрированный неполный ряд с дробным смещением ячеек.
+          for (let row = 0; row < canvas.height / 120; row++) {
+            let previous = false;
+            for (let x = 0; x < canvas.width; x++) {
+              let occupied = false;
+              for (let y = row * 120; y < (row + 1) * 120; y++)
+                if (pixels[(y * canvas.width + x) * 4 + 3]! >= 8) {
+                  occupied = true;
+                  break;
+                }
+              if (occupied && !previous) count++;
+              previous = occupied;
             }
-          count = occupied.size;
+          }
         }
         return {
           value: Number(button.textContent),
           count,
-          image: pictures[0]?.getAttribute('src'),
+          image: canvas?.getAttribute('data-image'),
           canvas: Boolean(canvas),
         };
       }),
     );
     for (const card of cards) expect(card.count).toBe(card.value);
-    if (!cards[0]!.canvas) {
+    if (cards[0]!.image) {
       const hash = await page.evaluate(async (url) => {
         const bytes = await (await fetch(url)).arrayBuffer();
         return [...new Uint8Array(await crypto.subtle.digest('SHA-256', bytes))]
@@ -82,7 +86,7 @@ test('все 13 счётных объектов рисуются настоящ�
       expect(hash).toBe(rasterHash);
       expect(cards.every((card) => card.image === cards[0]!.image)).toBe(true);
     }
-    const path = cards[0]!.canvas
+    const path = !cards[0]!.image
       ? await page.evaluate(() =>
           (window as Window & { tintPaths?: string[] }).tintPaths!.at(-1)!,
         )

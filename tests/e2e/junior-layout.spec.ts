@@ -15,6 +15,7 @@ const viewports = [
   { width: 768, height: 1024 },
   { width: 1024, height: 768 },
   { width: 844, height: 390 },
+  { width: 568, height: 320 },
 ];
 
 async function measure(page: Page, zoom = false) {
@@ -48,6 +49,8 @@ async function measure(page: Page, zoom = false) {
       width: document.documentElement.scrollWidth,
       height: document.documentElement.scrollHeight,
       cards,
+      header: rect(document.querySelector('main header')!),
+      prompt: rect(group.previousElementSibling!),
     };
   });
   expect(result.width).toBe(page.viewportSize()!.width);
@@ -56,6 +59,14 @@ async function measure(page: Page, zoom = false) {
     expect(card.width).toBeGreaterThanOrEqual(128);
     expect(card.height).toBeGreaterThanOrEqual(128);
     expect(card.contained).toBe(true);
+    for (const other of [result.header, result.prompt]) {
+      const separated =
+        card.left >= other.right - 0.5 ||
+        card.right <= other.left + 0.5 ||
+        card.top >= other.bottom - 0.5 ||
+        card.bottom <= other.top + 0.5;
+      expect(separated).toBe(true);
+    }
   }
   for (let a = 0; a < result.cards.length; a++)
     for (let b = a + 1; b < result.cards.length; b++) {

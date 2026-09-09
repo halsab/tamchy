@@ -53,6 +53,11 @@ export function contentPlugin(check: boolean): Plugin {
           );
         }
       }
+      this.emitFile({
+        type: 'asset',
+        fileName: 'assets/nunito-OFL.txt',
+        source: await readFile(resolve(root, 'src/styles/fonts/OFL.txt')),
+      });
       // Копируется только проверенный список, включая учебные и интерактивные MP3.
       for (const path of available) {
         this.emitFile({

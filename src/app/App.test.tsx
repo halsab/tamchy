@@ -33,7 +33,7 @@ it('главное меню: название, порядок трёх разд�
   expect(
     screen
       .getAllByRole('button')
-      .slice(0, 3)
+      .slice(1, 4)
       .map((button) => button.textContent),
   ).toEqual(['Төсләр', 'Хайваннар', 'Саннар']);
   expect(
@@ -55,7 +55,7 @@ it('главное меню: название, порядок трёх разд�
   ).not.toBeInTheDocument();
   expect(screen.getByRole('radio', { name: '2–4 яшь' })).toBeChecked();
   expect(screen.getByRole('radio', { name: '5–7 яшь' })).not.toBeChecked();
-  await s.click(strings.nav.home);
+  await s.click(strings.action.close);
   expect(location.hash).toBe('#/');
 });
 
@@ -122,7 +122,7 @@ it('выбор старшего режима запускает четыре о�
     screen.getByRole('radio', { name: strings.parents.senior }),
   );
   expect(localStorage.getItem('tamchy.age-mode')).toBe('senior');
-  await s.click(strings.nav.home);
+  await s.click(strings.action.close);
   for (const category of catalog.categories) {
     await s.click(category.labelTt);
     expect(answers()).toHaveLength(4);
@@ -214,7 +214,7 @@ it('изменённый возраст применяется при возвр
   await s.user.click(
     screen.getByRole('radio', { name: strings.parents.senior }),
   );
-  await s.click(strings.nav.home);
+  await s.click(strings.action.close);
   await s.click('Төсләр');
   expect(answers()).toHaveLength(4);
   expect(s.createSessionId).toHaveBeenCalledTimes(3);
@@ -228,7 +228,7 @@ it('при недоступном хранилище режим пережива
   const s = setupApp('#/parents');
   await s.settle();
   await s.user.click(screen.getByRole('radio', { name: '5–7 яшь' }));
-  await s.click(strings.nav.home);
+  await s.click(strings.action.close);
   await s.click('Төсләр');
   expect(answers()).toHaveLength(4);
   await s.route('#/numbers');
@@ -534,6 +534,10 @@ it('активность за пределами игровых кнопок с�
 it('Tab, Enter и Space управляют настоящими кнопками', async () => {
   const s = setupApp();
   await s.settle();
+  await s.user.tab();
+  expect(
+    screen.getByRole('button', { name: strings.nav.parents }),
+  ).toHaveFocus();
   await s.user.tab();
   expect(screen.getByRole('button', { name: 'Төсләр' })).toHaveFocus();
   await s.user.keyboard('{Enter}');

@@ -1,7 +1,6 @@
 import type { PwaState } from '../../services/pwa/service.ts';
 import controls from '../../shared/ui/controls.module.css';
 import strings from '../../content/tt.json';
-import { HomeButton } from '../../shared/ui/HomeButton.tsx';
 import styles from './ParentsScreen.module.css';
 import { useRef } from 'react';
 import type { AgeMode } from '../../services/preferences/age-mode.ts';
@@ -29,7 +28,11 @@ export function ParentsScreen({
   onRetry: () => void;
   onInstall: () => void;
 }) {
-  const { dialog, panel, handle } = useParentsSheet(open, onClosed, onHome);
+  const { dialog, panel, content, handle } = useParentsSheet(
+    open,
+    onClosed,
+    onHome,
+  );
   const backdropPress = useRef(false);
   return (
     <dialog
@@ -65,14 +68,22 @@ export function ParentsScreen({
       }}
     >
       <div ref={panel} className={styles.parents}>
-        <header className={styles.header} {...handle}>
-          <span className={styles.handle} aria-hidden="true" />
+        <header className={styles.header}>
+          <div className={styles.dragHandle} {...handle} aria-hidden="true">
+            <span className={styles.handle} />
+          </div>
           <div className={styles.heading}>
-            <HomeButton onClick={onHome} />
             <h1 id="parents-title">{strings.nav.parents}</h1>
+            <button
+              className={controls.iconButton}
+              onClick={onHome}
+              aria-label={strings.action.close}
+            >
+              <Icon name="close" />
+            </button>
           </div>
         </header>
-        <div className={styles.content}>
+        <div ref={content} className={styles.content}>
           <section>
             <h2>{strings.parents.settingsTitle}</h2>
             <fieldset

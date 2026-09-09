@@ -123,6 +123,23 @@ export function successfulFetch() {
 
 export function mockCanvas() {
   vi.stubGlobal(
+    'Image',
+    class {
+      naturalWidth = 1;
+      naturalHeight = 1;
+      onload: (() => void) | null = null;
+      onerror: (() => void) | null = null;
+      private path = '';
+      get src() {
+        return this.path;
+      }
+      set src(value: string) {
+        this.path = value;
+        queueMicrotask(() => this.onload?.());
+      }
+    },
+  );
+  vi.stubGlobal(
     'ImageData',
     class {
       constructor(
@@ -138,6 +155,7 @@ export function mockCanvas() {
       drawImage: ReturnType<typeof vi.fn>;
       clearRect: ReturnType<typeof vi.fn>;
       putImageData: ReturnType<typeof vi.fn>;
+      getImageData: ReturnType<typeof vi.fn>;
     }
   >();
   vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockImplementation(
@@ -149,6 +167,11 @@ export function mockCanvas() {
           drawImage,
           clearRect: vi.fn(() => drawImage.mockClear()),
           putImageData: vi.fn(),
+          getImageData: vi.fn(() => ({
+            width: 1,
+            height: 1,
+            data: new Uint8ClampedArray([128, 128, 128, 255]),
+          })),
         };
         contexts.set(this, context);
       }

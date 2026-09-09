@@ -11,7 +11,7 @@ async function chooseMode(page: Page, mode: AgeMode) {
   await expect(
     sheet.getByRole('radio', { name: strings.parents[mode] }),
   ).toBeChecked();
-  await sheet.getByRole('button', { name: strings.nav.home }).click();
+  await sheet.getByRole('button', { name: strings.action.close }).click();
   await expect(sheet).not.toBeVisible();
 }
 
@@ -32,8 +32,8 @@ test('выбор возраста управляет всеми разделам
     await page.getByRole('button', { name: strings.nav.parents }).click();
     await chooseMode(page, mode);
     await expect(page.getByRole('button')).toHaveText([
-      ...contentV2.categories.map((x) => x.labelTt),
       '',
+      ...contentV2.categories.map((x) => x.labelTt),
     ]);
     for (const category of contentV2.categories) {
       const started = (await audio()).starts.length;

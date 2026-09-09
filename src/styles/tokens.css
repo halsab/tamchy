@@ -20,5 +20,6 @@
   --radius-card: 24px;
   --radius-card-large: 32px;
   --font-system:
-    system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    'Nunito', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    sans-serif;
 }

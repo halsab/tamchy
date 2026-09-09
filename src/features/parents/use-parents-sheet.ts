@@ -7,6 +7,7 @@ export function useParentsSheet(
 ) {
   const dialog = useRef<HTMLDialogElement>(null);
   const panel = useRef<HTMLDivElement>(null);
+  const content = useRef<HTMLDivElement>(null);
   const animation = useRef<Animation | null>(null);
   const overflow = useRef<string | null>(null);
   const drag = useRef<{
@@ -52,33 +53,31 @@ export function useParentsSheet(
 
   useLayoutEffect(() => {
     const element = dialog.current!;
-    const content = panel.current!;
+    const sheet = panel.current!;
     drag.current = null;
     if (open) {
       if (!element.open) {
         overflow.current = document.body.style.overflow;
         document.body.style.overflow = 'hidden';
         element.showModal();
-        content.style.transform = 'translateY(100%)';
+        sheet.style.transform = 'translateY(100%)';
       }
+      if (content.current) content.current.scrollTop = 0;
       moveTo(0);
     } else if (element.open) {
-      moveTo(
-        reducedMotion() ? 0 : content.getBoundingClientRect().height,
-        () => {
-          element.close();
-          unlockScroll();
-          onClosed();
-        },
-      );
+      moveTo(reducedMotion() ? 0 : sheet.getBoundingClientRect().height, () => {
+        element.close();
+        unlockScroll();
+        onClosed();
+      });
     }
     return () => {
       if (!animation.current) return;
       // Отмена WAAPI снимает промежуточный кадр, поэтому сохраняем его до отмены.
-      const transform = getComputedStyle(content).transform;
+      const transform = getComputedStyle(sheet).transform;
       animation.current.cancel();
       animation.current = null;
-      content.style.transform = transform;
+      sheet.style.transform = transform;
     };
   }, [open, moveTo, onClosed, unlockScroll]);
 
@@ -150,6 +149,7 @@ export function useParentsSheet(
   return {
     dialog,
     panel,
+    content,
     handle: {
       onPointerDown,
       onPointerMove,

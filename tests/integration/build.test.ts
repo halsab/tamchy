@@ -26,6 +26,10 @@ async function fixture() {
   await cp('src/content/v2', join(root, 'src/content/v2'), { recursive: true });
   const files: Record<string, string> = {
     'src/content/tt.json': JSON.stringify(strings),
+    'src/styles/fonts/OFL.txt': await readFile(
+      'src/styles/fonts/OFL.txt',
+      'utf8',
+    ),
     'index.html':
       '<html lang="tt"><head><title>%APP_NAME%</title><link rel="icon" href="%BASE_URL%icons/pwa-192x192.png"></head><body><script type="module" src="/main.ts"></script></body></html>',
     'main.ts': 'document.body.textContent = "Тамчы";',
@@ -86,7 +90,9 @@ describe('границы сборочных артефактов', () => {
     const staticFiles = files.filter(
       (path) => path !== 'index.html' && !path.endsWith('.js'),
     );
-    expect(staticFiles.sort()).toEqual([...graphics].sort());
+    expect(staticFiles.sort()).toEqual(
+      [...graphics, 'assets/nunito-OFL.txt'].sort(),
+    );
     const html = await readFile(join(root, '.build-check/index.html'), 'utf8');
     expect(html).toContain('<title>Тамчы</title>');
     expect(html).toContain(`${base}icons/pwa-192x192.png`);

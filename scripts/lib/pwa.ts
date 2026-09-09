@@ -78,7 +78,9 @@ export async function createPwaOptions(
       clientsClaim: false,
       cleanupOutdatedCaches: false,
       sourcemap: false,
-      globPatterns: ['**/*.{html,js,css,json,webmanifest,png,svg,webp,mp3}'],
+      globPatterns: [
+        '**/*.{html,js,css,json,webmanifest,png,svg,webp,mp3,woff2,txt}',
+      ],
       globIgnores: ['offline-worker-*.js', 'offline-manifest.json'],
       importScripts: [helper],
       navigateFallback: 'index.html',

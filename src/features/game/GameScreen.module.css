@@ -1,10 +1,10 @@
 .game {
-  display: grid;
-  grid-template-areas: 'header' 'prompt' 'answers' 'feedback';
   --answer-rows: 1;
   --answer-min: max(128px, calc(9rem - 16px));
-  grid-template-rows: auto auto minmax(128px, 1fr) auto;
-  min-height: 0;
+  display: grid;
+  grid-template-areas: 'header' 'prompt' 'answers';
+  grid-template-rows: auto auto minmax(min-content, 1fr);
+  min-height: min-content;
   position: relative;
   gap: var(--space-1);
   flex: 1;
@@ -13,17 +13,33 @@
   align-self: center;
 }
 .header {
+  position: sticky;
+  top: max(16px, env(safe-area-inset-top));
+  z-index: 2;
+  background: var(--color-background);
   grid-area: header;
   display: grid;
   grid-template-columns: 56px minmax(0, 1fr) 56px;
   gap: var(--space-1);
   align-items: center;
+  align-self: start;
+}
+.header > :first-child {
+  grid-column: 1;
+  grid-row: 1;
+}
+.header > :last-child {
+  grid-column: 3;
+  grid-row: 1;
 }
 .header h1 {
+  grid-column: 2;
+  grid-row: 1;
   margin: 0;
   font-size: 1.5rem;
   text-align: center;
   line-height: 1.2;
+  overflow-wrap: break-word;
 }
 .header button:disabled {
   opacity: 0.45;
@@ -32,9 +48,11 @@
   grid-area: prompt;
   text-align: center;
   margin: 0;
+  min-width: 0;
   font-size: 1.25rem;
   line-height: 1.4;
   align-self: center;
+  overflow-wrap: break-word;
 }
 .prompt > p {
   margin: 0;
@@ -49,10 +67,10 @@
     minmax(var(--answer-min), 1fr)
   );
   align-self: center;
-  align-content: stretch;
   height: 100%;
   max-height: calc(
-    var(--answer-rows) * 272px + (var(--answer-rows) - 1) * 16px
+    var(--answer-rows) * min(272px, max(160px, 40vw)) +
+      (var(--answer-rows) - 1) * 16px
   );
   min-height: calc(
     var(--answer-rows) * var(--answer-min) + (var(--answer-rows) - 1) * 16px
@@ -73,7 +91,7 @@
   background: var(--color-surface);
 }
 .chip {
-  width: min(78cqw, 78cqh);
+  width: min(86cqw, 86cqh);
   border: 2px solid #65736b;
   aspect-ratio: 1;
   border-radius: 50%;
@@ -85,32 +103,18 @@
   object-fit: contain;
 }
 .number {
-  --digit-size: clamp(2rem, 28cqh, 4rem);
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  --digit-size: clamp(2rem, 26cqh, 4rem);
+  width: 100cqw;
+  height: 100cqh;
+  display: grid;
+  grid-template-rows: var(--digit-size) minmax(0, 1fr);
+  justify-items: center;
   gap: var(--space-1);
 }
 .digit {
   font-size: var(--digit-size);
   font-weight: 750;
   line-height: 1;
-}
-.counts {
-  --object-size: min(25cqw, calc((100cqh - var(--digit-size) - 8px) / 3), 56px);
-  display: grid;
-  grid-template: repeat(3, var(--object-size)) / repeat(4, var(--object-size));
-}
-.counts img {
-  width: var(--object-size);
-  height: var(--object-size);
-  object-fit: contain;
-}
-.tintedCount {
-  width: calc(4 * var(--object-size));
-  height: calc(3 * var(--object-size));
-  grid-area: 1 / 1 / -1 / -1;
 }
 .hint {
   border-color: var(--color-state);
@@ -121,23 +125,23 @@
 }
 .check {
   position: absolute;
-  top: var(--space-1);
-  right: var(--space-1);
+  top: 4px;
+  right: 4px;
   display: grid;
   place-items: center;
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   background: var(--color-state);
   color: var(--color-surface);
 }
+.check svg {
+  width: 75%;
+  height: 75%;
+}
 .wrong {
   border-color: var(--color-text);
   animation: respond 250ms ease-out;
-}
-.check svg {
-  width: 100%;
-  height: 100%;
 }
 .blockingCheck {
   position: static;
@@ -145,20 +149,20 @@
   height: 40px;
 }
 .feedback {
-  min-height: 28px;
-  grid-area: feedback;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: var(--space-1);
   text-align: center;
+  min-width: 0;
 }
 .feedback p {
   margin: 0;
   font-size: 1.25rem;
   line-height: 1.4;
   max-width: 32ch;
+  overflow-wrap: break-word;
 }
 @keyframes respond {
   50% {
@@ -180,7 +184,6 @@
 .game[data-blocking='true'] .feedback {
   grid-area: answers;
   align-self: center;
-  min-height: 0;
 }
 @media (min-width: 640px) and (max-height: 500px) {
   .game[data-count] {
@@ -194,18 +197,23 @@
     width: 100%;
   }
 }
+@media (orientation: landscape) and (max-width: 639px) and (max-height: 500px) {
+  .game {
+    grid-template-areas: 'header answers' 'prompt answers';
+    grid-template-columns: minmax(128px, 1fr) minmax(272px, 1.5fr);
+    grid-template-rows: auto minmax(min-content, 1fr);
+    gap: 8px 16px;
+  }
+  .header h1 {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   .wrong {
     animation: none;
   }
-}
-.header h1,
-.prompt {
-  overflow-wrap: anywhere;
-}
-.feedback {
-  min-width: 0;
-}
-.feedback p {
-  overflow-wrap: anywhere;
 }

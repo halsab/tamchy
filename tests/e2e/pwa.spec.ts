@@ -103,7 +103,7 @@ test('T13: только главное меню → закрытие брауз�
     expect((await page.reload())?.fromServiceWorker()).toBe(true);
     await parents(page);
     await expect(offlineStatus(page)).toHaveText(strings.status.offlineReady);
-    await page.getByRole('button', { name: strings.nav.home }).click();
+    await page.getByRole('button', { name: strings.action.close }).click();
     const audio = catalog.audio.map((clip) => clip.path);
     const decoded = await page.evaluate(async (paths) => {
       const audio = new AudioContext();
@@ -162,7 +162,7 @@ test('T13: только главное меню → закрытие брауз�
     expect(visited).toHaveLength(62);
     await parents(page);
     await page.getByText(strings.parents.senior, { exact: true }).click();
-    await page.getByRole('button', { name: strings.nav.home }).click();
+    await page.getByRole('button', { name: strings.action.close }).click();
     const seniorVisited: { kind: string; count: number }[] = [];
     for (const category of catalog.categories) {
       const player = await startSeniorPlayer(page, category.id);

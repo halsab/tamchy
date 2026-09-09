@@ -131,7 +131,12 @@ for (const baseline of ['current', 'mvp', 'junior'] as const)
         await other.goto(server.url);
         await ready(other);
         await page.bringToFront();
-        await page.getByRole('button', { name: strings.nav.home }).click();
+        await page
+          .getByRole('button', {
+            name:
+              baseline === 'current' ? strings.action.close : strings.nav.home,
+          })
+          .click();
         let exercise: { target: { labelTt: string }; textTt: string };
         if (baseline === 'current') {
           const player = await startSeniorPlayer(page, 'colors');
@@ -293,7 +298,7 @@ for (const baseline of ['current', 'mvp', 'junior'] as const)
             reopened.getByRole('radio', { name: strings.parents.senior }),
           ).toBeChecked();
           await reopened
-            .getByRole('button', { name: strings.nav.home })
+            .getByRole('button', { name: strings.action.close })
             .click();
           await reopened
             .getByRole('button', { name: 'Хайваннар', exact: true })

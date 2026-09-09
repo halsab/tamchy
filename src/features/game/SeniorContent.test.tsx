@@ -5,6 +5,7 @@ import { contentV2 as content } from '../../content/v2/catalog.ts';
 import { seniorExercise } from '../../../tests/fixtures/senior-exercises.ts';
 import { SeniorPrompt, SeniorAnswerContent } from './SeniorContent.tsx';
 import type { SeniorVisualAssets } from './SeniorIllustration.tsx';
+import { mockCanvas } from '../../../tests/helpers/browser.ts';
 import { tintNeutralPixels } from '../../services/assets/tint.ts';
 import type {
   CountIllustration,
@@ -18,13 +19,19 @@ const pixels = tintNeutralPixels(
 );
 const drawImage = vi.fn(),
   putImageData = vi.fn();
-const context = { drawImage, putImageData, clearRect: vi.fn() };
+const context = {
+  drawImage,
+  putImageData,
+  clearRect: vi.fn(),
+  getImageData: () => pixels,
+};
 const assets: SeniorVisualAssets = {
   imageUrl: (path) => `/tamchy/${path}`,
   tintedPixels: vi.fn(() => pixels),
   onImageError: vi.fn(),
 };
 beforeEach(() => {
+  mockCanvas();
   vi.clearAllMocks();
   vi.stubGlobal(
     'ImageData',
@@ -63,7 +70,7 @@ function answers(exercise: SeniorExercise) {
   ));
 }
 
-it('N1-A показывает только цифры, N1-C — только группы без подписи-ответа', () => {
+it('N1-A показывает только цифры, N1-C — только группы без подписи-ответа', async () => {
   const number = seniorExercise('N1-A');
   const view = render(<>{answers(number)}</>);
   expect(screen.getByText('4')).toBeTruthy();
@@ -82,13 +89,17 @@ it('N1-A показывает только цифры, N1-C — только г�
   expect(screen.getByText('4')).toBeTruthy();
   for (const [index, button] of screen.getAllByRole('button').entries()) {
     expect(button.textContent).toBe('');
-    expect(button.querySelectorAll('img')).toHaveLength(
-      (group.options[index] as { value: number }).value,
-    );
+    expect(
+      button.querySelector('[data-quantity]')!.getAttribute('data-quantity'),
+    ).toBe(String((group.options[index] as { value: number }).value));
   }
-  expect(groups.container.querySelectorAll('canvas')).toHaveLength(0);
+  await Promise.resolve();
+  expect(groups.container.querySelectorAll('canvas')).toHaveLength(4);
+  expect(drawImage.mock.calls.filter((call) => call.length === 9)).toHaveLength(
+    14,
+  );
 });
-it('N1-B отображает точное количество, N3 — обе группы и явно убранную часть', () => {
+it('N1-B отображает точное количество, N3 — обе группы и явно убранную часть', async () => {
   for (const kind of ['N1-B', 'N3-A', 'N3-B'] as const) {
     const e = seniorExercise(kind);
     const exercise = {
@@ -99,7 +110,11 @@ it('N1-B отображает точное количество, N3 — обе �
       <SeniorPrompt exercise={exercise} content={content} assets={assets} />,
     );
     const expected = kind === 'N1-B' ? 4 : kind === 'N3-A' ? 4 : 7;
-    expect(view.container.querySelectorAll('img')).toHaveLength(expected);
+    await Promise.resolve();
+    expect(
+      drawImage.mock.calls.filter((call) => call.length === 9),
+    ).toHaveLength(expected);
+    drawImage.mockClear();
     expect(
       view.container.querySelectorAll('[data-removed="true"]'),
     ).toHaveLength(kind === 'N3-B' ? 3 : 0);
@@ -139,13 +154,16 @@ it('C4 содержит весь ряд, одну пустую следующу�
     <SeniorPrompt
       exercise={{
         ...e,
-        prompt: { ...e.prompt, colorIds: ['white', 'blue', 'white', 'blue'] },
+        prompt: {
+          ...e.prompt,
+          colorIds: ['white', 'blue', 'white', 'blue', 'white', 'blue'],
+        },
       }}
       content={content}
       assets={assets}
     />,
   );
-  expect(view.container.querySelectorAll('[data-color]')).toHaveLength(4);
+  expect(view.container.querySelectorAll('[data-color]')).toHaveLength(6);
   expect(
     view.container.querySelector('[data-color="white"]')?.getAttribute('style'),
   ).toContain('rgb(255, 255, 255)');
@@ -180,7 +198,7 @@ it('счётные PNG рисуются одинаковыми ячейками 
   expect(view.container.querySelectorAll('canvas')).toHaveLength(4);
   expect(drawImage).toHaveBeenCalledTimes(14);
   for (const call of drawImage.mock.calls)
-    expect(call.slice(-2)).toEqual([120, 120]);
+    expect(call.slice(-2)).toEqual([105.6, 105.6]);
   expect(new Set(drawImage.mock.calls.map((x) => x[0])).size).toBe(4);
 });
 it('поздняя перекраска перерисовывает canvas, ошибка canvas возвращает обязательный ресурс', () => {

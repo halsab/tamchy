@@ -24,7 +24,7 @@ for (const category of contentV2.categories)
     const audio = await traceAudio(page);
     await page.goto('./#/parents');
     await page.getByText(strings.parents.senior, { exact: true }).click();
-    await page.getByRole('button', { name: strings.nav.home }).click();
+    await page.getByRole('button', { name: strings.action.close }).click();
     const player = await startSeniorPlayer(page, category.id);
     const counts = new Set([player.adaptation.answerCount]);
     for (
@@ -47,6 +47,9 @@ for (const category of contentV2.categories)
       for (const [width, height] of [
         [320, 568],
         [390, 844],
+        [375, 667],
+        [390, 664],
+        [641, 360],
         [768, 1024],
         [1024, 768],
         [844, 390],
@@ -63,6 +66,46 @@ for (const category of contentV2.categories)
           }));
           expect(size.width).toBe(width);
           if (!zoom) expect(size.height).toBe(height);
+          const layout = await page.evaluate(() => {
+            const rect = (element: Element) => {
+              const b = element.getBoundingClientRect();
+              return {
+                x: b.x,
+                y: b.y,
+                right: b.right,
+                bottom: b.bottom,
+                width: b.width,
+                height: b.height,
+              };
+            };
+            const header = document.querySelector('main header')!;
+            const group = document.querySelector('[role="group"]')!;
+            return {
+              header: rect(header),
+              controls: [...header.querySelectorAll('button')].map(rect),
+              prompt: rect(group.previousElementSibling!),
+              cards: [...group.querySelectorAll('button')].map(rect),
+            };
+          });
+          expect(layout.header.y).toBe(
+            width! >= 640 && height! >= 600 ? 32 : 16,
+          );
+          expect(layout.controls[0]!.x).toBeCloseTo(layout.header.x, 0);
+          expect(layout.controls[1]!.right).toBeCloseTo(layout.header.right, 0);
+          for (const card of layout.cards) {
+            expect(card.width).toBeGreaterThanOrEqual(80);
+            expect(card.height).toBeGreaterThanOrEqual(80);
+            if (!zoom)
+              expect(card.height).toBeLessThanOrEqual(card.width * 1.25 + 1);
+            for (const other of [layout.header, layout.prompt])
+              expect(
+                card.x >= other.right - 0.5 ||
+                  card.right <= other.x + 0.5 ||
+                  card.y >= other.bottom - 0.5 ||
+                  card.bottom <= other.y + 0.5,
+              ).toBe(true);
+          }
+
           for (const button of originals)
             expect(await button.evaluate((button) => button.isConnected)).toBe(
               true,

@@ -1,4 +1,10 @@
+@import './fonts.css';
 @import './tokens.css';
+
+html {
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
+}
 
 * {
   box-sizing: border-box;

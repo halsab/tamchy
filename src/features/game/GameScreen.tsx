@@ -119,6 +119,11 @@ export function GameScreen({
                   <AnswerContent
                     item={item}
                     countObject={countObject}
+                    maxCount={Math.max(
+                      ...round.options.map((option) =>
+                        option.kind === 'number' ? option.value : 1,
+                      ),
+                    )}
                     pixels={pixels}
                     imageUrl={game.imageUrl}
                     onImageError={game.imageFailed}
@@ -137,7 +142,7 @@ export function GameScreen({
             );
           })}
       </div>
-      <div className={styles.feedback}>
+      <div className={`${styles.feedback} ${blocking ? '' : 'visuallyHidden'}`}>
         {accepted && blocking && (
           <span
             className={`${styles.check} ${styles.blockingCheck}`}

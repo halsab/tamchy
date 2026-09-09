@@ -1,5 +1,6 @@
 .prompt {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   justify-items: center;
   gap: 8px;
   min-width: 0;
@@ -9,19 +10,20 @@
   margin: 0;
   font-size: 1.25rem;
   line-height: 1.4;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 .visual {
   display: grid;
   place-items: center;
-  min-height: 96px;
-  max-width: 100%;
+  width: 100%;
+  height: var(--visual-size);
+  container-type: size;
 }
 .sample {
   position: relative;
   display: block;
-  width: 128px;
-  height: 128px;
+  width: min(100cqw, 100cqh);
+  height: min(100cqw, 100cqh);
 }
 .image {
   display: block;
@@ -51,20 +53,25 @@
 }
 .shape {
   display: block;
-  width: 108px;
-  height: 108px;
+  width: min(96cqw, 96cqh);
+  height: min(96cqw, 96cqh);
 }
 .shape[data-size='small'] {
-  width: 64px;
-  height: 64px;
+  width: min(58cqw, 58cqh);
+  height: min(58cqw, 58cqh);
 }
 .digit {
-  font-size: 4rem;
+  font-size: clamp(3rem, min(64cqw, 64cqh), 7rem);
   font-weight: 750;
   line-height: 1;
   font-variant-numeric: tabular-nums;
 }
 .sequence {
+  --chip-size: min(
+    64px,
+    calc((100cqw - (var(--sequence-count) - 1) * 8px) / var(--sequence-count)),
+    80cqh
+  );
   display: flex;
   align-items: center;
   gap: 8px;
@@ -74,80 +81,25 @@
   flex: none;
   display: grid;
   place-items: center;
-  width: 24px;
-  height: 24px;
+  width: var(--chip-size);
+  height: var(--chip-size);
   border: 2px solid #65736b;
   border-radius: 50%;
 }
 .next {
   border-style: dashed;
-  font-size: 1.25rem;
-}
-.countGroup {
-  --count-size: 24px;
-  display: grid;
-  grid-template: repeat(4, var(--count-size)) / repeat(3, var(--count-size));
-  width: calc(3 * var(--count-size));
-  height: calc(4 * var(--count-size));
-  flex: none;
-  position: relative;
-}
-.countCanvas {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  inset: 0;
-}
-.countCell {
-  width: var(--count-size);
-  height: var(--count-size);
-  position: relative;
-}
-.countCell[data-removed='true']::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    135deg,
-    transparent 43%,
-    #27332f 44% 53%,
-    transparent 54%
-  );
-  border: 1px dashed #65736b;
+  font-size: calc(var(--chip-size) * 0.65);
+  font-weight: 700;
+  line-height: 1;
 }
 .addition {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: center;
   gap: 16px;
   padding: 8px;
   border: 2px solid #65736b;
   border-radius: 24px;
-}
-@media (max-width: 360px) and (max-height: 640px),
-  (max-width: 640px) and (max-height: 360px) {
-  .shape {
-    width: 64px;
-    height: 64px;
-  }
-  .shape[data-size='small'] {
-    width: 40px;
-    height: 40px;
-  }
-  .countGroup {
-    --count-size: 20px;
-  }
-  .digit {
-    font-size: 3rem;
-  }
-}
-@media (orientation: landscape) and (max-height: 360px) {
-  .sample {
-    width: 112px;
-    height: 112px;
-  }
-  .sequenceChip,
-  .next {
-    width: 16px;
-    height: 16px;
-  }
+  width: min(100%, 560px);
+  height: 100%;
 }

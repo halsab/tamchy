@@ -18,7 +18,18 @@ export function HomeScreen({
 }) {
   return (
     <div className={styles.home}>
-      <h1 className={styles.title}>{strings.app.name}</h1>
+      <header className={styles.header}>
+        <h1 className={styles.title}>{strings.app.name}</h1>
+        <button
+          ref={parentsButton}
+          className={styles.parents}
+          onClick={onParents}
+          aria-label={strings.nav.parents}
+          aria-haspopup="dialog"
+        >
+          <Icon name="settings" />
+        </button>
+      </header>
       <div className={styles.categories}>
         {categories.map((category) => (
           <button
@@ -37,15 +48,6 @@ export function HomeScreen({
           </button>
         ))}
       </div>
-      <button
-        ref={parentsButton}
-        className={styles.parents}
-        onClick={onParents}
-        aria-label={strings.nav.parents}
-        aria-haspopup="dialog"
-      >
-        <Icon name="settings" />
-      </button>
     </div>
   );
 }

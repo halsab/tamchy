@@ -11,7 +11,7 @@ async function openSheet(page: Page) {
   await settings(page).click();
   await expect(sheet(page)).toBeVisible();
   await expect(
-    sheet(page).getByRole('button', { name: strings.nav.home }),
+    sheet(page).getByRole('button', { name: strings.action.close }),
   ).toBeFocused();
 }
 
@@ -41,7 +41,7 @@ test('шестерёнка, шит, сохранённый возраст и с�
   expect(button.x + button.width).toBeLessThanOrEqual(390 - 16);
   expect(button.y + button.height).toBeLessThanOrEqual(844 - 16);
   expect(button.x).toBeGreaterThan(300);
-  expect(button.y).toBeGreaterThan(700);
+  expect(button.y).toBe(16);
   await openSheet(page);
   await expect(page).toHaveURL(/#\/parents$/);
   await expect(
@@ -58,7 +58,7 @@ test('шестерёнка, шит, сохранённый возраст и с�
   await expect(
     sheet(page).getByRole('radio', { name: strings.parents.senior }),
   ).toBeChecked();
-  await sheet(page).getByRole('button', { name: strings.nav.home }).click();
+  await sheet(page).getByRole('button', { name: strings.action.close }).click();
   await expect(sheet(page)).not.toBeVisible();
   await expect(settings(page)).toBeFocused();
   await page.getByRole('button', { name: 'Саннар', exact: true }).click();
@@ -93,7 +93,7 @@ test('фокус остаётся в шите; Escape, фон и история 
   await page.goForward();
   await expect(sheet(page)).toBeVisible();
   await page.goto('./#/parents');
-  await sheet(page).getByRole('button', { name: strings.nav.home }).click();
+  await sheet(page).getByRole('button', { name: strings.action.close }).click();
   await expect(sheet(page)).not.toBeVisible();
   await expect(page).toHaveURL(/#\/$/);
 });
@@ -113,18 +113,24 @@ test('панель следует за пальцем; короткий жест
   await expect
     .poll(async () => (await header.boundingBox())!.y)
     .toBeCloseTo(initial, 0);
-  const captured = header.evaluate(
-    (element) =>
-      new Promise<number>((resolve) => {
-        element.addEventListener(
-          'gotpointercapture',
-          (event) => resolve((event as PointerEvent).pointerId),
-          { once: true },
-        );
-      }),
-  );
+  const captured = header
+    .locator('[aria-hidden="true"]')
+    .first()
+    .evaluate(
+      (element) =>
+        new Promise<number>((resolve) => {
+          element.addEventListener(
+            'gotpointercapture',
+            (event) => resolve((event as PointerEvent).pointerId),
+            { once: true },
+          );
+        }),
+    );
   const gesture = await dragHeader(page, 130);
-  await header.dispatchEvent('pointercancel', { pointerId: await captured });
+  await header
+    .locator('[aria-hidden="true"]')
+    .first()
+    .dispatchEvent('pointercancel', { pointerId: await captured });
   await page.mouse.up();
   await expect
     .poll(async () => (await header.boundingBox())!.y)
@@ -158,7 +164,7 @@ test('прокрутка текста сохраняет шапку и не за
   await expect(sheet(page).getByText(strings.parents.liability)).toBeVisible();
   expect((await heading.boundingBox())!.y).toBeCloseTo(before, 0);
   await expect(
-    sheet(page).getByRole('button', { name: strings.nav.home }),
+    sheet(page).getByRole('button', { name: strings.action.close }),
   ).toBeInViewport();
   expect(await page.evaluate(() => window.scrollY)).toBe(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(
@@ -299,4 +305,33 @@ test('быстрое возвращение по истории продолжа
   await page.keyboard.press('Escape');
   await expect(sheet(page)).not.toBeVisible();
   await expect(settings(page)).toBeFocused();
+});
+
+test('повторное открытие сбрасывает прокрутку; заголовок не служит ручкой', async ({
+  checkedPage: page,
+}) => {
+  await page.setViewportSize({ width: 320, height: 568 });
+  await page.goto('./');
+  await openSheet(page);
+  await sheet(page)
+    .getByText(strings.parents.liability)
+    .scrollIntoViewIfNeeded();
+  await sheet(page).getByRole('button', { name: strings.action.close }).click();
+  await expect(sheet(page)).not.toBeVisible();
+  await openSheet(page);
+  await expect(
+    sheet(page).getByText(strings.parents.settingsTitle),
+  ).toBeInViewport();
+  const header = sheet(page).locator('header');
+  await header.click({ trial: true });
+  const heading = sheet(page).getByRole('heading', {
+    name: strings.nav.parents,
+  });
+  const box = (await heading.boundingBox())!;
+  await page.mouse.move(box.x + 15, box.y + 10);
+  await page.mouse.down();
+  await page.mouse.move(box.x + 15, box.y + 160, { steps: 10 });
+  await page.mouse.up();
+  await expect(sheet(page)).toBeVisible();
+  expect((await heading.boundingBox())!.y).toBeCloseTo(box.y, 0);
 });

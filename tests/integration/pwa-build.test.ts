@@ -15,6 +15,22 @@ it('итоговый PWA /tamchy/: один перечень и отклонен
     expect(
       artifact.metadata.entries.filter((entry) => entry.url.endsWith('.webp')),
     ).toHaveLength(43);
+    const fonts = artifact.metadata.entries.filter((entry) =>
+      entry.url.endsWith('.woff2'),
+    );
+    expect(fonts).toHaveLength(3);
+    for (const font of fonts) {
+      const bytes = await readFile(join(artifact.dist, font.url));
+      expect(bytes.subarray(0, 4).toString()).toBe('wOF2');
+    }
+    expect(
+      artifact.metadata.entries.some(
+        (entry) => entry.url === 'assets/nunito-OFL.txt',
+      ),
+    ).toBe(true);
+    expect(
+      await readFile(join(artifact.dist, 'assets/nunito-OFL.txt'), 'utf8'),
+    ).toContain('SIL OPEN FONT LICENSE');
     const illustrations = artifact.files.filter(
       (file) =>
         /\.(webp|png|svg)$/.test(file) &&

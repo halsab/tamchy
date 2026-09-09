@@ -7,6 +7,8 @@ export const mimeTypes: Record<string, string> = {
   '.html': 'text/html',
   '.js': 'text/javascript',
   '.css': 'text/css',
+  '.woff2': 'font/woff2',
+  '.txt': 'text/plain',
   '.json': 'application/json',
   '.webmanifest': 'application/manifest+json',
   '.mp3': 'audio/mpeg',

@@ -111,7 +111,8 @@ export async function inspectArtifact(
     'index.html',
     'manifest.webmanifest',
     ...required,
-    ...files.filter((file) => /^assets\/[^/]+\.(js|css)$/.test(file)),
+    ...files.filter((file) => /^assets\/[^/]+\.(js|css|woff2)$/.test(file)),
+    ...files.filter((file) => file === 'assets/nunito-OFL.txt'),
   ].sort();
   assert.deepEqual(
     files,
@@ -242,7 +243,11 @@ export async function measureBudgets(
     }
     if (js || css || file === 'index.html' || file === 'manifest.webmanifest')
       sizes.firstScreen += gzipSync(bytes).length;
-    if (firstImages.has(file) || file.startsWith('icons/'))
+    if (
+      firstImages.has(file) ||
+      file.startsWith('icons/') ||
+      file.endsWith('.woff2')
+    )
       sizes.firstScreen += bytes.length;
   }
   assertBudgets(sizes);

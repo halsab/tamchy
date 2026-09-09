@@ -137,6 +137,7 @@ const stringsSchema = z.strictObject({
   app: z.strictObject({ name: z.literal('Тамчы') }),
   nav: z.strictObject({ home: text, parents: text }),
   action: z.strictObject({
+    close: text,
     listen: text,
     listenAgain: text,
     continue: text,
