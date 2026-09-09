@@ -146,15 +146,15 @@ master-05-common-prompts.wav
 |   № | Clip ID            | Записать   | HEX       |
 | --: | ------------------ | ---------- | --------- |
 |   1 | `color.red`        | Кызыл      | `#D94343` |
-|   2 | `color.orange`     | Кишер сары | `#F28C28` |
-|   3 | `color.yellow`     | Сары       | `#F3C63A` |
+|   2 | `color.orange`     | Кишер сары | `#F58220` |
+|   3 | `color.yellow`     | Сары       | `#F5D83D` |
 |   4 | `color.green`      | Яшел       | `#32965B` |
 |   5 | `color.turquoise`  | Фирәзә     | `#2CAFA5` |
-|   6 | `color.light-blue` | Күк зәңгәр | `#4AA8E8` |
-|   7 | `color.blue`       | Зәңгәр     | `#347FD4` |
+|   6 | `color.light-blue` | Күк зәңгәр | `#70C5ED` |
+|   7 | `color.blue`       | Зәңгәр     | `#2456B8` |
 |   8 | `color.purple`     | Шәмәхә     | `#7959C8` |
 |   9 | `color.pink`       | Ал         | `#E66D9A` |
-|  10 | `color.brown`      | Көрән      | `#8A5A3B` |
+|  10 | `color.brown`      | Көрән      | `#795035` |
 |  11 | `color.gray`       | Соры       | `#7D8583` |
 |  12 | `color.white`      | Ак         | `#FFFFFF` |
 |  13 | `color.black`      | Кара       | `#222625` |

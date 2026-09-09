@@ -8,13 +8,13 @@
   {
     "id": "orange",
     "labelTt": "Кишер сары",
-    "hex": "#F28C28",
+    "hex": "#F58220",
     "labelClipId": "color.orange"
   },
   {
     "id": "yellow",
     "labelTt": "Сары",
-    "hex": "#F3C63A",
+    "hex": "#F5D83D",
     "labelClipId": "color.yellow"
   },
   {
@@ -32,13 +32,13 @@
   {
     "id": "light-blue",
     "labelTt": "Күк зәңгәр",
-    "hex": "#4AA8E8",
+    "hex": "#70C5ED",
     "labelClipId": "color.light-blue"
   },
   {
     "id": "blue",
     "labelTt": "Зәңгәр",
-    "hex": "#347FD4",
+    "hex": "#2456B8",
     "labelClipId": "color.blue"
   },
   {
@@ -56,7 +56,7 @@
   {
     "id": "brown",
     "labelTt": "Көрән",
-    "hex": "#8A5A3B",
+    "hex": "#795035",
     "labelClipId": "color.brown"
   },
   {
